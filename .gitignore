@@ -1,0 +1,21 @@
+# generated files
+bin/
+gen/
+
+# Windows thumbnail db
+Thumbs.db
+
+# Android Studio
+*.iml
+.gradle
+.navigation
+local.properties
+.idea/workspace.xml
+.idea/libraries
+.DS_Store
+build
+captures
+.externalNativeBuild
+\.idea/caches/build_file_checksums\.ser
+
+\.idea/codeStyles/Project\.xml

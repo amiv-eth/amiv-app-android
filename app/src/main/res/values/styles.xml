@@ -1,0 +1,40 @@
+<resources>
+
+    <style name="AppThemeLight" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorSecondary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppThemeDark" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorSecondary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/backgroundDark</item>
+        <item name="android:colorForeground">@android:color/background_light</item>
+    </style>
+
+    <style name="AppThemeLight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppThemeLight.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppThemeLight.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Fullscreen" parent="AppThemeLight">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:colorBackground">@color/colorPrimary</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccentDark</item>
+        <item name="android:textColorPrimary">@color/primary_text_material_dark</item>
+        <item name="android:textColorSecondary">@color/coloTextLight</item>
+        <item name="android:textColorSecondaryInverse">@color/primary_text_material_dark</item>
+        <item name="android:textColorPrimaryInverse">@color/primary_text_material_dark</item>
+        <item name="android:colorButtonNormal">@color/colorAccentDark</item>
+
+    </style>
+
+</resources>
