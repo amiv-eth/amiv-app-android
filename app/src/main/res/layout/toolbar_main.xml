@@ -16,7 +16,20 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppThemeLight.PopupOverlay" />
+            app:popupTheme="@style/AppThemeLight.PopupOverlay" >
+
+            <ImageView
+                android:id="@+id/toolbar_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="Logo"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp"
+                android:src="@mipmap/amiv_logo"
+                android:tint="@color/white" />
+
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
@@ -24,6 +37,7 @@
         android:id="@+id/include"
         layout="@layout/content_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="visible" />
 
 </android.support.design.widget.CoordinatorLayout>
