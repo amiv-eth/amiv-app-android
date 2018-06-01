@@ -2,6 +2,7 @@ package ch.amiv.android_app;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,7 +16,7 @@ import java.security.SecureRandom;
 public class LoginActivity extends AppCompatActivity {
 
     WebView webView;
-    private static final String API_OAUTH_URL = "http://192.168.1.105:5000/oauth?response_type=token&client_id=AndroidApp&redirect_uri=http://localhost&state=";
+    private static final String API_OAUTH_URL = Settings.API_URL + "oauth?response_type=token&client_id=Android+App&redirect_uri=http://localhost:5000&state=";
     private String CSRFState = "";
 
     @Override
@@ -47,10 +48,13 @@ public class LoginActivity extends AppCompatActivity {
                     {
                         Settings.SetToken(token, getApplicationContext());
                         //Notify and update UI
-                        StartMainActivity();
+                        StartMainActivity(true);
                     }
-                    else
+                    else {
                         view.loadUrl(GenerateOAuthUrl()); //states do not match so retry login, possible CSRF attack occured
+                        Snackbar.make(view, "Error Occured, Please Retry", Snackbar.LENGTH_LONG).show();
+                        Log.e("login", "OAuth amiv api login: CSRF States do not match, token invalid! Potential CSRF attack occured, will redirect to login retry.");
+                    }
                 }
 
 
@@ -68,9 +72,11 @@ public class LoginActivity extends AppCompatActivity {
         //webView.getSettings().setJavaScriptEnabled(true);
     }
 
-    private void StartMainActivity() {
+    private void StartMainActivity(boolean sucess) {
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("login_sucess", sucess);
         startActivity(intent);
+
     }
 
     /**
@@ -87,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
         if (webView.canGoBack()) {
             webView.goBack();
         } else {
-            super.onBackPressed();
+            StartMainActivity(false);
         }
     }
 

@@ -2,6 +2,7 @@ package ch.amiv.android_app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.session.MediaSession;
 import android.util.Log;
 
 import java.net.ConnectException;
@@ -13,6 +14,8 @@ import java.net.ConnectException;
  */
 public class Settings {
     public static Settings instance;
+
+    public static final String API_URL = "http://10.2.42.121:5000/";
 
     //Vars for saving/reading the url from shared prefs, to allow saving between sessions. For each variable, have a key to access it and a default value
     private static SharedPreferences sharedPrefs;
@@ -73,6 +76,15 @@ public class Settings {
     public static String GetToken(Context context) {
         CheckInitSharedPrefs(context);
         return sharedPrefs.getString(apiTokenKey, "");
+    }
+
+    /**
+     * Note: will only check if a token exists. This token may have expired but not have been refreshed/deleted.
+     * @return True if the user is logged into the api and has an access token.
+     */
+    public static boolean IsLoggedIn(){
+        String t = sharedPrefs.getString(apiTokenKey, "");
+        return !t.isEmpty();
     }
 
 

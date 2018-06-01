@@ -10,8 +10,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,7 +21,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -27,8 +28,25 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    NavigationView navigationView;
+    TextView drawer_title;
+    TextView drawer_subtitle;
 
     RecyclerView mRecylerView;
     RecyclerView.Adapter mRecylcerAdaper;
@@ -51,20 +69,11 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-
+//region Initialisation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -74,20 +83,26 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        drawer_title = navigationView.getHeaderView(0).findViewById(R.id.drawer_user_title);
+        drawer_subtitle = navigationView.getHeaderView(0).findViewById(R.id.drawer_user_subtitle);
 
-        new Settings(getApplicationContext());
-
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottomNav);
+        BottomNavigationView navigation = findViewById(R.id.bottomNav);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         //Recyclerview
-        InitialiseListView();
+        InitialisePageView();
+
+        new Settings(getApplicationContext());
+        if(Settings.IsLoggedIn() && UserInfo.current == null)
+            FetchUserData();
+        else
+            SetLoginUIDirty();
     }
 
 
-    private void InitialiseListView() {
+    private void InitialisePageView() {
         MyAdapter pagerAdapter = new MyAdapter(getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(pagerAdapter);
@@ -108,21 +123,129 @@ public class MainActivity extends AppCompatActivity
         mRecylerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(this, R.anim.layout_anim_falldown));
         mRecylerView.setAdapter(mRecylcerAdaper);*/
     }
+//endregion
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // If we are returning from the login activity and have had a successfuly login, refresh the user info and login UI
+        Intent intent = getIntent();
+        boolean refreshLogin = intent.getBooleanExtra("login_sucess", false);
+        if(refreshLogin && Settings.IsLoggedIn()){
+            FetchUserData();
+        }
+    }
+
+//region Login
+
+    /**
+     * Will fetch the user from the api if we have an access token. ie Token -> User. Data is stored in the current userinfo (UserInfo.current). Overwrites the current user info if it exists
+     */
+    private void FetchUserData()
+    {
+        if(!Settings.IsLoggedIn())
+            return;
+
+        //Do request Token->User
+        String url = Settings.API_URL + "sessions/" + Settings.GetToken(getApplicationContext()) + "?embedded={\"user\":1}";
+        StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
+        {
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
+                if(response != null) {
+                    Log.e("request", "status Code: " + response.statusCode);
+
+                    try {
+                        JSONObject json = new JSONObject(new String(response.data)).getJSONObject("user");
+                        UserInfo user = new UserInfo(json);
+                        user.SetAsCurrent();
+
+                        //Update UI in nav drawer
+                        navigationView.post(new Runnable() {    //Run updating UI on UI thread
+                            public void run() {
+                                SetLoginUIDirty();
+                            }});
+
+                        //Log.e("request", json.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                    Log.e("request", "Request returned null response.");
+                return super.parseNetworkResponse(response);
+            }
+
+            @Override
+            protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
+                if(volleyError != null && volleyError.networkResponse != null)
+                    Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + volleyError.networkResponse.data.toString());
+                else
+                    Log.e("request", "Request returned null response.");
+
+                return super.parseNetworkError(volleyError);
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers = new HashMap<String, String>();
+
+                // Add basic auth with token
+                String credentials = Settings.GetToken(getApplicationContext()) + ":";
+                String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                headers.put("Authorization", auth);
+
+                return headers;
+            }
+        };
+
+        Requests.SendRequest(request, getApplicationContext());
+    }
+
+    /**
+     * Log the user out, delete token. Will not log the user out of the device with the API as this is used with other amiv services as well
+     */
+    public void LogoutUser()
+    {
+        Settings.SetToken("", getApplicationContext());
+        UserInfo.current = null;
+        SetLoginUIDirty();
+        System.gc();//run garbage collector explicitly to clean up user data
+    }
+
+    /**
+     * Will refresh all login related UI, use this when the user logs in/out
+     */
+    public void SetLoginUIDirty ()
+    {
+        if(Settings.IsLoggedIn()) {
+            if(UserInfo.current == null)
+                FetchUserData();
+            else {
+                navigationView.getMenu().findItem(R.id.nav_login).setTitle("Logout");
+                drawer_title.setText(UserInfo.current.firstname + " " + UserInfo.current.lastname);
+                drawer_subtitle.setText(UserInfo.current.email);
+            }
+        }
+        else
+        {
+            navigationView.getMenu().findItem(R.id.nav_login).setTitle("Login");
+            drawer_title.setText("Not Logged In");
+            drawer_subtitle.setText("");
+        }
+    }
+//endregion
 
     //=====Changing Activity====
-    public void StartSettingsActivity()
-    {
+    public void StartSettingsActivity() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
-    public void StartLoginActivity()
-    {
+    public void StartLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
-
-        //Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://192.168.1.105:5000/oauth?response_type=token&client_id=AndroidApp&redirect_uri=http://localhost&state=123"));
-        //startActivity(browserIntent);
     }
 
     //=====TOOLBAR=====
@@ -169,7 +292,10 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_login) {
-            StartLoginActivity();
+            if(Settings.IsLoggedIn())
+                LogoutUser();
+            else
+                StartLoginActivity();
         } else if (id == R.id.nav_checkin) {
 
         } else if (id == R.id.nav_settings) {
