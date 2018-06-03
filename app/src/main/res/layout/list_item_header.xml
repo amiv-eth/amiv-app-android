@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--This layout file describes a single item used in the member list view, the Custom list adapter tell the list view how to fill/map the data onto the ui defined here-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/titleField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingLeft="12dp"
+        android:text="Header"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <View
+    android:id="@+id/dividerLine"
+    android:layout_width="match_parent"
+    android:layout_height="2dp"
+    android:background="@color/colorAccentDark" />
+</LinearLayout>
+

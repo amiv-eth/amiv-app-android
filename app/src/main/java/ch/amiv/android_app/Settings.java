@@ -15,7 +15,7 @@ import java.net.ConnectException;
 public class Settings {
     public static Settings instance;
 
-    public static final String API_URL = "http://10.2.42.121:5000/";
+    public static final String API_URL = "http://192.168.1.105:5000/";
 
     //Vars for saving/reading the url from shared prefs, to allow saving between sessions. For each variable, have a key to access it and a default value
     private static SharedPreferences sharedPrefs;

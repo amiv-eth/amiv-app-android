@@ -3,16 +3,14 @@ package ch.amiv.android_app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -23,10 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -35,22 +30,23 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    NavigationView navigationView;
+    NavigationView drawerNavigation;
     TextView drawer_title;
     TextView drawer_subtitle;
 
-    RecyclerView mRecylerView;
-    RecyclerView.Adapter mRecylcerAdaper;
-    RecyclerView.LayoutManager mRecyclerLayoutAdapter;
+    BottomNavigationView bottomNavigation;
+
+    ViewPager viewPager;
+    PagerAdapter pagerAdapter;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -58,11 +54,14 @@ public class MainActivity extends AppCompatActivity
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.navigation_home:
+                case R.id.bottom_nav_home:
+                    viewPager.setCurrentItem(0);
                     return true;
-                case R.id.navigation_dashboard:
+                case R.id.bottom_nav_blitz:
+                    viewPager.setCurrentItem(1);
                     return true;
-                case R.id.navigation_notifications:
+                case R.id.bottom_nav_events:
+                    viewPager.setCurrentItem(2);
                     return true;
             }
             return false;
@@ -83,13 +82,13 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        drawer_title = navigationView.getHeaderView(0).findViewById(R.id.drawer_user_title);
-        drawer_subtitle = navigationView.getHeaderView(0).findViewById(R.id.drawer_user_subtitle);
+        drawerNavigation = findViewById(R.id.nav_view);
+        drawerNavigation.setNavigationItemSelectedListener(this);
+        drawer_title = drawerNavigation.getHeaderView(0).findViewById(R.id.drawer_user_title);
+        drawer_subtitle = drawerNavigation.getHeaderView(0).findViewById(R.id.drawer_user_subtitle);
 
-        BottomNavigationView navigation = findViewById(R.id.bottomNav);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        bottomNavigation = findViewById(R.id.bottomNav);
+        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         //Recyclerview
         InitialisePageView();
@@ -99,29 +98,40 @@ public class MainActivity extends AppCompatActivity
             FetchUserData();
         else
             SetLoginUIDirty();
+
+        FetchEventList();
     }
 
 
     private void InitialisePageView() {
-        MyAdapter pagerAdapter = new MyAdapter(getSupportFragmentManager());
-        ViewPager viewPager = findViewById(R.id.viewPager);
+        pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setPageTransformer(true, new DepthPageTransformer());
 
-        /*mRecylerView = findViewById(R.id.recyclerView);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        mRecylerView.setHasFixedSize(true);
+            @Override
+            public void onPageSelected(int position) {
+                //need to convert index to resource id
+                if(position == 0)
+                    position = R.id.bottom_nav_home;
+                else if (position == 1)
+                    position = R.id.bottom_nav_blitz;
+                else if (position == 2)
+                    position = R.id.bottom_nav_events;
 
-        // use a linear layout manager
-        mRecyclerLayoutAdapter = new LinearLayoutManager(this);
-        mRecylerView.setLayoutManager(mRecyclerLayoutAdapter);
+                bottomNavigation.setSelectedItemId(position);
+            }
 
-        // specify an adapter (see also next example)
-        mRecylcerAdaper = new MemberListAdapter(EventDatabase.instance.members, EventDatabase.instance.stats, EventDatabase.instance.eventData.GetInfosAsKeyValuePairs());
-        mRecylerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(this, R.anim.layout_anim_falldown));
-        mRecylerView.setAdapter(mRecylcerAdaper);*/
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 //endregion
 
@@ -137,7 +147,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-//region Login
+//region -   ====Login====
 
     /**
      * Will fetch the user from the api if we have an access token. ie Token -> User. Data is stored in the current userinfo (UserInfo.current). Overwrites the current user info if it exists
@@ -162,7 +172,7 @@ public class MainActivity extends AppCompatActivity
                         user.SetAsCurrent();
 
                         //Update UI in nav drawer
-                        navigationView.post(new Runnable() {    //Run updating UI on UI thread
+                        drawerNavigation.post(new Runnable() {    //Run updating UI on UI thread
                             public void run() {
                                 SetLoginUIDirty();
                             }});
@@ -223,17 +233,94 @@ public class MainActivity extends AppCompatActivity
             if(UserInfo.current == null)
                 FetchUserData();
             else {
-                navigationView.getMenu().findItem(R.id.nav_login).setTitle("Logout");
+                drawerNavigation.getMenu().findItem(R.id.nav_login).setTitle("Logout");
                 drawer_title.setText(UserInfo.current.firstname + " " + UserInfo.current.lastname);
                 drawer_subtitle.setText(UserInfo.current.email);
             }
         }
         else
         {
-            navigationView.getMenu().findItem(R.id.nav_login).setTitle("Login");
+            drawerNavigation.getMenu().findItem(R.id.nav_login).setTitle("Login");
             drawer_title.setText("Not Logged In");
             drawer_subtitle.setText("");
         }
+    }
+//endregion
+
+//region -   =====Events======
+
+    /**
+     * Will fetch the list of events from the server, note does not require an access token.
+     */
+    public void FetchEventList()
+    {
+        String url = Settings.API_URL + "events";
+        StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
+        {
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
+                if(response != null) {
+                    Log.e("request", "status Code: " + response.statusCode);
+
+                    try {
+                        JSONArray eventArrayJson = new JSONObject(new String(response.data)).getJSONArray("_items");
+                        Events.UpdateEventInfos(eventArrayJson);
+
+
+                        //Update UI in nav drawer
+                        drawerNavigation.post(new Runnable() {    //Run updating UI on UI thread
+                            public void run() {
+                                SetEventUIDirty();
+                                pagerAdapter.currentFragment.RefreshList();
+                            }});
+
+                        Log.e("request", eventArrayJson.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                    Log.e("request", "Request returned null response.");
+                return super.parseNetworkResponse(response);
+            }
+
+            @Override
+            protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
+                if(volleyError != null && volleyError.networkResponse != null)
+                    Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + volleyError.networkResponse.data.toString());
+                else
+                    Log.e("request", "Request returned null response.");
+
+                return super.parseNetworkError(volleyError);
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                if(Settings.IsLoggedIn()) {
+                Map<String,String> headers = new HashMap<String, String>();
+
+                    String credentials = Settings.GetToken(getApplicationContext()) + ":";
+                    String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                    headers.put("Authorization", auth);
+
+                return headers;
+                }
+
+                return super.getHeaders();
+            }
+        };
+
+        Requests.SendRequest(request, getApplicationContext());
+    }
+
+    /**
+     * Will refresh the UI using event data
+     */
+    public void SetEventUIDirty()
+    {
+        //update the recycler view of the event page in the pageview
+
+
     }
 //endregion
 
@@ -248,12 +335,12 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    //=====TOOLBAR=====
+    //region =====TOOLBAR=====
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.toolbar_menu_main, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -265,16 +352,15 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_favorite) {
-            Toast.makeText(MainActivity.this, "Action clicked", Toast.LENGTH_LONG).show();
+            FetchEventList();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-    //=====END OF TOOLBAR=============
+    //endregion =====END OF TOOLBAR=============
 
 
-    //========START OF DRAWER=========
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -284,6 +370,7 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+    //region ========START OF DRAWER=========
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -310,11 +397,17 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    //=====END OF DRAWER==================
+    //endregion =====END OF DRAWER==================
 
-    //=====START OF PAGEVIEW==============
-    public static class MyAdapter extends FragmentPagerAdapter {
-        public MyAdapter(FragmentManager fm) {
+    //region =====START OF PAGEVIEW==============
+
+    /**
+     * This will handle changing between the pages
+     */
+    public class PagerAdapter extends FragmentPagerAdapter {
+        ListFragment currentFragment;
+
+        public PagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -325,61 +418,16 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public Fragment getItem(int position) {
-            return ArrayListFragment.newInstance(position);
-        }
-    }
-
-    /**
-     * An examply fragment, the central view in MainActivity, for showing a list, should be replaced by a standard fragment with a custom recyclerView, create one different class for different views
-     */
-    public static class ArrayListFragment extends ListFragment {
-        int mNum;
-
-        /**
-         * Create a new instance of CountingFragment, providing "num"
-         * as an argument.
-         */
-        static ArrayListFragment newInstance(int num) {
-            ArrayListFragment f = new ArrayListFragment();
-
-            // Supply num input as an argument.
-            Bundle args = new Bundle();
-            args.putInt("num", num);
-            f.setArguments(args);
-
-            return f;
-        }
-
-        /**
-         * When creating, retrieve this instance's number from its arguments.
-         */
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            mNum = getArguments() != null ? getArguments().getInt("num") : 1;
-        }
-
-        /**
-         * The Fragment's UI is just a simple text view showing its
-         * instance number.
-         */
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View v = inflater.inflate(R.layout.main_page1, container, false);
-            View tv = v.findViewById(R.id.text);
-            ((TextView)tv).setText("Fragment #" + mNum);
-            return v;
+            return ListFragment.NewInstance(position);
         }
 
         @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-            setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, new String[]{"A", "B", "C"}));
-        }
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            if (currentFragment != object) {
+                currentFragment = ((ListFragment) object);
+            }
 
-        @Override
-        public void onListItemClick(ListView l, View v, int position, long id) {
-            Log.i("FragmentList", "Item clicked: " + id);
+            super.setPrimaryItem(container, position, object);
         }
     }
 
@@ -416,5 +464,5 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-    //=====END OF PAGEVIEW================
+    //endregion =====END OF PAGEVIEW================
 }
