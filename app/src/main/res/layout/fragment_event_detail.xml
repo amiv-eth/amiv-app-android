@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/eventPoster"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_upload"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/eventTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Event Title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+            <TextView
+                android:id="@+id/eventDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Es ist wissenschaftlich erwiesen worden, dass Bergluft in der Lernphase die Motivation nachhaltig verbessert. Daher hat der AMIV beschlossen, ein Wanderweekend zu organisieren. Wir werden während 2 Tagen die frische Luft im Appenzell zu schnuppern bekommen. Wunderschöne Landschaften in Kombination mit dem einen oder anderen Berge erwarten uns!\n
+\n
+Wann? 16-17 Juni\n
+Wo? Zürich - Appenzell - Zürich\n
+Preis? 80.-"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+            <TextView
+                android:id="@+id/registerHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Register"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textSize="18sp" />
+
+
+        </LinearLayout>
+    </ScrollView>
+</android.support.constraint.ConstraintLayout>

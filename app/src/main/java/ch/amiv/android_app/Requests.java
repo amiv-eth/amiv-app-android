@@ -1,10 +1,16 @@
 package ch.amiv.android_app;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
+import android.os.AsyncTask;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.util.LruCache;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -12,29 +18,26 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.ConnectException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 public final class Requests {
     private static String ON_SUBMIT_PIN_URL_EXT = "/checkpin";
     private static String ON_SUBMIT_LEGI_URL_EXT = "/mutate";
     private static String GET_DATA_URL_EXT = "/checkin_update_data";
-    public static RequestQueue requestQueue;
+    private static RequestQueue requestQueue;
+    private static ImageLoader imageLoader;
 
     //=======CALLBACK INTERFACES========
 
@@ -173,6 +176,52 @@ public final class Requests {
         };
 
         return SendRequest(request, context);
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
+
+//region =====Image Loader=====
+    public static ImageLoader GetImageLoader(Context context){
+        if(imageLoader == null)
+        {
+            if(requestQueue == null)
+                requestQueue = Volley.newRequestQueue(context);
+
+            imageLoader = new ImageLoader(requestQueue, new ImageLoader.ImageCache() {
+            private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(10);
+            public void putBitmap(String url, Bitmap bitmap) {
+                mCache.put(url, bitmap);
+            }
+            public Bitmap getBitmap(String url) {
+                return mCache.get(url);
+            }
+        });
+        }
+
+        return imageLoader;
     }
 
     /**
