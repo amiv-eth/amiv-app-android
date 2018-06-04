@@ -108,12 +108,11 @@ public class EventDetailActivity extends AppCompatActivity {
 
             Log.e("request", "image url: " + posterUrl.toString());
 
-            //posterImage.setImageUrl(posterUrl.toString(), Requests.GetImageLoader(getApplicationContext()));
-
             ImageRequest posterRequest = new ImageRequest(posterUrl.toString(),
                     new Response.Listener<Bitmap>() {
                         @Override
-                        public void onResponse(Bitmap bitmap) {
+                        public void onResponse(final Bitmap bitmap) {
+                            Log.e("request", "bitmap: " + bitmap.getHeight() +"\n" + bitmap.toString());
                             posterImage.setImageBitmap(bitmap);
                             //Will adjust the empty space/mask at the top of the scrollview so we can see the whole image
                             posterImage.post(new Runnable() {
@@ -138,6 +137,9 @@ public class EventDetailActivity extends AppCompatActivity {
 
     private void AddRegisterDetails ()
     {
+        LinearLayout linear = findViewById(R.id.register_details_list);
+        linear.removeAllViews();
+
         ArrayList<String[]> infos = Events.eventInfos.get(eventIndex).GetInfos();
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         for (int i = 0; i < infos.size(); i++) {
@@ -145,7 +147,6 @@ public class EventDetailActivity extends AppCompatActivity {
             ((TextView) layout.findViewById(R.id.keyField  )).setText(infos.get(i)[0]);
             ((TextView) layout.findViewById(R.id.valueField)).setText(infos.get(i)[1]);
 
-            LinearLayout linear = findViewById(R.id.register_details_list);
             linear.addView(layout);
         }
     }
@@ -218,19 +219,6 @@ public class EventDetailActivity extends AppCompatActivity {
                 params.put("user", UserInfo.current._id);//XXX check user exists
                 return params;
             }
-/*
-            @Override
-            public byte[] getBody() throws AuthFailureError {
-                String body = "event:" + Events.eventInfos.get(eventIndex)._id + "\nuser:" + UserInfo.current._id;
-                byte[] bytes = new byte[0];
-                try {
-                    bytes = body.getBytes("UTF-8");
-                    Log.e("request", "body: " + new String(bytes, "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                return bytes;
-            }*/
         };
 
         Requests.SendRequest(request, getApplicationContext());
