@@ -137,14 +137,14 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 if(e.accepted && e.confirmed){ //change status of event depending on signup state
                     eventInfoHolder.statusImage.setVisibility(View.VISIBLE);
                     eventInfoHolder.placesField.setVisibility(View.GONE);
-                    eventInfoHolder.statusImage.setImageDrawable(Resources.getSystem().getDrawable(R.drawable.ic_check, activity.getTheme()));
-                    eventInfoHolder.statusImage.setColorFilter(Resources.getSystem().getColor(R.color.colorYellow, activity.getTheme()));
+                    eventInfoHolder.statusImage.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_check, activity.getTheme()));
+                    eventInfoHolder.statusImage.setColorFilter(activity.getResources().getColor(R.color.colorGreen, activity.getTheme()));
                 }
                 else if (e.accepted) {
                     eventInfoHolder.statusImage.setVisibility(View.VISIBLE);
                     eventInfoHolder.placesField.setVisibility(View.GONE);
-                    eventInfoHolder.statusImage.setImageDrawable(Resources.getSystem().getDrawable(R.drawable.ic_pending, activity.getTheme()));
-                    eventInfoHolder.statusImage.setColorFilter(Resources.getSystem().getColor(R.color.colorGreen, activity.getTheme()));
+                    eventInfoHolder.statusImage.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_pending, activity.getTheme()));
+                    eventInfoHolder.statusImage.setColorFilter(activity.getResources().getColor(R.color.colorYellow, activity.getTheme()));
                 }
                 else {
                     eventInfoHolder.statusImage.setVisibility(View.GONE);
@@ -152,11 +152,10 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     eventInfoHolder.placesField.setText(e.spots);
                 }
                 break;
-                /*XXXXX Change color of status image, Test status showing correctly for event, whether we are signed up or not, pending. Hide register button once registered, show registered.
-                Test registering to event
-                Fix event image loading from api
+                /*XXXXX
+                Change color of status image, Test status showing correctly for event, whether we are signed up or not, pending. Hide register button once registered, show registered.
                 Sort events upcoming and attended events, hide unattended old eventsa
-                return to main activity once registered??*/
+                feedback once registered*/
         }
     }
 

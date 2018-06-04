@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
-import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,16 +27,9 @@ import com.android.volley.toolbox.StringRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TimerTask;
 
 public class EventDetailActivity extends AppCompatActivity {
 
@@ -85,7 +77,7 @@ public class EventDetailActivity extends AppCompatActivity {
         title.setText(Events.eventInfos.get(eventIndex).title);
         content.setText(Events.eventInfos.get(eventIndex).description);
 
-        AddRegisterDetails();
+        AddRegisterInfos();
 
         if(Events.eventInfos.get(eventIndex).posterUrl.isEmpty())
         {
@@ -135,7 +127,7 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void AddRegisterDetails ()
+    private void AddRegisterInfos()
     {
         LinearLayout linear = findViewById(R.id.register_details_list);
         linear.removeAllViews();
@@ -177,11 +169,12 @@ public class EventDetailActivity extends AppCompatActivity {
                     Log.e("request", "status Code: " + response.statusCode);
 
                     try {
-                        JSONObject json = new JSONObject(new String(response.data)).getJSONObject("user");
+                        Log.e("request", new String(response.data));
+                        JSONObject json = new JSONObject(new String(response.data));
                         if(json.has("_status") && json.getString("_status").equals("OK"))
                             Events.eventInfos.get(registerEventIndex).AddSignup(json);
 
-                        //Log.e("request", json.toString());
+                        Snackbar.make(scrollView, "Sucessfully Registered", Snackbar.LENGTH_LONG).show();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -193,8 +186,11 @@ public class EventDetailActivity extends AppCompatActivity {
 
             @Override
             protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
-                if(volleyError != null && volleyError.networkResponse != null)
+                if(volleyError != null && volleyError.networkResponse != null) {
                     Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + volleyError.networkResponse.data.toString());
+                    if(volleyError.networkResponse.statusCode == 422)
+                        Snackbar.make(scrollView, "Already Registered", Snackbar.LENGTH_SHORT).show();  //XXX disable register button/get signup object
+                }
                 else
                     Log.e("request", "Request returned null response.");
 
