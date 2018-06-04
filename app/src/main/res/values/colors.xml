@@ -6,4 +6,6 @@
     <color name="colorAccentDark">#374773</color>
     <color name="backgroundDark">#131826</color>
     <color name="white">#ffffff</color>
+    <color name="colorYellow">#ffc107</color>
+    <color name="colorGreen">#4caf50</color>
 </resources>

@@ -26,6 +26,11 @@ public class LoginActivity extends AppCompatActivity {
 
         webView = findViewById(R.id.WebView);
 
+        Intent intent = getIntent();
+        String loginCause = intent.getStringExtra("cause");
+        if(loginCause != null && loginCause.equals("register_event"))
+            Snackbar.make(webView, "Need to be logged in to register", Snackbar.LENGTH_LONG).show();
+
         webView.loadUrl(GenerateOAuthUrl());
         webView.setWebViewClient(new WebViewClient() {
             @Override

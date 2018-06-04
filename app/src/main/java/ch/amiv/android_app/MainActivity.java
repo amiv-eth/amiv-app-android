@@ -2,6 +2,8 @@ package ch.amiv.android_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -94,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         InitialisePageView();
 
         new Settings(getApplicationContext());
-        if(Settings.IsLoggedIn() && UserInfo.current == null)
+        if(Settings.IsLoggedIn(getApplicationContext()) && UserInfo.current == null)
             FetchUserData();
         else
             SetLoginUIDirty();
@@ -142,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // If we are returning from the login activity and have had a successfuly login, refresh the user info and login UI
         Intent intent = getIntent();
         boolean refreshLogin = intent.getBooleanExtra("login_sucess", false);
-        if(refreshLogin && Settings.IsLoggedIn()){
+        if(refreshLogin && Settings.IsLoggedIn(getApplicationContext())){
             FetchUserData();
         }
     }
@@ -154,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void FetchUserData()
     {
-        if(!Settings.IsLoggedIn())
+        if(!Settings.IsLoggedIn(getApplicationContext()))
             return;
 
         //Do request Token->User
@@ -229,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     public void SetLoginUIDirty ()
     {
-        if(Settings.IsLoggedIn()) {
+        if(Settings.IsLoggedIn(getApplicationContext())) {
             if(UserInfo.current == null)
                 FetchUserData();
             else {
@@ -263,16 +265,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Log.e("request", "status Code: " + response.statusCode);
 
                     try {
-                        JSONArray eventArrayJson = new JSONObject(new String(response.data)).getJSONArray("_items");
-                        Events.UpdateEventInfos(eventArrayJson);
+                        final JSONArray eventArrayJson = new JSONObject(new String(response.data)).getJSONArray("_items");
 
-
-                        //Update UI in nav drawer
-                        drawerNavigation.post(new Runnable() {    //Run updating UI on UI thread
+                        //Update events on main thread
+                        Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
+                        Runnable myRunnable = new Runnable() {
+                            @Override
                             public void run() {
+                                Events.UpdateEventInfos(eventArrayJson);
                                 SetEventUIDirty();
                                 pagerAdapter.currentFragment.RefreshList();
-                            }});
+                            }
+                        };
+                        mainHandler.post(myRunnable);
 
                         Log.e("request", eventArrayJson.toString());
                     } catch (JSONException e) {
@@ -296,14 +301,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                if(Settings.IsLoggedIn()) {
-                Map<String,String> headers = new HashMap<String, String>();
+                if(Settings.IsLoggedIn(getApplicationContext())) {
+                    Map<String,String> headers = new HashMap<String, String>();
 
                     String credentials = Settings.GetToken(getApplicationContext()) + ":";
                     String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
                     headers.put("Authorization", auth);
 
-                return headers;
+                    return headers;
                 }
 
                 return super.getHeaders();
@@ -379,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_login) {
-            if(Settings.IsLoggedIn())
+            if(Settings.IsLoggedIn(getApplicationContext()))
                 LogoutUser();
             else
                 StartLoginActivity();

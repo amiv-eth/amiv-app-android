@@ -1,8 +1,12 @@
 package ch.amiv.android_app;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
+import android.content.res.Resources;
+import android.graphics.ColorFilter;
+import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +29,7 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         TextView titleField;
         TextView catchphraseField;
         TextView placesField;
+        ImageView statusImage;
         View.OnClickListener clickListener;
 
         public EventInfoHolder(View view) {
@@ -32,6 +37,7 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             titleField = view.findViewById(R.id.titleField);
             catchphraseField = view.findViewById(R.id.infoField);
             placesField = view.findViewById(R.id.places_left);
+            statusImage = view.findViewById(R.id.signupStatus);
         }
     }
 
@@ -54,7 +60,8 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public EventsListAdapter(Activity activity_) {
-        headerList.add("All Events");
+        headerList.add("New Events");
+        headerList.add("Attended Events");
         activity = activity_;
     }
 
@@ -92,7 +99,7 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      */
     @Override
     public int getItemViewType(int position) {      //Note stat and event info use the same layout, but types are different
-        if(position == 0)
+        if(position == 0 || position == Events.eventInfos.size() + 1)
             return 0;   //header
         if(position < Events.eventInfos.size() +1)
             return 2;   //events
@@ -120,14 +127,36 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final EventInfo e = Events.eventInfos.get(eventIndex);
                 eventInfoHolder.titleField.setText(e.title);
                 eventInfoHolder.catchphraseField.setText(e.catchphrase);
-                eventInfoHolder.placesField.setText(e.spots);
                 eventInfoHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         StartEventDetailActivity(eventIndex);
                     }
                 });
+
+                if(e.accepted && e.confirmed){ //change status of event depending on signup state
+                    eventInfoHolder.statusImage.setVisibility(View.VISIBLE);
+                    eventInfoHolder.placesField.setVisibility(View.GONE);
+                    eventInfoHolder.statusImage.setImageDrawable(Resources.getSystem().getDrawable(R.drawable.ic_check, activity.getTheme()));
+                    eventInfoHolder.statusImage.setColorFilter(Resources.getSystem().getColor(R.color.colorYellow, activity.getTheme()));
+                }
+                else if (e.accepted) {
+                    eventInfoHolder.statusImage.setVisibility(View.VISIBLE);
+                    eventInfoHolder.placesField.setVisibility(View.GONE);
+                    eventInfoHolder.statusImage.setImageDrawable(Resources.getSystem().getDrawable(R.drawable.ic_pending, activity.getTheme()));
+                    eventInfoHolder.statusImage.setColorFilter(Resources.getSystem().getColor(R.color.colorGreen, activity.getTheme()));
+                }
+                else {
+                    eventInfoHolder.statusImage.setVisibility(View.GONE);
+                    eventInfoHolder.placesField.setVisibility(View.VISIBLE);
+                    eventInfoHolder.placesField.setText(e.spots);
+                }
                 break;
+                /*XXXXX Change color of status image, Test status showing correctly for event, whether we are signed up or not, pending. Hide register button once registered, show registered.
+                Test registering to event
+                Fix event image loading from api
+                Sort events upcoming and attended events, hide unattended old eventsa
+                return to main activity once registered??*/
         }
     }
 
@@ -146,6 +175,8 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     {
         if(position == 0)
             return 0;
+        if(position == Events.eventInfos.size() +1)
+            return 1;
 
         Log.e("recyclerView", "Could not determine header position within list, at position: " + position);
         return 0;

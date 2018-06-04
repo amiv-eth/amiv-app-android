@@ -1,5 +1,6 @@
 package ch.amiv.android_app;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.session.MediaSession;
@@ -82,7 +83,8 @@ public class Settings {
      * Note: will only check if a token exists. This token may have expired but not have been refreshed/deleted.
      * @return True if the user is logged into the api and has an access token.
      */
-    public static boolean IsLoggedIn(){
+    public static boolean IsLoggedIn(Context context){
+        CheckInitSharedPrefs(context);
         String t = sharedPrefs.getString(apiTokenKey, "");
         return !t.isEmpty();
     }

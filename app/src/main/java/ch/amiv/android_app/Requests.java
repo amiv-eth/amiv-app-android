@@ -151,7 +151,7 @@ public final class Requests {
             //==Adding the content==
             @Override
             protected Map<String, String> getParams() {
-                if(Settings.IsLoggedIn())
+                if(Settings.IsLoggedIn(context))
                     params.put("token", Settings.GetToken(context));
                 return params;
             }

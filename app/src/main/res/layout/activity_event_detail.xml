@@ -12,7 +12,6 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/backgroundDark"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_include">
@@ -20,10 +19,12 @@
         <View
             android:id="@+id/posterBg"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="1dp"
             android:background="@color/backgroundDark"
             android:clickable="true"
-            android:onClick="ScrollToTop" />
+            android:onClick="ScrollToTop"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/eventPoster"
@@ -99,25 +100,24 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:text="Register"
+                        android:text="Info"
                         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                         android:textSize="30sp" />
 
-                    <TextView
-                        android:id="@+id/registerDetails"
+                    <LinearLayout
+                        android:id="@+id/register_details_list"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:paddingBottom="12dp"
-                        android:text="Details on registering..."
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:textSize="16sp" />
+                        android:orientation="vertical"
+                        android:paddingBottom="8dp">
+
+                    </LinearLayout>
 
                     <Button
                         android:id="@+id/registerButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:onClick="RegisterForEvent"
                         android:paddingBottom="16dp"
                         android:text="Register" />
 
