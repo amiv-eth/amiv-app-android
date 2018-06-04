@@ -2,6 +2,7 @@ package ch.amiv.android_app;
 
 import android.media.Image;
 import android.net.ParseException;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -45,6 +46,9 @@ public class EventInfo {
      * @return
      */
     public ArrayList<String[]> GetInfos(){
+        if(infos != null && infos.size() > 0)
+            return infos;
+
         DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm");
         infos.add(new String[]{"Register Start", dateFormat.format(time_register_start)});
         infos.add(new String[]{"Register End", dateFormat.format(time_register_end)});
