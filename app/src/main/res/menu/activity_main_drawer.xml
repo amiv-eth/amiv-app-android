@@ -26,18 +26,4 @@
                 android:title="Demo App" />
         </menu>
     </item>
-
-    <item android:title="Developers">
-        <menu>
-            <item
-                android:id="@+id/nav_dev_log"
-                android:icon="@drawable/ic_menu_manage"
-                android:title="Log" />
-            <item
-                android:id="@+id/nav_dev_request"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send Request" />
-        </menu>
-    </item>
-
 </menu>

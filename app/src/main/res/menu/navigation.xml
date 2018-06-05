@@ -6,14 +6,15 @@
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/title_home" />
 
+    <!--
     <item
         android:id="@+id/bottom_nav_blitz"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/title_articles" />
+    -->
 
     <item
         android:id="@+id/bottom_nav_events"
         android:icon="@drawable/ic_notifications"
         android:title="@string/title_notifications" />
-
 </menu>

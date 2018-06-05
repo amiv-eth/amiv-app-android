@@ -58,11 +58,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case R.id.bottom_nav_home:
                     viewPager.setCurrentItem(0);
                     return true;
-                case R.id.bottom_nav_blitz:
+                /*case R.id.bottom_nav_blitz:
                     viewPager.setCurrentItem(1);
-                    return true;
+                    return true;*/
                 case R.id.bottom_nav_events:
-                    viewPager.setCurrentItem(2);
+                    viewPager.setCurrentItem(1);
                     return true;
             }
             return false;
@@ -129,9 +129,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //need to convert index to resource id
                 if(position == 0)
                     position = R.id.bottom_nav_home;
+                /*else if (position == 1)
+                    position = R.id.bottom_nav_blitz;*/
                 else if (position == 1)
-                    position = R.id.bottom_nav_blitz;
-                else if (position == 2)
                     position = R.id.bottom_nav_events;
 
                 bottomNavigation.setSelectedItemId(position);
@@ -290,13 +290,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 StartLoginActivity();
         } else if (id == R.id.nav_checkin) {
 
-        } else if (id == R.id.nav_settings) {
+        } else if (id == R.id.nav_settings)
             StartSettingsActivity();
-        } else if (id == R.id.nav_dev_log) {
-
-        } else if (id == R.id.nav_dev_request) {
-
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -318,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
 
         @Override

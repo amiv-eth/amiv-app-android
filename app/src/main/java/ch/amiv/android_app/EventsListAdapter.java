@@ -155,16 +155,6 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     eventInfoHolder.placesField.setText((e.spots == 0 ? "" : "" + (e.spots - e.signup_count)));
                 }
                 break;
-                /*XXXXX
-                Sort events upcoming and attended events, hide unattended old events
-                show event date in infos, if start end are not equal then show both, formatting
-                prevent refreshing events on rotate/slide, remove from onresume
-
-                Create mini app module design, example barcode generator
-                Add checkin app as module
-                Add job offers page in main activity page viewer
-
-                Test if token has expired or is wrong when we get an auth error from the server, notify user and logout*/
         }
     }
 
