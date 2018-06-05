@@ -19,10 +19,9 @@
         <View
             android:id="@+id/posterBg"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="match_parent"
             android:background="@color/backgroundDark"
-            android:clickable="true"
-            android:onClick="ScrollToTop"
+            android:translationZ="-10dp"
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,102 +30,127 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
+            android:elevation="0dp"
             android:scaleType="fitCenter"
-            app:layout_constraintTop_toBottomOf="@id/toolbar_include"
-            app:srcCompat="@mipmap/amiv_logo" />
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <ScrollView
-            android:id="@+id/scrollView_event"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefresh"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent">
+
+            <ScrollView
+                android:id="@+id/scrollView_event"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <View
-                    android:id="@+id/posterMask"
-                    android:layout_width="10dp"
-                    android:layout_height="0dp"
-                    android:alpha="0"
-                    android:clickable="true"
-                    android:onClick="ScrollToTop" />
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/white"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <View
+                    <ImageView
+                        android:id="@+id/posterMask"
                         android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/backgroundDark" />
-
-                    <TextView
-                        android:id="@+id/eventTitle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:text="Event Title"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                        android:textSize="30sp" />
-
-                    <TextView
-                        android:id="@+id/eventDetail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:paddingBottom="12dp"
-                        android:text="Es ist wissenschaftlich erwiesen worden, dass Bergluft in der Lernphase die Motivation nachhaltig verbessert. Daher hat der AMIV beschlossen, ein Wanderweekend zu organisieren. Wir werden während 2 Tagen die frische Luft im Appenzell zu schnuppern bekommen. Wunderschöne Landschaften in Kombination mit dem einen oder anderen Berge erwarten uns!\n
-    \n
-    Wann? 16-17 Juni\n
-    Wo? Zürich - Appenzell - Zürich\n
-    Preis? 80.-"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:textSize="16sp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/backgroundDark" />
-
-                    <TextView
-                        android:id="@+id/registerHeader"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:text="Info"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                        android:textSize="30sp" />
+                        android:layout_height="32dp"
+                        android:layout_marginTop="500dp"
+                        android:adjustViewBounds="true"
+                        android:clickable="true"
+                        android:onClick="ScrollToTop"
+                        android:scaleType="fitCenter"
+                        android:visibility="visible"
+                        app:srcCompat="@drawable/ic_arrow_up"
+                        custom:layout_constraintTop_toBottomOf="@id/toolbar_include" />
 
                     <LinearLayout
-                        android:id="@+id/register_details_list"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingBottom="8dp">
+                        android:layout_height="match_parent"
+                        android:background="@android:color/white"
+                        android:orientation="vertical">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/backgroundDark" />
+
+                        <TextView
+                            android:id="@+id/eventTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:text="Event Title"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                            android:textSize="30sp" />
+
+                        <TextView
+                            android:id="@+id/eventDetail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:paddingBottom="12dp"
+                            android:text="Es ist wissenschaftlich erwiesen worden, dass Bergluft in der Lernphase die Motivation nachhaltig verbessert. Daher hat der AMIV beschlossen, ein Wanderweekend zu organisieren. Wir werden während 2 Tagen die frische Luft im Appenzell zu schnuppern bekommen. Wunderschöne Landschaften in Kombination mit dem einen oder anderen Berge erwarten uns!\n
+        \n
+        Wann? 16-17 Juni\n
+        Wo? Zürich - Appenzell - Zürich\n
+        Preis? 80.-"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textSize="16sp" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/backgroundDark" />
+
+                        <TextView
+                            android:id="@+id/registerHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:text="Info"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                            android:textSize="30sp" />
+
+                        <LinearLayout
+                            android:id="@+id/register_details_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingBottom="8dp">
+
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/registerButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:elevation="0dp"
+                            android:enabled="true"
+                            android:onClick="RegisterForEvent"
+                            android:paddingBottom="16dp"
+                            android:text="Register" />
+
 
                     </LinearLayout>
-
-                    <Button
-                        android:id="@+id/registerButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:onClick="RegisterForEvent"
-                        android:paddingBottom="16dp"
-                        android:text="Register" />
-
-
                 </LinearLayout>
-            </LinearLayout>
-        </ScrollView>
+            </ScrollView>
+        </android.support.v4.widget.SwipeRefreshLayout>
 
     </android.support.constraint.ConstraintLayout>
 

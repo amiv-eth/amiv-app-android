@@ -7,6 +7,8 @@ public class UserInfo {
     public static UserInfo current;
 
     public String _id = "";
+    public String session_id = "";
+    public String session_etag = "";
     public String firstname = "";
     public String lastname = "";
     public String nethz = "";
@@ -14,11 +16,27 @@ public class UserInfo {
     public String membership = "";
     public String gender = "";
 
-    public UserInfo (JSONObject json)
+    private UserInfo(JSONObject json, boolean isFromTokenRequest)
     {
+        Update(json, isFromTokenRequest);
+    }
+
+    /**
+     * Use this to update the user info with a json. Can handle partial update where old items will not be overwritten if they do not exist
+     * @param isFromTokenRequest set to true when the json is from a /sessions POST request, where the user ID is "user" not "_id"
+     */
+    public void Update(JSONObject json, boolean isFromTokenRequest){
         try {
-            if (json.has("_id"))
-                _id = json.getString("_id");
+            //dont use optString as this will overwrite the current value to "" if it does not exist
+            if (json.has(isFromTokenRequest ? "user" : "_id"))
+                _id = json.getString(isFromTokenRequest ? "user" : "_id");
+
+            if(isFromTokenRequest && json.has("_etag"))
+                session_etag = json.getString("_etag");
+
+            if(isFromTokenRequest && json.has("_id"))
+                session_id = json.getString("_id");
+
             if (json.has("firstname"))
                 firstname = json.getString("firstname");
             if (json.has("lastname"))
@@ -34,6 +52,18 @@ public class UserInfo {
         }
         catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Will safely update the current user or create it
+     * @param isFromTokenRequest This ensures the correct values are retrieved from the json. Set to true when the json is from a /sessions POST request, where the user ID is "user" not "_id" as usually
+     */
+    public static void UpdateCurrent(JSONObject json, boolean isFromTokenRequest){
+        if(current != null)
+            current.Update(json, isFromTokenRequest);
+        else {
+            current = new UserInfo(json, isFromTokenRequest);
         }
     }
 

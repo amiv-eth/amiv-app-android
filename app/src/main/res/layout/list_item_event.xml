@@ -55,19 +55,20 @@
             android:gravity="right|center"
             android:paddingLeft="6dp"
             android:paddingRight="12dp"
+            android:textAlignment="textEnd"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/signupStatus"
-            android:layout_width="match_parent"
+            android:layout_width="48dp"
             android:layout_height="match_parent"
-            android:layout_weight="5"
             android:gravity="right|center"
             android:paddingLeft="6dp"
             android:paddingRight="12dp"
             android:tint="@color/colorYellow"
-            android:visibility="gone"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_pending" />
     </LinearLayout>
 

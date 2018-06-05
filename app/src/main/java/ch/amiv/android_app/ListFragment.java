@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,21 +13,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
+import com.android.volley.Request;
+
 /**
  * An example fragment, the central view in MainActivity, for showing a list, should be replaced by a standard fragment with a custom recyclerView, create one different class for different views
  */
 public class ListFragment extends Fragment {
-    int mPagePosition; //the fragments page in the pageview
+    int pagePosition; //the fragments page in the pageview of the main activity
     RecyclerView recyclerView;
     RecyclerView.Adapter recylcerAdaper;
     RecyclerView.LayoutManager recyclerLayoutAdapter;
+
+    SwipeRefreshLayout swipeRefreshLayout;
+    Requests.OnDataReceivedCallback cancelRefreshCallback = new Requests.OnDataReceivedCallback() {
+        @Override
+        public void OnDataReceived() {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    };
 
     public static ListFragment NewInstance(int pageNum_) {
         ListFragment f = new ListFragment();
 
         // Supply num input as an argument.
         Bundle args = new Bundle();
-        args.putInt("mPagePosition", pageNum_);
+        args.putInt("pagePosition", pageNum_);
         f.setArguments(args);
 
         return f;
@@ -40,12 +51,20 @@ public class ListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPagePosition = getArguments() != null ? getArguments().getInt("mPagePosition") : 1;
+        pagePosition = getArguments() != null ? getArguments().getInt("pagePosition") : 1;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        swipeRefreshLayout = getView().findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(pagePosition == 0 && getActivity() instanceof MainActivity)
+                    Requests.FetchEventList(getContext(), ((MainActivity)getActivity()).onEventsListUpdatedCallback, cancelRefreshCallback);
+            }
+        });
 
         recyclerView = getView().findViewById(R.id.recyclerView);
 
@@ -58,7 +77,7 @@ public class ListFragment extends Fragment {
         recyclerView.setLayoutManager(recyclerLayoutAdapter);
 
         // specify an adapter (see also next example)
-        if(mPagePosition == 0) {
+        if(pagePosition == 0) {
             recylcerAdaper = new EventsListAdapter(getActivity());
             recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_falldown));
             recyclerView.setAdapter(recylcerAdaper);
@@ -84,10 +103,12 @@ public class ListFragment extends Fragment {
         AnimateList(null);
     }
 
-    public void RefreshList()
+    public void RefreshList(boolean animate)
     {
         recylcerAdaper.notifyDataSetChanged();
-        AnimateList(null);
+        swipeRefreshLayout.setRefreshing(false);
+        if(animate)
+            AnimateList(null);
     }
 
 

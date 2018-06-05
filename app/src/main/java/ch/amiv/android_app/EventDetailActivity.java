@@ -3,6 +3,7 @@ package ch.amiv.android_app;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -11,8 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -31,13 +34,31 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The activity/screen used for showing a selected event in detail.
+ * This mainly displays stored info about the event, eg description and also fetches more such as images. Also handles registering for and event and the possible outcomes
+ */
 public class EventDetailActivity extends AppCompatActivity {
 
     private int eventIndex = 0;
 
-    ImageView posterImage;
-    View posterMask;
-    ScrollView scrollView;
+    private ImageView posterImage;
+    private ImageView posterMask;
+    private View posterBg;
+    private ProgressBar posterProgress; //Note:posterProgress bar is specific for the image loading, whereas swipeRefreshLayout (swipe down to refresh) is for reloading the whole event
+                                        //There should be a progress bar for each image as these can take longer to load
+    private ScrollView scrollView;
+    private Button registerButton;
+
+    private Intent responseIntent = new Intent();   //used for sending back a result to the calling activity, used for telling MainActivity if the login has changed
+
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Requests.OnDataReceivedCallback cancelRefreshCallback = new Requests.OnDataReceivedCallback() {
+        @Override
+        public void OnDataReceived() {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,86 +68,186 @@ public class EventDetailActivity extends AppCompatActivity {
         InitUI();
     }
 
+    //When returning from login activity refresh data and register the user, then apply the response to the UI
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            // If we are returning from the login activity and have had a successfuly login, refresh the user info and login UI
+            boolean refreshLogin = data.getBooleanExtra("login_success", false);
+            if(refreshLogin && Settings.IsLoggedIn(getApplicationContext()))
+            {
+                Requests.FetchEventSignups(getApplicationContext(), new Requests.OnDataReceivedCallback() {
+                    @Override
+                    public void OnDataReceived() {
+                        UpdateRegisterButton();
+                    }
+                });
+                responseIntent.putExtra("login_success", refreshLogin);
+                ScrollToBottom(null);
+                RegisterForEvent(null);
+            }
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         GetIntentData();
     }
 
-    private void GetIntentData (){
-        Intent intent = getIntent();
-        eventIndex = intent.getIntExtra("eventIndex", 0);
+    @Override
+    public void onBackPressed() {
+        //return to the calling activity with the set response in the intent, such as whether the login state has changed
+        setResult(RESULT_OK, responseIntent);
+        finish();
     }
 
+    /**
+     * This will retrieve the eventIndex to display, is only set when we originate from the MainActivity, where the int is added to the intent.
+     */
+    private void GetIntentData (){
+        if(eventIndex == 0) {
+            Intent intent = getIntent();
+            eventIndex = intent.getIntExtra("eventIndex", 0);
+        }
+    }
+
+    /**
+     * This initialises UI variables and sets up various UI elements
+     */
     private void InitUI (){
+        //Set up toolbar and back button
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        //Check that we have been given an event that exists else return to the calling activity
         if(eventIndex < 0 || Events.eventInfos.size() <= eventIndex) {
             Log.e("events", "invlaid event index selected during InitUI(), eventIndex: " + eventIndex + ", size" + Events.eventInfos.size() + ". Ensure that you are not clearing/overwiting the events list while viewing an event.");
+            onBackPressed();
             return;
         }
 
-        TextView title = findViewById(R.id.eventTitle);
-        TextView content = findViewById(R.id.eventDetail);
+        //Link up variables with UI elements from the layout xml
+        ((TextView) findViewById(R.id.eventTitle)).setText(Events.eventInfos.get(eventIndex).title_en);
+        ((TextView)findViewById(R.id.eventDetail)).setText(Events.eventInfos.get(eventIndex).description_en);
         scrollView = findViewById(R.id.scrollView_event);
+        posterProgress = findViewById(R.id.progressBar);
         posterImage = findViewById(R.id.eventPoster);
         posterMask = findViewById(R.id.posterMask);
+        posterBg = findViewById(R.id.posterBg);
+        registerButton = findViewById(R.id.registerButton);
 
-        title.setText(Events.eventInfos.get(eventIndex).title);
-        content.setText(Events.eventInfos.get(eventIndex).description);
+        swipeRefreshLayout = findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {    //This sets what function is called when we swipe down to refresh
+            @Override
+            public void onRefresh() {
+                LoadEventImage(true);   //XXX fetch this specific event from the server again
+            }
+        });
 
         AddRegisterInfos();
+        UpdateRegisterButton();
 
-        if(Events.eventInfos.get(eventIndex).posterUrl.isEmpty())
+        LoadEventImage(false);
+    }
+
+    /**
+     * Will load the poster for the event if it exists and handle progress bars etc. Can call this again to refresh the poster
+     * @param isRefreshing
+     */
+    private void LoadEventImage (boolean isRefreshing)
+    {
+        //Image loading and masking. the posterMask is a small arrow image but we use the layout margin to add some transparent 'padding' to the top of the scrollview
+        if(Events.eventInfos.get(eventIndex).poster_url.isEmpty() || !Requests.CheckConnection(getApplicationContext()))
         {
-            posterImage.setVisibility(View.GONE);
-            posterMask.setVisibility(View.GONE);
-            findViewById(R.id.posterBg).setVisibility(View.GONE);
+            //Hide the image and mask if there is no poster linked with the event or we have no internet
+            if(!isRefreshing) {
+                posterImage.setVisibility(View.GONE);
+                posterMask.setVisibility(View.GONE);
+                posterBg.setVisibility(View.GONE);
+                posterProgress.setVisibility(View.GONE);
+            }
         }
         else
         {
-            posterImage.setVisibility(View.VISIBLE);
-            posterMask.setVisibility(View.VISIBLE);
-            findViewById(R.id.posterBg).setVisibility(View.VISIBLE);
+            if(!isRefreshing || posterImage.getDrawable() == null) {
+                swipeRefreshLayout.setRefreshing(false);
+                posterProgress.setVisibility(View.VISIBLE);
+                posterImage.setVisibility(View.VISIBLE);
+                posterBg.setVisibility(View.VISIBLE);
 
-            //generate URL to image
+                //Will set height of mask to be the height of the constraint layout(parent of the posterImage) this is likely to be the closest match, to reduce snapping once the image is loaded
+                    posterMask.post(new Runnable() {    //need to run one frame later so the layouts are correctly initialised so we can retrieve the height of the parent.
+                        @Override
+                        public void run() {
+                            posterMask.setVisibility(View.VISIBLE);
+                            ViewGroup.MarginLayoutParams maskParams = (ViewGroup.MarginLayoutParams) posterMask.getLayoutParams();
+                            maskParams.topMargin = ((View) posterImage.getParent()).getMeasuredHeight() - posterMask.getHeight();
+                            posterMask.requestLayout();
+                        }
+                    });
+            }
+
+            //generate URL for the poster
             StringBuilder posterUrl = new StringBuilder();
-            posterUrl.append(Events.eventInfos.get(eventIndex).posterUrl);
+            posterUrl.append(Events.eventInfos.get(eventIndex).poster_url); //To show the banner instead change this variable
             if(posterUrl.charAt(0) == '/')
                 posterUrl.deleteCharAt(0);
             posterUrl.insert(0, Settings.API_URL);
 
-            Log.e("request", "image url: " + posterUrl.toString());
+            //Log.e("request", "Event image url: " + posterUrl.toString());
 
+            //Send a request for the image, note we can also use a NetworkImageView, but have less control then
             ImageRequest posterRequest = new ImageRequest(posterUrl.toString(),
                     new Response.Listener<Bitmap>() {
                         @Override
                         public void onResponse(final Bitmap bitmap) {
-                            Log.e("request", "bitmap: " + bitmap.getHeight() +"\n" + bitmap.toString());
-                            posterImage.setImageBitmap(bitmap);
+                            posterImage.setImageBitmap(bitmap); //Apply image downloaded
+
                             //Will adjust the empty space/mask at the top of the scrollview so we can see the whole image
                             posterImage.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ViewGroup.LayoutParams layoutParams = posterMask.getLayoutParams();
-                                    layoutParams.height = posterImage.getHeight();
-                                    posterMask.setLayoutParams(layoutParams);
-                                    //findViewById(R.id.posterBg).setLayoutParams(layoutParams);
+                                    //Set background height
+                                    ViewGroup.LayoutParams bgParams = posterBg.getLayoutParams();
+                                    bgParams.height = posterImage.getHeight();
+                                    posterBg.setLayoutParams(bgParams);
+                                    posterBg.setVisibility(View.VISIBLE);
+
+                                    //Set mask height
+                                    ViewGroup.MarginLayoutParams maskParams = (ViewGroup.MarginLayoutParams) posterMask.getLayoutParams();
+                                    maskParams.topMargin = posterImage.getHeight() - posterMask.getLayoutParams().height;
+                                    posterMask.requestLayout();
+                                    posterMask.setVisibility(View.VISIBLE);
+
+                                    posterProgress.setVisibility(View.GONE);
+                                    swipeRefreshLayout.setRefreshing(false);
                                 }
                             });
                         }
                     }, 0, 0, ImageView.ScaleType.CENTER_INSIDE, Bitmap.Config.ARGB_8888,
                     new Response.ErrorListener() {
                         public void onErrorResponse(VolleyError error) {
-                            posterImage.setImageResource(R.drawable.ic_error_white);
+                            Snackbar.make(posterImage, "Error loading image", Snackbar.LENGTH_SHORT).show();
+                            posterProgress.setVisibility(View.GONE);
+                            swipeRefreshLayout.setRefreshing(false);
                         }
                     });
-            Requests.SendRequest(posterRequest, getApplicationContext());
+
+            if(!Requests.SendRequest(posterRequest, getApplicationContext())){
+                //Only enter here if the request was not sent, usually because of missing internet
+                posterProgress.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
+            }
         }
+
+        swipeRefreshLayout.setRefreshing(false);
     }
 
+    /**
+     * This creates the short list under Infos, to display specific details. We get which details to dispkay from the EventInfo
+     */
     private void AddRegisterInfos()
     {
         LinearLayout linear = findViewById(R.id.register_details_list);
@@ -135,6 +256,7 @@ public class EventDetailActivity extends AppCompatActivity {
         ArrayList<String[]> infos = Events.eventInfos.get(eventIndex).GetInfos();
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         for (int i = 0; i < infos.size(); i++) {
+            //Create a view from the xml and then add it as a child of the listview
             LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.list_item_keyval, null, false);
             ((TextView) layout.findViewById(R.id.keyField  )).setText(infos.get(i)[0]);
             ((TextView) layout.findViewById(R.id.valueField)).setText(infos.get(i)[1]);
@@ -143,6 +265,10 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Will send a request to register the user for the event the activity is showing
+     * @param view
+     */
     public void RegisterForEvent(View view)
     {
         if(!Requests.CheckConnection(getApplicationContext())) {
@@ -150,17 +276,17 @@ public class EventDetailActivity extends AppCompatActivity {
             return;
         }
 
+        //Redirect to the login page first
         if(!Settings.IsLoggedIn(getApplicationContext())){
             Intent intent = new Intent(this, LoginActivity.class);
             intent.putExtra("cause", "register_event");
-            startActivity(intent);
+            startActivityForResult(intent, 0);
             return;
         }
 
-        final int registerEventIndex = eventIndex;
-
-        //Do request Token->User
+        final int registerEventIndex = eventIndex;  //declare final so it does not change
         String url = Settings.API_URL + "eventsignups";
+
         StringRequest request = new StringRequest(Request.Method.POST, url,null, null)
         {
             @Override
@@ -171,25 +297,44 @@ public class EventDetailActivity extends AppCompatActivity {
                     try {
                         Log.e("request", new String(response.data));
                         JSONObject json = new JSONObject(new String(response.data));
-                        if(json.has("_status") && json.getString("_status").equals("OK"))
-                            Events.eventInfos.get(registerEventIndex).AddSignup(json);
+                        Events.eventInfos.get(registerEventIndex).AddSignup(json);  //Register signup
 
-                        Snackbar.make(scrollView, "Sucessfully Registered", Snackbar.LENGTH_LONG).show();
+                        //We need to fetch signups again as the response for registering for an event is not a complete signup object
+                        Requests.FetchEventSignups(getApplicationContext(), new Requests.OnDataReceivedCallback() {
+                            @Override
+                            public void OnDataReceived() {
+                                UpdateRegisterButton();
+                            }
+                        });
+
+                        //Interpret notification to show from the signup
+                        String notification = "";
+                        if(Events.eventInfos.get(eventIndex).accepted) {
+                            if(Events.eventInfos.get(eventIndex).confirmed)
+                                notification = "Successfully Registered";
+                            else
+                                notification = "Registered, please confirm with mail";
+                        } else
+                            notification = "Added to Waiting List";
+                        Snackbar.make(scrollView, notification, Snackbar.LENGTH_LONG).show();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-                else
+                else {
                     Log.e("request", "Request returned null response.");
+                    Snackbar.make(scrollView, "Error occured, please try again", Snackbar.LENGTH_SHORT).show();
+                }
                 return super.parseNetworkResponse(response);
             }
 
             @Override
             protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
                 if(volleyError != null && volleyError.networkResponse != null) {
-                    Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + volleyError.networkResponse.data.toString());
-                    if(volleyError.networkResponse.statusCode == 422)
-                        Snackbar.make(scrollView, "Already Registered", Snackbar.LENGTH_SHORT).show();  //XXX disable register button/get signup object
+                    Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
+                    if(volleyError.networkResponse.statusCode == 422) {
+                        Snackbar.make(scrollView, "Already Registered", Snackbar.LENGTH_SHORT).show();
+                    }
                 }
                 else
                     Log.e("request", "Request returned null response.");
@@ -212,7 +357,7 @@ public class EventDetailActivity extends AppCompatActivity {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("event", Events.eventInfos.get(eventIndex)._id);
-                params.put("user", UserInfo.current._id);//XXX check user exists
+                params.put("user", UserInfo.current._id);
                 return params;
             }
         };
@@ -220,7 +365,21 @@ public class EventDetailActivity extends AppCompatActivity {
         Requests.SendRequest(request, getApplicationContext());
     }
 
+    private void UpdateRegisterButton() {
+        if (Events.eventInfos.get(eventIndex).IsSignedUp()) {
+            registerButton.setEnabled(false);
+            registerButton.setText("Already Registered");
+        } else {
+            registerButton.setEnabled(true);
+            registerButton.setText("Register");
+        }
+    }
+
     public void ScrollToTop (View view) {
         scrollView.fullScroll(ScrollView.FOCUS_UP);
+    }
+
+    public void ScrollToBottom (View view) {
+        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
     }
 }

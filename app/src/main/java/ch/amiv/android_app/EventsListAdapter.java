@@ -25,7 +25,7 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      * Defining our own view holder which maps the layout items to view variables which can then later be accessed, and text value set etc
      * For each item type we have to define a viewholder. This will map the layout to the variables
      */
-    public static class EventInfoHolder extends RecyclerView.ViewHolder {
+    public class EventInfoHolder extends RecyclerView.ViewHolder {
         TextView titleField;
         TextView catchphraseField;
         TextView placesField;
@@ -41,7 +41,7 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public static class HeaderHolder extends RecyclerView.ViewHolder {
+    public class HeaderHolder extends RecyclerView.ViewHolder {
         TextView nameField;
 
         public HeaderHolder(View view) {
@@ -50,7 +50,7 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public static class SpaceHolder extends RecyclerView.ViewHolder {
+    public class SpaceHolder extends RecyclerView.ViewHolder {
         View space;
 
         public SpaceHolder(View view) {
@@ -61,7 +61,7 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public EventsListAdapter(Activity activity_) {
         headerList.add("New Events");
-        headerList.add("Attended Events");
+        //headerList.add("Attended Events");  //XXX Add sorting of old events, where checkin or confirmed is true
         activity = activity_;
     }
 
@@ -99,7 +99,7 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      */
     @Override
     public int getItemViewType(int position) {      //Note stat and event info use the same layout, but types are different
-        if(position == 0 || position == Events.eventInfos.size() + 1)
+        if(position == 0 /*|| position == Events.eventInfos.size() + 1*/)
             return 0;   //header
         if(position < Events.eventInfos.size() +1)
             return 2;   //events
@@ -112,6 +112,9 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if(activity == null)
+            return;
+
         switch (holder.getItemViewType())
         {
             case 0: //header
@@ -125,8 +128,8 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final EventInfoHolder eventInfoHolder = (EventInfoHolder)holder;
                 final int eventIndex = holder.getAdapterPosition() - 1;
                 final EventInfo e = Events.eventInfos.get(eventIndex);
-                eventInfoHolder.titleField.setText(e.title);
-                eventInfoHolder.catchphraseField.setText(e.catchphrase);
+                eventInfoHolder.titleField.setText(e.title_en);
+                eventInfoHolder.catchphraseField.setText(e.catchphrase_en);
                 eventInfoHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -140,7 +143,7 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     eventInfoHolder.statusImage.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_check, activity.getTheme()));
                     eventInfoHolder.statusImage.setColorFilter(activity.getResources().getColor(R.color.colorGreen, activity.getTheme()));
                 }
-                else if (e.accepted) {
+                else if (e.accepted || e.confirmed || e.IsSignedUp()) {
                     eventInfoHolder.statusImage.setVisibility(View.VISIBLE);
                     eventInfoHolder.placesField.setVisibility(View.GONE);
                     eventInfoHolder.statusImage.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_pending, activity.getTheme()));
@@ -149,13 +152,19 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 else {
                     eventInfoHolder.statusImage.setVisibility(View.GONE);
                     eventInfoHolder.placesField.setVisibility(View.VISIBLE);
-                    eventInfoHolder.placesField.setText(e.spots);
+                    eventInfoHolder.placesField.setText((e.spots == 0 ? "" : "" + (e.spots - e.signup_count)));
                 }
                 break;
                 /*XXXXX
-                Change color of status image, Test status showing correctly for event, whether we are signed up or not, pending. Hide register button once registered, show registered.
-                Sort events upcoming and attended events, hide unattended old eventsa
-                feedback once registered*/
+                Sort events upcoming and attended events, hide unattended old events
+                show event date in infos, if start end are not equal then show both, formatting
+                prevent refreshing events on rotate/slide, remove from onresume
+
+                Create mini app module design, example barcode generator
+                Add checkin app as module
+                Add job offers page in main activity page viewer
+
+                Test if token has expired or is wrong when we get an auth error from the server, notify user and logout*/
         }
     }
 
@@ -182,8 +191,6 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void StartEventDetailActivity(int eventIndex) {
-        Intent intent = new Intent(activity, EventDetailActivity.class);
-        intent.putExtra("eventIndex", eventIndex);
-        activity.startActivity(intent);
+        ((MainActivity)activity).StartEventDetailActivity(eventIndex);
     }
 }

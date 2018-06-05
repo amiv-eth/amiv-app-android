@@ -6,23 +6,37 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/AppThemeLight">
+
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/AppThemeLight">
+            android:layout_height="match_parent">
+
 
             <ImageView
                 android:id="@+id/toolbar_logo"
-                android:layout_width="wrap_content"
+                android:layout_width="128dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="16dp"
+                android:antialias="true"
                 android:contentDescription="Logo"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
+                android:scaleType="fitCenter"
                 android:src="@mipmap/amiv_logo"
-                android:tint="@color/white" />
+                android:tint="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        </android.support.v7.widget.Toolbar>
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.Toolbar>
 
 </android.support.design.widget.CoordinatorLayout>

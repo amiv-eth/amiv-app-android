@@ -2,17 +2,12 @@ package ch.amiv.android_app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Base64;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -25,31 +20,35 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
-
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    NavigationView drawerNavigation;
-    TextView drawer_title;
-    TextView drawer_subtitle;
+    private NavigationView drawerNavigation;
+    private TextView drawer_title;
+    private TextView drawer_subtitle;
 
-    BottomNavigationView bottomNavigation;
+    private BottomNavigationView bottomNavigation;
 
-    ViewPager viewPager;
-    PagerAdapter pagerAdapter;
+    private ViewPager viewPager;
+    private PagerAdapter pagerAdapter;
 
+    public Requests.OnDataReceivedCallback onEventsListUpdatedCallback = new Requests.OnDataReceivedCallback() {
+        @Override
+        public void OnDataReceived() {
+            Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback);
+            pagerAdapter.RefreshCurrentList(true);
+        }
+    };
+
+    private Requests.OnDataReceivedCallback onSignupsUpdatedCallback = new Requests.OnDataReceivedCallback() {
+        @Override
+        public void OnDataReceived() {
+            pagerAdapter.RefreshCurrentList(false);
+        }
+    };
+
+    /**
+     * Handle what should happen when the bottom nav buttons are pressed, will change the page of the viewpager
+     */
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -92,29 +91,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bottomNavigation = findViewById(R.id.bottomNav);
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        //Recyclerview
         InitialisePageView();
 
-        new Settings(getApplicationContext());
-        if(Settings.IsLoggedIn(getApplicationContext()) && UserInfo.current == null)
-            FetchUserData();
-        else
-            SetLoginUIDirty();
+        new Settings(getApplicationContext()); //creates the settings instance, so we can store/retrieve shared preferences
+        //fetch the user info if we are logged in, there exists a token from the previous session, should be cached.
+        if(Settings.IsLoggedIn(getApplicationContext()) && (UserInfo.current == null || UserInfo.current.nethz.isEmpty()))
+        {
+            Requests.FetchUserData(getApplicationContext(), drawerNavigation, new Requests.OnDataReceivedCallback() {
+                @Override
+                public void OnDataReceived() {
+                    SetLoginUIDirty();
+                    //Fetch the event list and then the signup information for the current user
+                    Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
+                }
+            });
+        }
 
-        FetchEventList();
+        SetLoginUIDirty();
     }
 
-
+    /**
+     * Creates the page view for swiping sideways to switch pages
+     */
     private void InitialisePageView() {
         pagerAdapter = new PagerAdapter(getSupportFragmentManager());
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(pagerAdapter);
-        viewPager.setPageTransformer(true, new DepthPageTransformer());
+        viewPager.setPageTransformer(true, new DepthPageTransformer()); //used for animating
 
+        //set for the bottom nav to be updated when we swipe to change the page
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
 
             @Override
             public void onPageSelected(int position) {
@@ -130,100 +138,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
+            public void onPageScrollStateChanged(int state) { }
         });
     }
 //endregion
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // If we are returning from the login activity and have had a successfuly login, refresh the user info and login UI
-        Intent intent = getIntent();
-        boolean refreshLogin = intent.getBooleanExtra("login_sucess", false);
-        if(refreshLogin && Settings.IsLoggedIn(getApplicationContext())){
-            FetchUserData();
-        }
-    }
-
 //region -   ====Login====
-
-    /**
-     * Will fetch the user from the api if we have an access token. ie Token -> User. Data is stored in the current userinfo (UserInfo.current). Overwrites the current user info if it exists
-     */
-    private void FetchUserData()
-    {
-        if(!Settings.IsLoggedIn(getApplicationContext()))
-            return;
-
-        //Do request Token->User
-        String url = Settings.API_URL + "sessions/" + Settings.GetToken(getApplicationContext()) + "?embedded={\"user\":1}";
-        StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
-        {
-            @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
-                if(response != null) {
-                    Log.e("request", "status Code: " + response.statusCode);
-
-                    try {
-                        JSONObject json = new JSONObject(new String(response.data)).getJSONObject("user");
-                        UserInfo user = new UserInfo(json);
-                        user.SetAsCurrent();
-
-                        //Update UI in nav drawer
-                        drawerNavigation.post(new Runnable() {    //Run updating UI on UI thread
-                            public void run() {
-                                SetLoginUIDirty();
-                            }});
-
-                        //Log.e("request", json.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                    Log.e("request", "Request returned null response.");
-                return super.parseNetworkResponse(response);
-            }
-
-            @Override
-            protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
-                if(volleyError != null && volleyError.networkResponse != null)
-                    Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + volleyError.networkResponse.data.toString());
-                else
-                    Log.e("request", "Request returned null response.");
-
-                return super.parseNetworkError(volleyError);
-            }
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers = new HashMap<String, String>();
-
-                // Add basic auth with token
-                String credentials = Settings.GetToken(getApplicationContext()) + ":";
-                String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
-                headers.put("Authorization", auth);
-
-                return headers;
-            }
-        };
-
-        Requests.SendRequest(request, getApplicationContext());
-    }
-
     /**
      * Log the user out, delete token. Will not log the user out of the device with the API as this is used with other amiv services as well
      */
     public void LogoutUser()
     {
-        Settings.SetToken("", getApplicationContext());
+        //delete session at the server and then clear the token
+        Requests.DeleteCurrentSession(getApplicationContext());
+
         UserInfo.current = null;
+        Events.ClearSignups();
+        pagerAdapter.RefreshCurrentList(true);
         SetLoginUIDirty();
         System.gc();//run garbage collector explicitly to clean up user data
+
+        Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
     }
 
     /**
@@ -232,17 +167,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void SetLoginUIDirty ()
     {
         if(Settings.IsLoggedIn(getApplicationContext())) {
-            if(UserInfo.current == null)
-                FetchUserData();
-            else {
-                drawerNavigation.getMenu().findItem(R.id.nav_login).setTitle("Logout");
+            drawerNavigation.getMenu().findItem(R.id.nav_login)
+                .setTitle("Logout")
+                .setChecked(false);
+            if(UserInfo.current != null)
+            {
                 drawer_title.setText(UserInfo.current.firstname + " " + UserInfo.current.lastname);
                 drawer_subtitle.setText(UserInfo.current.email);
             }
         }
         else
         {
-            drawerNavigation.getMenu().findItem(R.id.nav_login).setTitle("Login");
+            drawerNavigation.getMenu().findItem(R.id.nav_login)
+                .setTitle("Login")
+                .setChecked(false);
             drawer_title.setText("Not Logged In");
             drawer_subtitle.setText("");
         }
@@ -251,82 +189,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 //region -   =====Events======
 
-    /**
-     * Will fetch the list of events from the server, note does not require an access token.
-     */
-    public void FetchEventList()
-    {
-        String url = Settings.API_URL + "events";
-        StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
-        {
-            @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
-                if(response != null) {
-                    Log.e("request", "status Code: " + response.statusCode);
-
-                    try {
-                        final JSONArray eventArrayJson = new JSONObject(new String(response.data)).getJSONArray("_items");
-
-                        //Update events on main thread
-                        Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
-                        Runnable myRunnable = new Runnable() {
-                            @Override
-                            public void run() {
-                                Events.UpdateEventInfos(eventArrayJson);
-                                SetEventUIDirty();
-                                pagerAdapter.currentFragment.RefreshList();
-                            }
-                        };
-                        mainHandler.post(myRunnable);
-
-                        Log.e("request", eventArrayJson.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                    Log.e("request", "Request returned null response.");
-                return super.parseNetworkResponse(response);
-            }
-
-            @Override
-            protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
-                if(volleyError != null && volleyError.networkResponse != null)
-                    Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + volleyError.networkResponse.data.toString());
-                else
-                    Log.e("request", "Request returned null response.");
-
-                return super.parseNetworkError(volleyError);
-            }
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                if(Settings.IsLoggedIn(getApplicationContext())) {
-                    Map<String,String> headers = new HashMap<String, String>();
-
-                    String credentials = Settings.GetToken(getApplicationContext()) + ":";
-                    String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
-                    headers.put("Authorization", auth);
-
-                    return headers;
-                }
-
-                return super.getHeaders();
-            }
-        };
-
-        Requests.SendRequest(request, getApplicationContext());
-    }
-
-    /**
-     * Will refresh the UI using event data
-     */
-    public void SetEventUIDirty()
-    {
-        //update the recycler view of the event page in the pageview
-
-
-    }
 //endregion
 
     //=====Changing Activity====
@@ -337,7 +199,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void StartLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 0);
+    }
+
+    public void StartEventDetailActivity(int eventIndex)
+    {
+        Intent intent = new Intent(this, EventDetailActivity.class);
+        intent.putExtra("eventIndex", eventIndex);
+        startActivityForResult(intent, 0);
+    }
+
+    /**
+     * Here we can interpret the result of the login/event detail activity, if the login was successful or not, then update accordingly
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                // If we are returning from the login activity and have had a successfuly login, refresh the user info and login UI
+                boolean refreshLogin = data.getBooleanExtra("login_success", false);
+                if(refreshLogin && Settings.IsLoggedIn(getApplicationContext()))
+                {
+                    Requests.FetchUserData(getApplicationContext(), drawerNavigation, new Requests.OnDataReceivedCallback() {
+                        @Override
+                        public void OnDataReceived() {
+                            SetLoginUIDirty();
+                            //Update events and signups with the new userinfo
+                            if(Events.eventInfos.size() > 0)
+                                Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback);
+                            else
+                                Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
+                        }
+                    });
+
+                }
+            }
+        }
     }
 
     //region =====TOOLBAR=====
@@ -356,10 +256,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_favorite) {
-            FetchEventList();
+        /*if (id == R.id.action_favorite) {
+            Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -433,6 +333,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             super.setPrimaryItem(container, position, object);
+        }
+
+        public void RefreshCurrentList(boolean animate)
+        {
+            if(currentFragment != null)
+                currentFragment.RefreshList(animate);
         }
     }
 

@@ -2,15 +2,14 @@ package ch.amiv.android_app;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
+import android.media.session.MediaSession;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
-import android.support.constraint.ConstraintLayout;
+import android.os.Handler;
 import android.support.v4.util.LruCache;
+import android.util.Base64;
 import android.util.Log;
-import android.widget.ImageView;
+import android.view.View;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -22,46 +21,33 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public final class Requests {
-    private static String ON_SUBMIT_PIN_URL_EXT = "/checkpin";
-    private static String ON_SUBMIT_LEGI_URL_EXT = "/mutate";
-    private static String GET_DATA_URL_EXT = "/checkin_update_data";
     private static RequestQueue requestQueue;
     private static ImageLoader imageLoader;
 
-    //=======CALLBACK INTERFACES========
+    public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    private static Handler callbackHandler = new Handler();
 
     /**
-     * Used for doing callbacks when the memberDB has been updated
+     * Used for doing callbacks when data has been received from the server
      */
     public interface OnDataReceivedCallback {
-        void OnDataReceived(int statusCode, String data);
+        void OnDataReceived();
     }
 
-    public interface OnCheckPinReceivedCallback {  //used for doing callbacks when the memberDB has been updated
-        void OnStringReceived(boolean validResponse, int statusCode, String data);
-    }
-
-    public interface OnJsonReceivedCallback {  //used for doing callbacks when the memberDB has been updated
-        void OnJsonReceived(int statusCode, JSONObject data);
-        void OnStringReceived (int statusCode, String data);
-    }
-    //====END OF CALLBACKS======
-
-    public enum ServerTarget {None, API, Checkin}
     /**
-     * Send a created request with the requestQueue
+     * Send a created request with the requestQueue. You should use this function to send all requests. Also checks if we have an internet connection. Uses static request queue
      * @param request A volley request of generic type, eg StringRequest, JsonRequest
+     * @return true if the request was sent successfully
      */
     public static boolean SendRequest(Request request, Context context){
         if(!CheckConnection(context))
@@ -75,132 +61,299 @@ public final class Requests {
     }
 
     /**
-     * Will replace illegal characters correctly
-     * @param url
-     * @return
+     * Will fetch the list of events from the server, note does not require an access token.
+     * @param errorCallback Use this to know when an error occured to stop loading animations etc
+     * @return True if the request was sent.
      */
-    public static String EncodeUrl(String url)
+    public static void FetchEventList(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback)
     {
-        String encodedUrl = "";
-        try {
-            encodedUrl = URLEncoder.encode(url, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return "";
-        }
-        return encodedUrl;
-    }
-
-    /**
-     *
-     * @param context
-     * @param callback
-     * @return If the request was sucessfuly sent, may be false if there is not connction
-     */
-    public static boolean Request(Request.Method requestMethod, final Context context, final ServerTarget serverTarget, final String url_, final HashMap<String, String> params, final HashMap<String, String> header, final HashMap<String, String> body, final OnJsonReceivedCallback callback){
-        if(!CheckConnection(context))
-            return false;
-
-        //create URL
-        String url = "";
-        switch (serverTarget) {
-            case None:
-                break;
-            case API:
-                url += Settings.API_URL;
-                break;
-            case Checkin:
-                break;
-            default:
-                break;
-        }
-        url += url_;
-
-        String encodedUrl = "";
-        try {
-             encodedUrl = URLEncoder.encode(url, java.nio.charset.StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return false;
+        if(!CheckConnection(context)) {
+            RunCallback(errorCallback);
+            return;
         }
 
-        StringRequest request = new StringRequest(requestMethod.hashCode(), encodedUrl,
-                /*new Response.Listener<String>() { @Override public void onResponse(String response){} },
-                new Response.ErrorListener() { @Override public void onErrorResponse(VolleyError error){} }*/
-                null, null)
+        String url = Settings.API_URL + "events";
+        StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
         {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
-                if(response != null)
-                    callback.OnStringReceived(response.statusCode, new String(response.data));
-                else
-                    callback.OnStringReceived(400, "");
+                if(response != null) {
+                    Log.e("request", "status Code: " + response.statusCode);
+
+                    try {
+                        final JSONArray eventArrayJson = new JSONObject(new String(response.data)).getJSONArray("_items");
+
+                        //Update events on main thread
+                        if(callback != null) {
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    Events.UpdateEventInfos(eventArrayJson);
+                                    callback.OnDataReceived();
+                                }
+                            };
+                            callbackHandler.post(runnable);
+                        }
+
+                        Log.e("request", eventArrayJson.toString());
+                    } catch (JSONException e) {
+                        RunCallback(errorCallback);
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    RunCallback(errorCallback);
+                    Log.e("request", "Request returned null response.");
+                }
                 return super.parseNetworkResponse(response);
             }
 
             @Override
             protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
                 if(volleyError != null && volleyError.networkResponse != null)
-                    callback.OnStringReceived(volleyError.networkResponse.statusCode, new String(volleyError.networkResponse.data));
+                    Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
                 else
-                    callback.OnStringReceived(400, "");
+                    Log.e("request", "Request returned null response.");
 
+                RunCallback(errorCallback);
                 return super.parseNetworkError(volleyError);
-            }
-
-            //==Adding the content==
-            @Override
-            protected Map<String, String> getParams() {
-                if(Settings.IsLoggedIn(context))
-                    params.put("token", Settings.GetToken(context));
-                return params;
             }
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                return header;
+                if(Settings.IsLoggedIn(context)) {
+                    Map<String,String> headers = new HashMap<String, String>();
+
+                    String credentials = Settings.GetToken(context) + ":";
+                    String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                    headers.put("Authorization", auth);
+
+                    return headers;
+                }
+
+                return super.getHeaders();
+            }
+        };
+
+        //send the request and check if it failed
+        if(!Requests.SendRequest(request, context))
+            RunCallback(errorCallback);
+    }
+
+    /**
+     * Will fetch the event signups for the current user and save them in the eventInfos list
+     */
+    public static void FetchEventSignups(final Context context, final OnDataReceivedCallback callback)
+    {
+        if(!Settings.IsLoggedIn(context) || UserInfo.current == null || UserInfo.current._id.isEmpty())
+            return;
+
+        String url = Settings.API_URL + "eventsignups?where={\"user\":\"" + UserInfo.current._id + "\"}";
+        Log.e("request", "url: " + url);
+
+        StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
+        {
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
+                if(response != null) {
+                    Log.e("request", "/eventsignups status Code: " + response.statusCode);
+
+                    try {
+                        JSONObject json = new JSONObject(new String(response.data));
+                        if(json.has("_items")) {
+                            final JSONArray signupsJson = json.getJSONArray("_items");
+
+                            //save json data to events and run callback in main thread
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    Events.AddSignupArray(signupsJson);
+                                    if(callback != null)
+                                        callback.OnDataReceived();
+                                }
+                            };
+                            callbackHandler.post(runnable);
+                        }
+
+                        //Log.e("request", json.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                    Log.e("request", "Request returned null response: fetch event signups");
+                return super.parseNetworkResponse(response);
             }
 
             @Override
-            public byte[] getBody() throws AuthFailureError {
-                StringBuilder tmp = new StringBuilder();
-                Iterator it = body.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry)it.next();
-                    tmp.append(pair.getKey()).append(":").append(pair.getValue()).append("\n");
-                    it.remove();
-                }
-                return tmp.toString().getBytes();
+            protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
+                if(volleyError != null && volleyError.networkResponse != null)
+                    Log.e("request", "Fetch event signups, status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
+                else
+                    Log.e("request", "Request returned null response: fetch event signups");
+
+                return super.parseNetworkError(volleyError);
             }
 
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers = new HashMap<String, String>();
+
+                // Add basic auth with token
+                String credentials = Settings.GetToken(context) + ":";
+                String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                headers.put("Authorization", auth);
+
+                return headers;
+            }
         };
 
-        return SendRequest(request, context);
+        boolean hasSent = Requests.SendRequest(request, context);
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
+    /**
+     * Will fetch the user from the api if we have an access token. ie Token -> User. Data is stored in the current userinfo (UserInfo.current). Overwrites the current user info if it exists
+     */
+    public static void FetchUserData(final Context context, final View view, final OnDataReceivedCallback callback)
+    {
+        if(!Settings.IsLoggedIn(context) || !CheckConnection(context))
+            return;
 
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
+        //Do request Token->User
+        String url = Settings.API_URL + "sessions/" + Settings.GetToken(context) + "?embedded={\"user\":1}";
+        StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
+        {
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
+                if(response != null) {
+                    Log.e("request", "status Code: " + response.statusCode);
 
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
+                    try {
+                        final JSONObject json = new JSONObject(new String(response.data)).getJSONObject("user");
+                        callbackHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                UserInfo.UpdateCurrent(json, false);
+                                /*UserInfo user = new UserInfo(json, false);
+                                user.SetAsCurrent();*/
+                            }
+                        });
+
+                        if(callback != null && view != null) {
+                            view.post(new Runnable() {
+                                @Override
+                                public void run() { callback.OnDataReceived(); }
+                            });
+                        }
+                        //Log.e("request", json.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                    Log.e("request", "Request returned null response.");
+                return super.parseNetworkResponse(response);
             }
-            return mIcon11;
-        }
 
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
+            @Override
+            protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
+                if(volleyError != null && volleyError.networkResponse != null)
+                    Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
+                else
+                    Log.e("request", "Request returned null response.");
+
+                return super.parseNetworkError(volleyError);
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers = new HashMap<String, String>();
+
+                // Add basic auth with token
+                String credentials = Settings.GetToken(context) + ":";
+                String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                headers.put("Authorization", auth);
+
+                return headers;
+            }
+        };
+
+        boolean hasSent = Requests.SendRequest(request, context);
+    }
+
+    /**
+     * Will send a Delete request to delete the current session and token with it.
+     * XXX When there is no internet or an error the request is not completed. the session persists on the server. need to rerun request on next time we have a connection
+     */
+    public static void DeleteCurrentSession(final Context context)
+    {
+        final UserInfo user = UserInfo.current;
+        final String token = Settings.GetToken(context);
+        Settings.SetToken("", context);
+
+        if(!Settings.IsLoggedIn(context) || UserInfo.current == null || UserInfo.current.session_id.isEmpty())
+            return;
+
+        //Do request Token->User
+        String url = Settings.API_URL + "sessions/" + user.session_id;
+        StringRequest request = new StringRequest(Request.Method.DELETE, url,null, null)
+        {
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
+                if(response != null) {
+                    Log.e("request", "Deleted session successfully. status Code: " + response.statusCode);
+                    Settings.SetToken("", context);
+                }
+                else
+                    Log.e("request", "Request returned null response. delete session ");
+                return super.parseNetworkResponse(response);
+            }
+
+            @Override
+            protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
+                if(volleyError != null && volleyError.networkResponse != null)
+                    Log.e("request", "delete session , status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
+                else
+                    Log.e("request", "delete session request returned null response.");
+
+                return super.parseNetworkError(volleyError);
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers = new HashMap<String, String>();
+
+                // Add basic auth with token
+                String credentials = token + ":";
+                String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                headers.put("Authorization", auth);
+
+                headers.put("if-match", user.session_etag);
+
+                return headers;
+            }
+        };
+
+        Settings.SetToken("", context);
+        Requests.SendRequest(request, context);
+    }
+
+    /**
+     * Will run the callback on the main thread, use this for easily executing callbacks, which do not have any additional code on the main thread
+     * @param callback
+     */
+    private static void RunCallback (final OnDataReceivedCallback callback)
+    {
+        if(callback == null)
+            return;
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                callback.OnDataReceived();
+            }
+        };
+        callbackHandler.post(runnable);
     }
 
 //region =====Image Loader=====

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
+    <!--
     <item
         android:id="@+id/action_favorite"
         android:icon="@drawable/ic_refresh_white_24dp"
@@ -11,5 +12,5 @@
         android:orderInCategory="300"
         android:title="User"
         app:showAsAction="ifRoom" />
-
+    -->
 </menu>
