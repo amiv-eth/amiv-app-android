@@ -2,8 +2,6 @@ package ch.amiv.android_app;
 
 import android.util.Log;
 
-import com.android.volley.Request;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -58,7 +56,7 @@ public class EventInfo {
     public String signup_id = "";
     public boolean accepted;
     public boolean confirmed;
-    public enum CheckinState {none, in, out};
+    public enum CheckinState {none, in, out}
     public CheckinState checked_in = CheckinState.none;
 //endregion
 

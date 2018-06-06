@@ -1,12 +1,6 @@
 package ch.amiv.android_app;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.ColorFilter;
-import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,7 +24,6 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         TextView catchphraseField;
         TextView placesField;
         ImageView statusImage;
-        View.OnClickListener clickListener;
 
         public EventInfoHolder(View view) {
             super(view);

@@ -29,7 +29,7 @@
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/amiv_logo"
+                android:src="@drawable/ic_amiv_logo"
                 android:tint="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

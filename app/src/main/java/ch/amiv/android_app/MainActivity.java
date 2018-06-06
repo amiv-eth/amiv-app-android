@@ -4,19 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.Menu;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -209,6 +209,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivityForResult(intent, 0);
     }
 
+    private void StartCheckinActivity() {
+
+    }
+
+    private void StartBarcodeIdActivity() {
+        Intent intent = new Intent(this, BarcodeIdActivity.class);
+        startActivity(intent);
+    }
+
     /**
      * Here we can interpret the result of the login/event detail activity, if the login was successful or not, then update accordingly
      * @param requestCode
@@ -219,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
-                // If we are returning from the login activity and have had a successfuly login, refresh the user info and login UI
+                // If we are returning from the login activity and have had a successfully login, refresh the user info and login UI
                 boolean refreshLogin = data.getBooleanExtra("login_success", false);
                 if(refreshLogin && Settings.IsLoggedIn(getApplicationContext()))
                 {
@@ -268,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -284,22 +293,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_login) {
-            if(Settings.IsLoggedIn(getApplicationContext()))
+            if (Settings.IsLoggedIn(getApplicationContext()))
                 LogoutUser();
             else
                 StartLoginActivity();
-        } else if (id == R.id.nav_checkin) {
-
-        } else if (id == R.id.nav_settings)
+        }
+        else if (id == R.id.nav_checkin)
+            StartCheckinActivity();
+        else if (id == R.id.nav_barcode_id)
+            StartBarcodeIdActivity();
+        else if (id == R.id.nav_settings)
             StartSettingsActivity();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    //endregion =====END OF DRAWER==================
+//endregion =====END OF DRAWER==================
 
-    //region =====START OF PAGEVIEW==============
+
+//region =====START OF PAGEVIEW==============
 
     /**
      * This will handle changing between the pages
@@ -372,3 +385,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     //endregion =====END OF PAGEVIEW================
 }
+

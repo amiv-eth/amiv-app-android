@@ -1,15 +1,11 @@
 package ch.amiv.android_app;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.media.session.MediaSession;
 import android.util.Log;
 
-import java.net.ConnectException;
-
 /**
- * This class is used to save settings so they can be resoted in another session later.
+ * This class is used to save settings so they can be restored in another session later.
  * Use this class to retrieve visible/hidden settings.
  * Access the settings with the according get function from the static instance.
  */
@@ -24,7 +20,7 @@ public class Settings {
     private static final String apiUrlPrefKey = "ch.amiv.android_app.serverurl";
     private static final String defaultApiUrl = "https://api-dev.amiv.ethz.ch";
     private static final String themeKey = "ch.amiv.android_app.theme";
-    private static final boolean defaultTheme = false;  //flase for light
+    private static final boolean defaultTheme = false;  //false for light
     private static final String apiTokenKey = "ch.amiv.android_app.apitoken";
 
 
