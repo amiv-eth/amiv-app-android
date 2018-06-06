@@ -1,0 +1,36 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:defaultValue="-1"
+        android:entries="@array/pref_lang_list_values"
+        android:entryValues="@array/pref_lang_list_entries"
+        android:key="@string/pref_lang_key"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_lang_title" />
+
+    <ListPreference
+        android:defaultValue="-1"
+        android:entries="@array/pref_food_list_values"
+        android:entryValues="@array/pref_food_list_entries"
+        android:key="@string/pref_food_key"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_food_title" />
+
+    <ListPreference
+        android:defaultValue="-1"
+        android:entries="@array/pref_sbb_list_values"
+        android:entryValues="@array/pref_sbb_list_entries"
+        android:key="@string/pref_sbb_key"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_sbb_title" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="@string/pref_notifications_key"
+        android:summary="@string/pref_notifications_desc"
+        android:title="@string/pref_notifications_title" />
+
+</PreferenceScreen>

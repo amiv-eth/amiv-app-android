@@ -128,8 +128,8 @@ public class EventDetailActivity extends AppCompatActivity {
         }
 
         //Link up variables with UI elements from the layout xml
-        ((TextView) findViewById(R.id.eventTitle)).setText(Events.eventInfos.get(eventIndex).title_en);
-        ((TextView)findViewById(R.id.eventDetail)).setText(Events.eventInfos.get(eventIndex).description_en);
+        ((TextView) findViewById(R.id.eventTitle)).setText(Events.eventInfos.get(eventIndex).GetTitle(getResources()));
+        ((TextView)findViewById(R.id.eventDetail)).setText(Events.eventInfos.get(eventIndex).GetDescription(getResources()));
         scrollView = findViewById(R.id.scrollView_event);
         posterProgress = findViewById(R.id.progressBar);
         posterImage = findViewById(R.id.eventPoster);
@@ -228,7 +228,7 @@ public class EventDetailActivity extends AppCompatActivity {
                     }, 0, 0, ImageView.ScaleType.CENTER_INSIDE, Bitmap.Config.ARGB_8888,
                     new Response.ErrorListener() {
                         public void onErrorResponse(VolleyError error) {
-                            Snackbar.make(posterImage, "Error loading image", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(posterImage, R.string.error_image_load, Snackbar.LENGTH_SHORT).show();
                             posterProgress.setVisibility(View.GONE);
                             swipeRefreshLayout.setRefreshing(false);
                         }
@@ -252,7 +252,7 @@ public class EventDetailActivity extends AppCompatActivity {
         LinearLayout linear = findViewById(R.id.register_details_list);
         linear.removeAllViews();
 
-        ArrayList<String[]> infos = Events.eventInfos.get(eventIndex).GetInfos();
+        ArrayList<String[]> infos = Events.eventInfos.get(eventIndex).GetInfos(getResources());
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         for (int i = 0; i < infos.size(); i++) {
             //Create a view from the xml and then add it as a child of the listview
@@ -271,7 +271,7 @@ public class EventDetailActivity extends AppCompatActivity {
     public void RegisterForEvent(View view)
     {
         if(!Requests.CheckConnection(getApplicationContext())) {
-            Snackbar.make(view, "Requires Internet", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(view, R.string.requires_internet, Snackbar.LENGTH_LONG).show();
             return;
         }
 
@@ -307,14 +307,14 @@ public class EventDetailActivity extends AppCompatActivity {
                         });
 
                         //Interpret notification to show from the signup
-                        String notification = "";
+                        int notification = 0;
                         if(Events.eventInfos.get(eventIndex).accepted) {
                             if(Events.eventInfos.get(eventIndex).confirmed)
-                                notification = "Successfully Registered";
+                                notification = R.string.register_success;
                             else
-                                notification = "Registered, please confirm with mail";
+                                notification = R.string.register_success_confirm_required;
                         } else
-                            notification = "Added to Waiting List";
+                            notification = R.string.added_to_waiting_list;
                         Snackbar.make(scrollView, notification, Snackbar.LENGTH_LONG).show();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -322,7 +322,7 @@ public class EventDetailActivity extends AppCompatActivity {
                 }
                 else {
                     Log.e("request", "Request returned null response.");
-                    Snackbar.make(scrollView, "Error occured, please try again", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(scrollView, R.string.snack_error_retry, Snackbar.LENGTH_SHORT).show();
                 }
                 return super.parseNetworkResponse(response);
             }
@@ -332,7 +332,7 @@ public class EventDetailActivity extends AppCompatActivity {
                 if(volleyError != null && volleyError.networkResponse != null) {
                     Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
                     if(volleyError.networkResponse.statusCode == 422) {
-                        Snackbar.make(scrollView, "Already Registered", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(scrollView, R.string.already_registered, Snackbar.LENGTH_SHORT).show();
                     }
                 }
                 else
@@ -367,10 +367,10 @@ public class EventDetailActivity extends AppCompatActivity {
     private void UpdateRegisterButton() {
         if (Events.eventInfos.get(eventIndex).IsSignedUp()) {
             registerButton.setEnabled(false);
-            registerButton.setText("Already Registered");
+            registerButton.setText(R.string.already_registered);
         } else {
             registerButton.setEnabled(true);
-            registerButton.setText("Register");
+            registerButton.setText(R.string.register_title);
         }
     }
 

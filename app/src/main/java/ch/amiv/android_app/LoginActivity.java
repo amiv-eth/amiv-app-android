@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
         final String password = passwordField.getText().toString();
 
         if(username.isEmpty()) {
-            Snackbar.make(submitButton, "Please fill in all fields", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(submitButton, R.string.snack_fill_all_fields, Snackbar.LENGTH_SHORT).show();
             return;
         }
 
@@ -95,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
                             ReturnToCallingActivity(true);
                         }
                         else{
-                            Snackbar.make(userField, "An error occured, please retry", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(userField, R.string.snack_error_retry, Snackbar.LENGTH_SHORT).show();
                             SetSubmitButtonState(true, false);
                         }
 
@@ -123,12 +123,12 @@ public class LoginActivity extends AppCompatActivity {
             protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
                 if(volleyError != null && volleyError.networkResponse != null)
                 {
-                    Snackbar.make(userField, "Invalid Login Details", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(userField, R.string.invalid_login, Snackbar.LENGTH_SHORT).show();
                     Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
                 }
                 else
                 {
-                    Snackbar.make(userField, "No Internet", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(userField, R.string.no_internet, Snackbar.LENGTH_SHORT).show();
                     Log.e("request", "Request returned null response.");
                 }
 
@@ -149,7 +149,7 @@ public class LoginActivity extends AppCompatActivity {
         if(wasSent)
             SetSubmitButtonState(false, false);
         else
-            Snackbar.make(userField, "No Internet", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(userField, R.string.no_internet, Snackbar.LENGTH_SHORT).show();
     }
 
     /**
@@ -162,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void run() {
                 submitButton.setEnabled(enable);
-                submitButton.setText(enable ? "Submit" : (loginSuccess ? "Success" : "Please Wait"));
+                submitButton.setText(enable ? R.string.login_title : (loginSuccess ? R.string.success : R.string.wait));
             }
         });
     }

@@ -4,13 +4,13 @@
     <string name="app_name">AMIV</string>
     <string name="title_home">Home</string>
     <string name="title_blitz">blitz</string>
-    <string name="title_notifications">Notifications</string>
-    <string name="settings_title">Settings</string>
+    <string name="title_notifications">Benachrichtigungen</string>
+    <string name="settings_title">Einstellungen</string>
     <string name="apps_title">Apps</string>
     <string name="check_in_title">Check-in</string>
     <string name="barcode_id_title">Barcode ID</string>
     <string name="info_title">Info</string>
-    <string name="new_events_title">New Events</string>
+    <string name="new_events_title">Neue Events</string>
 
     <!-- Language -->
     <string name="pref_lang_title">Language - Sprache</string>
@@ -26,47 +26,46 @@
 
     <!-- Login -->
     <string name="login_title">Login</string>
-    <string name="login_prompt">Please enter your login details</string>
-    <string name="not_logged_in">Not Logged In</string>
-    <string name="invalid_login">Invalid Login Details</string>
+    <string name="login_prompt">Bitte geben Sie Ihre Zugangsdaten ein</string>
+    <string name="not_logged_in">Nicht Eingeloggt</string>
+    <string name="invalid_login">Ungültige Login Daten</string>
     <string name="logout_title">Log out</string>
 
-    <string name="wait">Please Wait</string>
-    <string name="success">Success</string>
+    <string name="wait">Bitte Warten</string>
+    <string name="success">Erfolg</string>
 
     <!-- Event Infos -->
     <string name="start_time">Start</string>
-    <string name="end_time">End</string>
-    <string name="price">Price</string>
-    <string name="location">Location</string>
-    <string name="waiting_list_size">Waiting List Size</string>
-    <string name="available_places">Available Places</string>
-    <string name="price_free">Free</string>
+    <string name="end_time">Ende</string>
+    <string name="price">Preis</string>
+    <string name="location">Ort</string>
+    <string name="waiting_list_size">Wartelistengröße</string>
+    <string name="available_places">Restliche Plätze</string>
+    <string name="price_free">Gratis</string>
 
     <!-- Event Registering -->
-    <string name="register_title">Register</string>
-    <string name="register_end">Register End</string>
-    <string name="register_start">Register Start</string>
-    <string name="already_registered">Already Registered</string>
-    <string name="register_success">Successfully Registered</string>
-    <string name="register_success_confirm_required">Registered, please confirm with mail</string>
-    <string name="added_to_waiting_list">Added to Waiting List</string>
+    <string name="register_title">Anmelden</string>
+    <string name="register_end">Anmelden bis</string>
+    <string name="register_start">Anmelden ab</string>
+    <string name="already_registered">Schon Angemeldet</string>
+    <string name="register_success">Anmeldung Erfolgreich</string>
+    <string name="register_success_confirm_required">Angemeldet, bitte mit mail bestätigen</string>
+    <string name="added_to_waiting_list">Auf Warteliste gesetzt</string>
 
-    <string name="no_internet">No Internet</string>
-    <string name="requires_internet">Requires Internet</string>
-    <string name="snack_fill_all_fields">Please fill in all fields</string>
+    <string name="no_internet">Kein Internet</string>
+    <string name="requires_internet">Benötigt Internet</string>
+    <string name="snack_fill_all_fields">BItte füllen sie alle Felder ein</string>
 
     <!-- Errors -->
-    <string name="error_image_load">Error loading image</string>
-    <string name="snack_error_retry">An error occurred, please retry</string>
+    <string name="error_image_load">Fehler aufgetreten</string>
+    <string name="snack_error_retry">Fehler aufgetreten, bitte erneut versuchen</string>
 
-    <!-- Settings -->
-    <string name="pref_food_title">Food Preference</string>
+    <string name="pref_food_title">Essen Preferenz</string>
     <string name="pref_food_key">food</string>
     <string-array name="pref_food_list_values">
-        <item>Everything</item>
-        <item>Vegetarian</item>
-        <item>Nothing</item>
+        <item>Alles</item>
+        <item>Vegitarisch</item>
+        <item>Nichts</item>
     </string-array>
     <string-array name="pref_food_list_entries">
         <item>all</item>
@@ -74,13 +73,13 @@
         <item>nothing</item>
     </string-array>
 
-    <string name="pref_sbb_title">Public Transport</string>
+    <string name="pref_sbb_title">ÖV Abo</string>
     <string name="pref_sbb_key">sbb_list</string>
     <string-array name="pref_sbb_list_values">
         <item>GA</item>
         <item>Gleis7</item>
-        <item>Half Tax</item>
-        <item>Nothing</item>
+        <item>Halx Tax</item>
+        <item>Kein Abo</item>
     </string-array>
     <string-array name="pref_sbb_list_entries">
         <item>GA</item>
@@ -89,15 +88,15 @@
         <item>NA</item>
     </string-array>
 
-    <string name="pref_notifications_title">Receive Notifications</string>
-    <string name="pref_notifications_desc">Get updates about events</string>
+    <string name="pref_notifications_title">Benachrichtigungen</string>
+    <string name="pref_notifications_desc">Erhalte benachrichtigungen über events</string>
     <string name="pref_notifications_key">notif_enabled</string>
 
 
 
 
     <!-- Settings, some are still from template -->
-    <string name="pref_header_general">General</string>
+    <string name="pref_header_general">Allgemeine Einstellungen</string>
     <string name="pref_title_social_recommendations">Enable social recommendations</string>
     <string name="pref_description_social_recommendations">Recommendations for people to contact based on your message history</string>
     <string name="pref_title_display_name">Display name</string>

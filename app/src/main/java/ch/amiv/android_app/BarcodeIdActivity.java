@@ -1,6 +1,7 @@
 package ch.amiv.android_app;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -71,8 +72,11 @@ public class BarcodeIdActivity extends AppCompatActivity {
      * Will generate a barcode bitmap and apply it to the barcodeImageview. Note: barcode will not fill whole constraint as the width of the bars is determined in pixels, to prevent distortion
      */
     public void GenerateBarcode(){
-        if(UserInfo.current == null || (UserInfo.current.nethz.isEmpty() && UserInfo.current.email.isEmpty()))
+        if(UserInfo.current == null || (UserInfo.current.nethz.isEmpty() && UserInfo.current.email.isEmpty())){
+            Snackbar.make(swipeRefreshLayout, R.string.not_logged_in, Snackbar.LENGTH_LONG).show();
+            swipeRefreshLayout.setRefreshing(false);
             return;
+        }
 
         //prioritise nethz as this is shorter
         String encode = UserInfo.current.nethz.isEmpty() ? UserInfo.current.email : UserInfo.current.nethz;
