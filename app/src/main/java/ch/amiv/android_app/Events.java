@@ -1,5 +1,7 @@
 package ch.amiv.android_app;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +39,7 @@ public final class Events {
     public static void AddSignupArray(JSONArray json) {
         boolean[] hasUpdatedEvent = new boolean[eventInfos.size()];
 
+        signupLoop:
         for (int i = 0; i < json.length(); i++) {
             try {
                 JSONObject signup = json.getJSONObject(i);
@@ -46,8 +49,10 @@ public final class Events {
                         if (!hasUpdatedEvent[j] && event.equals(eventInfos.get(j)._id)) {
                             Events.eventInfos.get(j).AddSignup(signup);
                             hasUpdatedEvent[j] = true;
+                            continue signupLoop;
                         }
                     }
+                    Log.e("events", "Received signup for event that does not exist locally, event id:" + signup.getString("event"));
                 }
             }
             catch (JSONException e){

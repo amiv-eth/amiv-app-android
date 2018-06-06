@@ -1,5 +1,6 @@
 <resources>
     <!-- Titles -->
+    <string name="title">AMIV</string>
     <string name="app_name">AMIV</string>
     <string name="title_home">Home</string>
     <string name="title_blitz">blitz</string>
@@ -40,12 +41,16 @@
     <string name="location">Location</string>
     <string name="waiting_list_size">Waiting List Size</string>
     <string name="available_places">Available Places</string>
+    <string name="price_free">Free</string>
 
     <!-- Event Registering -->
     <string name="register_title">Register</string>
     <string name="register_end">Register End</string>
     <string name="register_start">Register Start</string>
     <string name="already_registered">Already Registered</string>
+    <string name="register_success">Successfully Registered</string>
+    <string name="register_success_confirm_required">Registered, please confirm with mail</string>
+    <string name="added_to_waiting_list">Added to Waiting List</string>
 
     <string name="no_internet">No Internet</string>
     <string name="requires_internet">Requires Internet</string>
@@ -53,14 +58,14 @@
 
     <!-- Errors -->
     <string name="error_image_load">Error loading image</string>
-    <string name="snack_error_retry">An error occured, please retry</string>
+    <string name="snack_error_retry">An error occurred, please retry</string>
 
     <!-- Settings -->
     <string name="pref_food_title">Food Preference</string>
     <string name="pref_food_key">food</string>
     <string-array name="pref_food_list_values">
         <item>Everything</item>
-        <item>Vegitarian</item>
+        <item>Vegetarian</item>
         <item>Nothing</item>
     </string-array>
     <string-array name="pref_food_list_entries">

@@ -121,8 +121,8 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final EventInfoHolder eventInfoHolder = (EventInfoHolder)holder;
                 final int eventIndex = holder.getAdapterPosition() - 1;
                 final EventInfo e = Events.eventInfos.get(eventIndex);
-                eventInfoHolder.titleField.setText(e.title_en);
-                eventInfoHolder.catchphraseField.setText(e.catchphrase_en);
+                eventInfoHolder.titleField.setText(e.GetTitle(activity.getResources()));
+                eventInfoHolder.catchphraseField.setText(e.GetCatchphrase(activity.getResources()));
                 eventInfoHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -145,7 +145,7 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 else {
                     eventInfoHolder.statusImage.setVisibility(View.GONE);
                     eventInfoHolder.placesField.setVisibility(View.VISIBLE);
-                    eventInfoHolder.placesField.setText((e.spots == 0 ? "" : "" + (e.spots - e.signup_count)));
+                    eventInfoHolder.placesField.setText("" + Math.max(0, e.spots - e.signup_count));
                 }
                 break;
         }

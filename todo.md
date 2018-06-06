@@ -1,5 +1,11 @@
 TODO list
 =========
+Bugs
+====
+interpret event dates, register start end, sort by date, advertise dates to hide/show
+
+Features
+========
 Sort events upcoming and attended events, hide unattended old events
 show event date in infos, if start end are not equal then show both, formatting
 prevent refreshing events on rotate/slide, remove from onresume

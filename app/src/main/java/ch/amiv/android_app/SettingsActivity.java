@@ -166,6 +166,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     //update summary
                     sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, newValue);
 
+                    //Restart app to apply language
+                    Intent i = getActivity().getBaseContext().getPackageManager()
+                            .getLaunchIntentForPackage( getActivity().getBaseContext().getPackageName() );
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(i);
+
                     return true;
                 }
             });

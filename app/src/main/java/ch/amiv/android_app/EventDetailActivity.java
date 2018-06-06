@@ -128,8 +128,8 @@ public class EventDetailActivity extends AppCompatActivity {
         }
 
         //Link up variables with UI elements from the layout xml
-        ((TextView) findViewById(R.id.eventTitle)).setText(Events.eventInfos.get(eventIndex).title_en);
-        ((TextView)findViewById(R.id.eventDetail)).setText(Events.eventInfos.get(eventIndex).description_en);
+        ((TextView) findViewById(R.id.eventTitle)).setText(Events.eventInfos.get(eventIndex).GetTitle(getResources()));
+        ((TextView)findViewById(R.id.eventDetail)).setText(Events.eventInfos.get(eventIndex).GetDescription(getResources()));
         scrollView = findViewById(R.id.scrollView_event);
         posterProgress = findViewById(R.id.progressBar);
         posterImage = findViewById(R.id.eventPoster);
@@ -307,14 +307,14 @@ public class EventDetailActivity extends AppCompatActivity {
                         });
 
                         //Interpret notification to show from the signup
-                        String notification = "";
+                        int notification = 0;
                         if(Events.eventInfos.get(eventIndex).accepted) {
                             if(Events.eventInfos.get(eventIndex).confirmed)
-                                notification = "Successfully Registered";
+                                notification = R.string.register_success;
                             else
-                                notification = "Registered, please confirm with mail";
+                                notification = R.string.register_success_confirm_required;
                         } else
-                            notification = "Added to Waiting List";
+                            notification = R.string.added_to_waiting_list;
                         Snackbar.make(scrollView, notification, Snackbar.LENGTH_LONG).show();
                     } catch (JSONException e) {
                         e.printStackTrace();

@@ -1,5 +1,6 @@
 package ch.amiv.android_app;
 
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.Log;
 
@@ -10,6 +11,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * This is all the data about one event AND the current users signup data about that event
@@ -17,12 +19,12 @@ import java.util.Date;
 public class EventInfo {
 //region -   ====Variables====
     public String _id;
-    public String title_de;
-    public String title_en;
-    public String catchphrase_de;
-    public String catchphrase_en;
-    public String description_de;
-    public String description_en;
+    private String title_de;
+    private String title_en;
+    private String catchphrase_de;
+    private String catchphrase_en;
+    private String description_de;
+    private String description_en;
     public String location;
     public String price;
     public String priority;
@@ -161,10 +163,10 @@ public class EventInfo {
         if(infos != null && infos.size() > 0)
             return infos;
 
-        DateFormat dateFormat = new SimpleDateFormat("dd - MMM - yyyy HH:mm");
+        DateFormat dateFormat = new SimpleDateFormat("dd - MMM - yyyy HH:mm", r.getConfiguration().locale);
         if(time_start != null) infos.add(new String[]{ r.getString(R.string.start_time), dateFormat.format(time_start)});
         if(time_end != null) infos.add(new String[]{ r.getString(R.string.end_time), dateFormat.format(time_end)});
-        if(!price.isEmpty()) infos.add(new String[]{ r.getString(R.string.price), (price.equalsIgnoreCase("0") ? "Free" : price)});
+        if(!price.isEmpty()) infos.add(new String[]{ r.getString(R.string.price), (price.equalsIgnoreCase("0") ? r.getString(R.string.price_free) : price + " CHF")});
         if(!location.isEmpty()) infos.add(new String[]{ r.getString(R.string.location), location});
         if(time_register_start != null) infos.add(new String[]{ r.getString(R.string.register_start), dateFormat.format(time_register_start)});
         if(time_register_end != null) infos.add(new String[]{ r.getString(R.string.register_end), dateFormat.format(time_register_end)});
@@ -173,6 +175,31 @@ public class EventInfo {
             infos.add(new String[]{ r.getString(R.string.waiting_list_size), "" + (signup_count - spots)});
 
         return infos;
+    }
+
+    public String GetTitle (Resources res)
+    {
+        Locale locale = res.getConfiguration().locale;
+        if(res.getConfiguration().locale.equals(Locale.GERMAN) && !title_de.isEmpty())
+            return title_de;
+        else
+            return title_en;
+    }
+
+    public String GetDescription(Resources res)
+    {
+        if(res.getConfiguration().locale.equals(Locale.GERMAN) && !description_de.isEmpty())
+            return description_de;
+        else
+            return description_en;
+    }
+
+    public String GetCatchphrase(Resources res)
+    {
+        if(res.getConfiguration().locale.equals(Locale.GERMAN) && !catchphrase_de.isEmpty())
+            return catchphrase_de;
+        else
+            return catchphrase_en;
     }
 
     public boolean IsSignedUp ()

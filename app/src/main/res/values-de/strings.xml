@@ -1,5 +1,6 @@
 <resources>
     <!-- Titles -->
+    <string name="title">AMIV</string>
     <string name="app_name">AMIV</string>
     <string name="title_home">Home</string>
     <string name="title_blitz">blitz</string>
@@ -13,9 +14,10 @@
 
     <!-- Language -->
     <string name="pref_lang_title">Language - Sprache</string>
+    <string name="pref_lang_key">lang</string>
     <string-array name="pref_lang_list_values">
-        <item>Deutsch</item>
         <item>English</item>
+        <item>Deutsch</item>
     </string-array>
     <string-array name="pref_lang_list_entries">
         <item>en</item>
@@ -38,13 +40,17 @@
     <string name="price">Preis</string>
     <string name="location">Ort</string>
     <string name="waiting_list_size">Wartelistengröße</string>
-    <string name="available_places">Available Places</string>
+    <string name="available_places">Restliche Plätze</string>
+    <string name="price_free">Gratis</string>
 
     <!-- Event Registering -->
     <string name="register_title">Anmelden</string>
     <string name="register_end">Anmelden bis</string>
     <string name="register_start">Anmelden ab</string>
     <string name="already_registered">Schon Angemeldet</string>
+    <string name="register_success">Anmeldung Erfolgreich</string>
+    <string name="register_success_confirm_required">Angemeldet, bitte mit mail bestätigen</string>
+    <string name="added_to_waiting_list">Auf Warteliste gesetzt</string>
 
     <string name="no_internet">Kein Internet</string>
     <string name="requires_internet">Benötigt Internet</string>
@@ -53,6 +59,38 @@
     <!-- Errors -->
     <string name="error_image_load">Fehler aufgetreten</string>
     <string name="snack_error_retry">Fehler aufgetreten, bitte erneut versuchen</string>
+
+    <string name="pref_food_title">Essen Preferenz</string>
+    <string name="pref_food_key">food</string>
+    <string-array name="pref_food_list_values">
+        <item>Alles</item>
+        <item>Vegitarisch</item>
+        <item>Nichts</item>
+    </string-array>
+    <string-array name="pref_food_list_entries">
+        <item>all</item>
+        <item>veg</item>
+        <item>nothing</item>
+    </string-array>
+
+    <string name="pref_sbb_title">ÖV Abo</string>
+    <string name="pref_sbb_key">sbb_list</string>
+    <string-array name="pref_sbb_list_values">
+        <item>GA</item>
+        <item>Gleis7</item>
+        <item>Halx Tax</item>
+        <item>Kein Abo</item>
+    </string-array>
+    <string-array name="pref_sbb_list_entries">
+        <item>GA</item>
+        <item>G7</item>
+        <item>HT</item>
+        <item>NA</item>
+    </string-array>
+
+    <string name="pref_notifications_title">Benachrichtigungen</string>
+    <string name="pref_notifications_desc">Erhalte benachrichtigungen über events</string>
+    <string name="pref_notifications_key">notif_enabled</string>
 
 
 

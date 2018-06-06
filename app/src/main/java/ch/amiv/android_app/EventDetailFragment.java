@@ -66,8 +66,8 @@ public class EventDetailFragment extends Fragment {
         TextView content = getView().findViewById(R.id.eventDetail);
         final ImageView poster = getView().findViewById(R.id.eventPoster);
 
-        title.setText(Events.eventInfos.get(eventIndex).title_en);
-        content.setText(Events.eventInfos.get(eventIndex).description_en);
+        title.setText(Events.eventInfos.get(eventIndex).GetTitle(getResources()));
+        content.setText(Events.eventInfos.get(eventIndex).GetDescription(getResources()));
 
         String posterUrl = "https://www.amiv.ethz.ch/sites/all/themes/amiv15/logo.png";
         ImageRequest posterRequest = new ImageRequest(posterUrl,
