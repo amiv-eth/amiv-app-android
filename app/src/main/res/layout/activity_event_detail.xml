@@ -92,7 +92,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="16dp"
                             android:layout_marginRight="16dp"
-                            android:text="Event Title"
+                            android:text=""
                             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                             android:textSize="30sp" />
 
@@ -118,7 +118,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="16dp"
                             android:layout_marginRight="16dp"
-                            android:text="Info"
+                            android:text="@string/info_title"
                             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                             android:textSize="30sp" />
 
@@ -139,7 +139,7 @@
                             android:enabled="true"
                             android:onClick="RegisterForEvent"
                             android:paddingBottom="16dp"
-                            android:text="Register" />
+                            android:text="@string/register_title" />
 
 
                     </LinearLayout>

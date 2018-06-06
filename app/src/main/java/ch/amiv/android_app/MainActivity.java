@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         if(Settings.IsLoggedIn(getApplicationContext())) {
             drawerNavigation.getMenu().findItem(R.id.nav_login)
-                .setTitle("Logout")
+                .setTitle(R.string.logout_title)
                 .setChecked(false);
             if(UserInfo.current != null)
             {
@@ -179,9 +179,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else
         {
             drawerNavigation.getMenu().findItem(R.id.nav_login)
-                .setTitle("Login")
+                .setTitle(R.string.login_title)
                 .setChecked(false);
-            drawer_title.setText("Not Logged In");
+            drawer_title.setText(R.string.not_logged_in);
             drawer_subtitle.setText("");
         }
     }

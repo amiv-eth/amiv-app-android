@@ -14,3 +14,4 @@ Aspirational
 ===========
 Test if token has expired or is wrong when we get an auth error from the server, notify user and logout
 Add error handling of requests, max retries,
+Add app intro and one time setup, notify if legi and rfid are not added?

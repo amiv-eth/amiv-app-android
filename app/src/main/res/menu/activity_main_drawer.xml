@@ -7,23 +7,23 @@
         <item
             android:id="@+id/nav_login"
             android:icon="@drawable/ic_menu_account"
-            android:title="Login" />
+            android:title="@string/login_title" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_settings"
-            android:title="Settings" />
+            android:title="@string/settings_title" />
     </group>
 
-    <item android:title="Apps">
+    <item android:title="@string/apps_title">
         <menu>
             <item
                 android:id="@+id/nav_checkin"
                 android:icon="@drawable/ic_menu_camera"
-                android:title="Check-in" />
+                android:title="@string/check_in_title" />
             <item
                 android:id="@+id/nav_barcode_id"
                 android:icon="@drawable/ic_menu_gallery"
-                android:title="Barcode ID" />
+                android:title="@string/barcode_id_title" />
         </menu>
     </item>
 </menu>

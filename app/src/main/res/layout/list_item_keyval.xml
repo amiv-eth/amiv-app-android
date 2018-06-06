@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Key"
+            android:text=""
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textSize="18sp" />
 
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:paddingLeft="8dp"
-            android:text="Value"
+            android:text=""
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textSize="16sp" />
     </LinearLayout>

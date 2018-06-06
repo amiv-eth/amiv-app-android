@@ -1,5 +1,6 @@
 package ch.amiv.android_app;
 
+import android.content.res.Resources;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -156,20 +157,20 @@ public class EventInfo {
      * Choose the key value pairs to be displayed in the event info section when viewing the event in detail
      * @return
      */
-    public ArrayList<String[]> GetInfos(){
+    public ArrayList<String[]> GetInfos(Resources r){
         if(infos != null && infos.size() > 0)
             return infos;
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy - MMM - dd HH:mm");
-        if(time_start != null) infos.add(new String[]{"Start", dateFormat.format(time_start)});
-        if(time_end != null) infos.add(new String[]{"End", dateFormat.format(time_end)});
-        if(!price.isEmpty()) infos.add(new String[]{"Price", (price.equalsIgnoreCase("0") ? "Free" : price)});
-        if(!location.isEmpty()) infos.add(new String[]{"Location", location});
-        if(time_register_start != null) infos.add(new String[]{"Register Start", dateFormat.format(time_register_start)});
-        if(time_register_end != null) infos.add(new String[]{"Register End", dateFormat.format(time_register_end)});
-        infos.add(new String[]{"Available Places", (spots == 0 ? "-" : "" + Math.max(0, spots - signup_count))});
+        DateFormat dateFormat = new SimpleDateFormat("dd - MMM - yyyy HH:mm");
+        if(time_start != null) infos.add(new String[]{ r.getString(R.string.start_time), dateFormat.format(time_start)});
+        if(time_end != null) infos.add(new String[]{ r.getString(R.string.end_time), dateFormat.format(time_end)});
+        if(!price.isEmpty()) infos.add(new String[]{ r.getString(R.string.price), (price.equalsIgnoreCase("0") ? "Free" : price)});
+        if(!location.isEmpty()) infos.add(new String[]{ r.getString(R.string.location), location});
+        if(time_register_start != null) infos.add(new String[]{ r.getString(R.string.register_start), dateFormat.format(time_register_start)});
+        if(time_register_end != null) infos.add(new String[]{ r.getString(R.string.register_end), dateFormat.format(time_register_end)});
+        infos.add(new String[]{ r.getString(R.string.available_places), (spots <= 0 ? "-" : "" + Math.max(0, spots - signup_count))});
         if(spots - signup_count < 0)
-            infos.add(new String[]{"Waiting List Size", "" + (signup_count - spots)});
+            infos.add(new String[]{ r.getString(R.string.waiting_list_size), "" + (signup_count - spots)});
 
         return infos;
     }

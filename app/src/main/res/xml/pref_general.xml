@@ -4,10 +4,10 @@
         android:defaultValue="-1"
         android:entries="@array/pref_lang_list_values"
         android:entryValues="@array/pref_lang_list_entries"
-        android:key="lang_list"
+        android:key="@string/pref_lang_key"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
-        android:title="@string/pref_title_lang" />
+        android:title="@string/pref_lang_title" />
 
     <SwitchPreference
         android:defaultValue="true"

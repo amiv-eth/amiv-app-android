@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Please enter your login details"
+                android:text="@string/login_prompt"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view" />
@@ -81,7 +81,8 @@
                 android:singleLine="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
+                app:layout_constraintTop_toBottomOf="@+id/textView"
+                tools:ignore="HardcodedText" />
 
             <EditText
                 android:id="@+id/passwordField"
@@ -98,7 +99,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/usernameField" />
+                app:layout_constraintTop_toBottomOf="@+id/usernameField"
+                tools:ignore="HardcodedText" />
 
             <Button
                 android:id="@+id/submitLoginButton"
@@ -115,7 +117,8 @@
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/passwordField" />
+                app:layout_constraintTop_toBottomOf="@+id/passwordField"
+                tools:ignore="HardcodedText" />
 
 
         </android.support.constraint.ConstraintLayout>

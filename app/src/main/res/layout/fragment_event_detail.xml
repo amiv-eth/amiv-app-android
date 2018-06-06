@@ -30,7 +30,7 @@
                 android:id="@+id/eventTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Event Title"
+                android:text=""
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
             <TextView
@@ -44,7 +44,7 @@
                 android:id="@+id/registerHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Register"
+                android:text="@string/register_title"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textSize="18sp" />
 

@@ -53,7 +53,7 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public EventsListAdapter(Activity activity_) {
-        headerList.add("New Events");
+        headerList.add(activity_.getResources().getString(R.string.new_events_title));
         //headerList.add("Attended Events");  //XXX Add sorting of old events, where checkin or confirmed is true
         activity = activity_;
     }
