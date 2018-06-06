@@ -13,8 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
-import com.android.volley.Request;
-
 /**
  * An example fragment, the central view in MainActivity, for showing a list, should be replaced by a standard fragment with a custom recyclerView, create one different class for different views
  */
@@ -119,7 +117,6 @@ public class ListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_list, container, false);
-        View tv = v.findViewById(R.id.text);
         return v;
     }
 
@@ -129,12 +126,6 @@ public class ListFragment extends Fragment {
 
         if(recylcerAdaper != null)
             recylcerAdaper.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        //old  setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, new String[]{"A", "B", "C"}));
     }
 
     /**

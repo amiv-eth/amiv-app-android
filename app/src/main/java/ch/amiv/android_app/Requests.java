@@ -2,7 +2,6 @@ package ch.amiv.android_app;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.media.session.MediaSession;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
@@ -196,7 +195,7 @@ public final class Requests {
             }
 
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders()  {
                 Map<String,String> headers = new HashMap<String, String>();
 
                 // Add basic auth with token
@@ -266,7 +265,7 @@ public final class Requests {
             }
 
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders()  {
                 Map<String,String> headers = new HashMap<String, String>();
 
                 // Add basic auth with token
@@ -320,7 +319,7 @@ public final class Requests {
             }
 
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map<String,String> headers = new HashMap<String, String>();
 
                 // Add basic auth with token

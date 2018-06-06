@@ -2,10 +2,10 @@ package ch.amiv.android_app;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
@@ -19,7 +19,6 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -257,7 +256,7 @@ public class EventDetailActivity extends AppCompatActivity {
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         for (int i = 0; i < infos.size(); i++) {
             //Create a view from the xml and then add it as a child of the listview
-            LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.list_item_keyval, null, false);
+            LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.list_item_keyval, linear, false);
             ((TextView) layout.findViewById(R.id.keyField  )).setText(infos.get(i)[0]);
             ((TextView) layout.findViewById(R.id.valueField)).setText(infos.get(i)[1]);
 
@@ -343,7 +342,7 @@ public class EventDetailActivity extends AppCompatActivity {
             }
 
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders()  {
                 Map<String,String> headers = new HashMap<String, String>();
 
                 // Add basic auth with token
@@ -354,7 +353,7 @@ public class EventDetailActivity extends AppCompatActivity {
             }
 
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
+            protected Map<String, String> getParams()  {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("event", Events.eventInfos.get(eventIndex)._id);
                 params.put("user", UserInfo.current._id);

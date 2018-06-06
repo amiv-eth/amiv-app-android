@@ -69,7 +69,6 @@
                         android:layout_height="32dp"
                         android:layout_marginTop="500dp"
                         android:adjustViewBounds="true"
-                        android:clickable="true"
                         android:onClick="ScrollToTop"
                         android:scaleType="fitCenter"
                         android:visibility="visible"
@@ -104,11 +103,7 @@
                             android:layout_marginLeft="16dp"
                             android:layout_marginRight="16dp"
                             android:paddingBottom="12dp"
-                            android:text="Es ist wissenschaftlich erwiesen worden, dass Bergluft in der Lernphase die Motivation nachhaltig verbessert. Daher hat der AMIV beschlossen, ein Wanderweekend zu organisieren. Wir werden während 2 Tagen die frische Luft im Appenzell zu schnuppern bekommen. Wunderschöne Landschaften in Kombination mit dem einen oder anderen Berge erwarten uns!\n
-        \n
-        Wann? 16-17 Juni\n
-        Wo? Zürich - Appenzell - Zürich\n
-        Preis? 80.-"
+                            android:text=""
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                             android:textSize="16sp" />
 

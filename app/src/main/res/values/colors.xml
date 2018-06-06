@@ -8,4 +8,8 @@
     <color name="white">#ffffff</color>
     <color name="colorYellow">#ffc107</color>
     <color name="colorGreen">#4caf50</color>
+
+    <color name="refresh_progress_1">@color/white</color>
+    <color name="refresh_progress_2">@color/white</color>
+    <color name="refresh_progress_3">@color/white</color>
 </resources>
