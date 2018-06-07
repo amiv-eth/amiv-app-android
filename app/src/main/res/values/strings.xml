@@ -2,6 +2,7 @@
     <!-- Titles -->
     <string name="title">AMIV</string>
     <string name="app_name">AMIV</string>
+    <string name="app_name_checkin">AMIV Check-in</string>
     <string name="title_home">Home</string>
     <string name="title_blitz">blitz</string>
     <string name="title_notifications">Notifications</string>
@@ -92,6 +93,18 @@
     <string name="pref_notifications_title">Receive Notifications</string>
     <string name="pref_notifications_desc">Get updates about events</string>
     <string name="pref_notifications_key">notif_enabled</string>
+
+
+    <!-- CHECKIN Package -->
+    <string name="check_in">Check-In</string>
+    <string name="check_out">Check-Out</string>
+    <string name="submit">Submit</string>
+    <string name="enter_event_pin">Enter Event PIN</string>
+    <string name="no_barcode_detected">No Barcode Detected</string>
+    <string name="invalid_pin">Invalid PIN</string>
+    <string name="invalid_url">Invalid URL</string>
+    <string name="checkin_server_url">https://checkin.amiv.ethz.ch</string>
+
 
 
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--This layout file describes a single item used in the member list view, the Custom list adapter tell the list view how to fill/map the data onto the ui defined here-->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/space"
+    android:layout_width="match_parent"
+    android:layout_height="128sp"
+    android:orientation="horizontal"
+    android:visibility="visible">
+
+</android.support.constraint.ConstraintLayout>
