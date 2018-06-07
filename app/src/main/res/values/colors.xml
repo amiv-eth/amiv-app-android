@@ -9,6 +9,11 @@
     <color name="colorYellow">#ffc107</color>
     <color name="colorGreen">#4caf50</color>
 
+    <color name="colorValid">#FF669900</color>
+    <color name="colorInvalid">#FFCC0000</color>
+    <color name="colorOrange">#F79C3B</color>
+    <color name="colorLightGrey">#d1d1d1</color>
+
     <color name="refresh_progress_1">@color/white</color>
     <color name="refresh_progress_2">@color/white</color>
     <color name="refresh_progress_3">@color/white</color>
