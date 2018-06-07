@@ -1,11 +1,15 @@
 image: registry.gitlab.com/showcheap/android-ci:react-native
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 before_script:
-  - sdkmanager "platforms;android-27"
-  - sdkmanager "build-tools;27.0.3"
+  - git submodule sync --recursive
+  - git submodule update --init --recursive
   - export GRADLE_USER_HOME=`pwd`/.gradle
   - chmod +x ./gradlew
   - npm install
+
 
 cache:
   key: "$CI_COMMIT_REF_NAME"

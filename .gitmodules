@@ -1,3 +1,2 @@
 [submodule "volley"]
-	path = volley
-	url = https://github.com/google/volley.git
+	url = https://github.com/amiv-eth/volley.git
