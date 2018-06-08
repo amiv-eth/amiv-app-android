@@ -64,7 +64,15 @@ public class EventInfo {
     public CheckinState checked_in = CheckinState.none;
 //endregion
 
-    public EventInfo(JSONObject json)
+    public EventInfo(JSONObject json) {
+        UpdateEvent(json);
+    }
+
+    /**
+     * Overwrite the current data
+     * @param json
+     */
+    public void UpdateEvent(JSONObject json)
     {
         _id             = json.optString("_id");
         title_en        = json.optString("title_en");
@@ -162,7 +170,7 @@ public class EventInfo {
      */
     public ArrayList<String[]> GetInfos(Resources r){
         if(infos != null && infos.size() > 0)
-            return infos;
+            infos.clear();
 
         DateFormat dateFormat = new SimpleDateFormat("dd - MMM - yyyy HH:mm", r.getConfiguration().locale);
         if(time_start != null) infos.add(new String[]{ r.getString(R.string.start_time), dateFormat.format(time_start)});

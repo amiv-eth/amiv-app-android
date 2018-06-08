@@ -78,6 +78,23 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     };
 
+    public Requests.OnDataReceivedCallback onEventsListUpdatedCallback = new Requests.OnDataReceivedCallback() {
+        @Override
+        public void OnDataReceived() {
+            SetUIDirty(true, false);
+            Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback, cancelRefreshCallback, event()._id);
+            LoadEventImage(true);
+        }
+    };
+
+    private Requests.OnDataReceivedCallback onSignupsUpdatedCallback = new Requests.OnDataReceivedCallback() {
+        @Override
+        public void OnDataReceived() {
+            SetUIDirty(true, true);
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,7 +116,7 @@ public class EventDetailActivity extends AppCompatActivity {
                     public void OnDataReceived() {
                         UpdateRegisterButton();
                     }
-                }, "");
+                }, null, "");
                 responseIntent.putExtra("login_success", refreshLogin);
                 ScrollToBottom(null);
                 RegisterForEvent(null);
@@ -148,8 +165,6 @@ public class EventDetailActivity extends AppCompatActivity {
         }
 
         //Link up variables with UI elements from the layout xml
-        ((TextView) findViewById(R.id.eventTitle)).setText(event().GetTitle(getResources()));
-        ((TextView)findViewById(R.id.eventDetail)).setText(event().GetDescription(getResources()));
         scrollView = findViewById(R.id.scrollView_event);
         posterProgress = findViewById(R.id.progressBar);
         posterImage = findViewById(R.id.eventPoster);
@@ -161,14 +176,25 @@ public class EventDetailActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {    //This sets what function is called when we swipe down to refresh
             @Override
             public void onRefresh() {
-                LoadEventImage(true);   //XXX fetch this specific event from the server again
+                if(!hasEvent())
+                    return;
+                Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, cancelRefreshCallback, event()._id);
             }
         });
 
-        AddRegisterInfos();
-        UpdateRegisterButton();
+        SetUIDirty(false, false);
+    }
 
-        LoadEventImage(false);
+    public void SetUIDirty(boolean isRefreshing, boolean signupUpdated)
+    {
+        if(!signupUpdated) {
+            ((TextView) findViewById(R.id.eventTitle)).setText(event().GetTitle(getResources()));
+            ((TextView) findViewById(R.id.eventDetail)).setText(event().GetDescription(getResources()));
+            LoadEventImage(isRefreshing);
+            AddRegisterInfos();
+        }
+
+        UpdateRegisterButton();
     }
 
     /**
@@ -191,7 +217,6 @@ public class EventDetailActivity extends AppCompatActivity {
         else
         {
             if(!isRefreshing || posterImage.getDrawable() == null) {
-                swipeRefreshLayout.setRefreshing(false);
                 posterProgress.setVisibility(View.VISIBLE);
                 posterImage.setVisibility(View.VISIBLE);
                 posterBg.setVisibility(View.VISIBLE);
@@ -241,7 +266,6 @@ public class EventDetailActivity extends AppCompatActivity {
                                     posterMask.setVisibility(View.VISIBLE);
 
                                     posterProgress.setVisibility(View.GONE);
-                                    swipeRefreshLayout.setRefreshing(false);
                                 }
                             });
                         }
@@ -250,18 +274,14 @@ public class EventDetailActivity extends AppCompatActivity {
                         public void onErrorResponse(VolleyError error) {
                             Snackbar.make(posterImage, R.string.error_image_load, Snackbar.LENGTH_SHORT).show();
                             posterProgress.setVisibility(View.GONE);
-                            swipeRefreshLayout.setRefreshing(false);
                         }
                     });
 
             if(!Requests.SendRequest(posterRequest, getApplicationContext())){
                 //Only enter here if the request was not sent, usually because of missing internet
                 posterProgress.setVisibility(View.GONE);
-                swipeRefreshLayout.setRefreshing(false);
             }
         }
-
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -325,7 +345,7 @@ public class EventDetailActivity extends AppCompatActivity {
                             public void OnDataReceived() {
                                 UpdateRegisterButton();
                             }
-                        }, event()._id);
+                        }, null, event()._id);
 
                         //Interpret notification to show from the signup
                         int notification = 0;

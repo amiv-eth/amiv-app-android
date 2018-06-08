@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public Requests.OnDataReceivedCallback onEventsListUpdatedCallback = new Requests.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
-            Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback, "");
+            Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback, null, "");
             pagerAdapter.RefreshCurrentList(true);
         }
     };
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         SetLoginUIDirty();
         System.gc();//run garbage collector explicitly to clean up user data
 
-        Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
+        Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null, "");
     }
 
     /**
@@ -243,9 +243,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             SetLoginUIDirty();
                             //Update events and signups with the new userinfo
                             if(Events.eventInfos.size() > 0)
-                                Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback, "");
+                                Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback, null, "");
                             else
-                                Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
+                                Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null, "");
                         }
                     });
 

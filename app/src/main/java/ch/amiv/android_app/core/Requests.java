@@ -63,16 +63,19 @@ public final class Requests {
     /**
      * Will fetch the list of events from the server, note does not require an access token.
      * @param errorCallback Use this to know when an error occured to stop loading animations etc
+     * @param eventId to only fetch for a specific event id add this, else set as emoty
      * @return True if the request was sent.
      */
-    public static void FetchEventList(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback)
+    public static void FetchEventList(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback, @NonNull final String eventId)
     {
         if(!CheckConnection(context)) {
             RunCallback(errorCallback);
             return;
         }
 
-        String url = Settings.API_URL + "events";
+        String url = Settings.API_URL + "events" + (eventId.isEmpty() ? "" : "/" + eventId);
+        Log.e("request", "url: " + url);
+
         StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
         {
             @Override
@@ -81,21 +84,28 @@ public final class Requests {
                     Log.e("request", "fetch events status Code: " + response.statusCode);
 
                     try {
-                        final JSONArray eventArrayJson = new JSONObject(new String(response.data)).getJSONArray("_items");
+                        final JSONObject json = new JSONObject(new String(response.data));
 
                         //Update events on main thread
                         if(callback != null) {
                             Runnable runnable = new Runnable() {
                                 @Override
                                 public void run() {
-                                    Events.UpdateEventInfos(eventArrayJson);
+                                    try {
+                                        if(eventId.isEmpty())
+                                            Events.UpdateEventInfos(json.getJSONArray("_items"));
+                                        else
+                                            Events.UpdateSingleEvent(json, eventId);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                     callback.OnDataReceived();
                                 }
                             };
                             callbackHandler.post(runnable);
                         }
 
-                        Log.e("request", eventArrayJson.toString());
+                        Log.e("request", new JSONObject(new String(response.data)).toString());
                     } catch (JSONException e) {
                         RunCallback(errorCallback);
                         e.printStackTrace();
@@ -144,10 +154,12 @@ public final class Requests {
      * Will fetch the event signups for the current user and save them in the eventInfos list
      * @param eventId to only fetch for a specific event id add this, else set as emoty
      */
-    public static void FetchEventSignups(final Context context, final OnDataReceivedCallback callback, @NonNull String eventId)
+    public static void FetchEventSignups(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback, @NonNull String eventId)
     {
-        if(!Settings.IsLoggedIn(context) || UserInfo.current == null || UserInfo.current._id.isEmpty())
+        if(!Settings.IsLoggedIn(context) || UserInfo.current == null || UserInfo.current._id.isEmpty()) {
+            RunCallback(errorCallback);
             return;
+        }
 
         String url = Settings.API_URL + "eventsignups?where={\"user\":\"" + UserInfo.current._id + "\"" + (eventId.isEmpty() ? "" : ",\"event\":\"" + eventId + "\"") + "}";
         Log.e("request", "url: " + url);
@@ -178,11 +190,14 @@ public final class Requests {
 
                         //Log.e("request", json.toString());
                     } catch (JSONException e) {
+                        RunCallback(errorCallback);
                         e.printStackTrace();
                     }
                 }
-                else
+                else {
+                    RunCallback(errorCallback);
                     Log.e("request", "Request returned null response: fetch event signups");
+                }
                 return super.parseNetworkResponse(response);
             }
 
@@ -193,6 +208,7 @@ public final class Requests {
                 else
                     Log.e("request", "Request returned null response: fetch event signups");
 
+                RunCallback(errorCallback);
                 return super.parseNetworkError(volleyError);
             }
 
@@ -209,7 +225,8 @@ public final class Requests {
             }
         };
 
-        boolean hasSent = Requests.SendRequest(request, context);
+        if(!Requests.SendRequest(request, context))
+            RunCallback(errorCallback);
     }
 
     /**

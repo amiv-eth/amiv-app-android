@@ -1,5 +1,6 @@
 package ch.amiv.android_app.core;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -79,6 +80,18 @@ public final class Events {
                 else
                     sortedEvents.get(EventGroup.PAST_EVENTS).add(eventInfos.get(i));
             }
+        }
+    }
+
+    /**
+     * Do not use this to create a single event, will update a given event with the id
+     * @param json
+     * @param eventId
+     */
+    public static void UpdateSingleEvent(JSONObject json, @NonNull String eventId){
+        for (int i = 0; i < eventInfos.size(); i++){
+            if(eventInfos.get(i)._id.equalsIgnoreCase(eventId))
+                eventInfos.get(i).UpdateEvent(json);
         }
     }
 

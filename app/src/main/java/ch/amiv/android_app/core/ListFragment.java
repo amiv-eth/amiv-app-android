@@ -63,7 +63,7 @@ public class ListFragment extends Fragment {
             @Override
             public void onRefresh() {
                 if(pagePosition == 0 && getActivity() instanceof MainActivity)
-                    Requests.FetchEventList(getContext(), ((MainActivity)getActivity()).onEventsListUpdatedCallback, cancelRefreshCallback);
+                    Requests.FetchEventList(getContext(), ((MainActivity)getActivity()).onEventsListUpdatedCallback, cancelRefreshCallback, "");
             }
         });
         //refresh on activity start
@@ -72,7 +72,7 @@ public class ListFragment extends Fragment {
             public void run() {
                 if(pagePosition == 0 && getActivity() instanceof MainActivity) {
                     swipeRefreshLayout.setRefreshing(true);
-                    Requests.FetchEventList(getContext(), ((MainActivity)getActivity()).onEventsListUpdatedCallback, cancelRefreshCallback);
+                    Requests.FetchEventList(getContext(), ((MainActivity)getActivity()).onEventsListUpdatedCallback, cancelRefreshCallback, "");
                 }
             }
         });

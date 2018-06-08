@@ -15,8 +15,8 @@ import java.security.PublicKey;
 public class Settings {
     public static Settings instance;
 
-    public static final String API_URL = "http://192.168.1.105:5000/";
-    //public static final String API_URL = "https://api-dev.amiv.ethz.ch/";
+    //public static final String API_URL = "http://192.168.1.105:5000/";
+    public static final String API_URL = "https://api-dev.amiv.ethz.ch/";
 
     //Vars for saving/reading the url from shared prefs, to allow saving between sessions. For each variable, have a key to access it and a default value
     private static SharedPreferences sharedPrefs;
