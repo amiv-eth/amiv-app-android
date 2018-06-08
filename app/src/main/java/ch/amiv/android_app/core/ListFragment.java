@@ -3,6 +3,7 @@ package ch.amiv.android_app.core;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,7 +22,7 @@ import ch.amiv.android_app.R;
 public class ListFragment extends Fragment {
     int pagePosition; //the fragments page in the pageview of the main activity
     RecyclerView recyclerView;
-    RecyclerView.Adapter recylcerAdaper;
+    EventsListAdapter recylcerAdaper;
     RecyclerView.LayoutManager recyclerLayoutAdapter;
 
     SwipeRefreshLayout swipeRefreshLayout;
@@ -65,6 +66,16 @@ public class ListFragment extends Fragment {
                     Requests.FetchEventList(getContext(), ((MainActivity)getActivity()).onEventsListUpdatedCallback, cancelRefreshCallback);
             }
         });
+        //refresh on activity start
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if(pagePosition == 0 && getActivity() instanceof MainActivity) {
+                    swipeRefreshLayout.setRefreshing(true);
+                    Requests.FetchEventList(getContext(), ((MainActivity)getActivity()).onEventsListUpdatedCallback, cancelRefreshCallback);
+                }
+            }
+        });
 
         recyclerView = getView().findViewById(R.id.recyclerView);
 
@@ -105,7 +116,7 @@ public class ListFragment extends Fragment {
 
     public void RefreshList(boolean animate)
     {
-        recylcerAdaper.notifyDataSetChanged();
+        recylcerAdaper.RefreshData();
         swipeRefreshLayout.setRefreshing(false);
         if(animate)
             AnimateList(null);
@@ -127,7 +138,7 @@ public class ListFragment extends Fragment {
         super.onResume();
 
         if(recylcerAdaper != null)
-            recylcerAdaper.notifyDataSetChanged();
+            recylcerAdaper.RefreshData();
     }
 
     /**

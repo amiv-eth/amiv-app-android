@@ -29,7 +29,10 @@ import com.android.volley.toolbox.StringRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.acl.Group;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +44,21 @@ import ch.amiv.android_app.R;
  */
 public class EventDetailActivity extends AppCompatActivity {
 
+    private int eventGroup = 0;
     private int eventIndex = 0;
+    private EventInfo event(){  //Used to easily access the activities event
+        if(!hasEvent())
+            return null;
+        return Events.sortedEvents.get(eventGroup).get(eventIndex);
+    }
+
+    private boolean hasEvent(){
+        if(eventGroup >= Events.sortedEvents.size() || eventIndex >= Events.sortedEvents.get(eventGroup).size()){
+            Log.e("events", "EventDetailActivity given invalid event indexes, (group, index) = (" + eventGroup + ", " + eventIndex + "), with sortedEvents size of 1st dim: " + Events.sortedEvents.size());
+            return false;
+        }
+        return true;
+    }
 
     private ImageView posterImage;
     private ImageView posterMask;
@@ -82,7 +99,7 @@ public class EventDetailActivity extends AppCompatActivity {
                     public void OnDataReceived() {
                         UpdateRegisterButton();
                     }
-                });
+                }, "");
                 responseIntent.putExtra("login_success", refreshLogin);
                 ScrollToBottom(null);
                 RegisterForEvent(null);
@@ -104,11 +121,12 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     /**
-     * This will retrieve the eventIndex to display, is only set when we originate from the MainActivity, where the int is added to the intent.
+     * This will retrieve the eventIndexes to display, is only set when we originate from the MainActivity, where the int is added to the intent.
      */
     private void GetIntentData (){
-        if(eventIndex == 0) {
+        if(eventGroup == 0 && eventIndex == 0) {
             Intent intent = getIntent();
+            eventGroup = intent.getIntExtra("eventGroup", 0);
             eventIndex = intent.getIntExtra("eventIndex", 0);
         }
     }
@@ -123,15 +141,15 @@ public class EventDetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Check that we have been given an event that exists else return to the calling activity
-        if(eventIndex < 0 || Events.eventInfos.size() <= eventIndex) {
-            Log.e("events", "invlaid event index selected during InitUI(), eventIndex: " + eventIndex + ", size" + Events.eventInfos.size() + ". Ensure that you are not clearing/overwiting the events list while viewing an event.");
+        if(!hasEvent()) {
+            Log.e("events", "invlaid event index selected during InitUI(), (groupIndex, eventIndex): (" + eventGroup + "," + eventIndex + "), total event size" + Events.eventInfos.size() + ". Ensure that you are not clearing/overwiting the events list while viewing an event.");
             onBackPressed();
             return;
         }
 
         //Link up variables with UI elements from the layout xml
-        ((TextView) findViewById(R.id.eventTitle)).setText(Events.eventInfos.get(eventIndex).GetTitle(getResources()));
-        ((TextView)findViewById(R.id.eventDetail)).setText(Events.eventInfos.get(eventIndex).GetDescription(getResources()));
+        ((TextView) findViewById(R.id.eventTitle)).setText(event().GetTitle(getResources()));
+        ((TextView)findViewById(R.id.eventDetail)).setText(event().GetDescription(getResources()));
         scrollView = findViewById(R.id.scrollView_event);
         posterProgress = findViewById(R.id.progressBar);
         posterImage = findViewById(R.id.eventPoster);
@@ -160,7 +178,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private void LoadEventImage (boolean isRefreshing)
     {
         //Image loading and masking. the posterMask is a small arrow image but we use the layout margin to add some transparent 'padding' to the top of the scrollview
-        if(Events.eventInfos.get(eventIndex).poster_url.isEmpty() || !Requests.CheckConnection(getApplicationContext()))
+        if(event().poster_url.isEmpty() || !Requests.CheckConnection(getApplicationContext()))
         {
             //Hide the image and mask if there is no poster linked with the event or we have no internet
             if(!isRefreshing) {
@@ -192,7 +210,7 @@ public class EventDetailActivity extends AppCompatActivity {
 
             //generate URL for the poster
             StringBuilder posterUrl = new StringBuilder();
-            posterUrl.append(Events.eventInfos.get(eventIndex).poster_url); //To show the banner instead change this variable
+            posterUrl.append(event().poster_url); //To show the banner instead change this variable
             if(posterUrl.charAt(0) == '/')
                 posterUrl.deleteCharAt(0);
             posterUrl.insert(0, Settings.API_URL);
@@ -254,7 +272,7 @@ public class EventDetailActivity extends AppCompatActivity {
         LinearLayout linear = findViewById(R.id.register_details_list);
         linear.removeAllViews();
 
-        ArrayList<String[]> infos = Events.eventInfos.get(eventIndex).GetInfos(getResources());
+        ArrayList<String[]> infos = event().GetInfos(getResources());
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         for (int i = 0; i < infos.size(); i++) {
             //Create a view from the xml and then add it as a child of the listview
@@ -285,7 +303,8 @@ public class EventDetailActivity extends AppCompatActivity {
             return;
         }
 
-        final int registerEventIndex = eventIndex;  //declare final so it does not change
+        final int registerEventGroup = eventGroup;  //declare final so it does not change
+        final int registerEventIndex = eventIndex;
         String url = Settings.API_URL + "eventsignups";
 
         StringRequest request = new StringRequest(Request.Method.POST, url,null, null)
@@ -298,23 +317,24 @@ public class EventDetailActivity extends AppCompatActivity {
                     try {
                         Log.e("request", new String(response.data));
                         JSONObject json = new JSONObject(new String(response.data));
-                        Events.eventInfos.get(registerEventIndex).AddSignup(json);  //Register signup
+                        event().AddSignup(json);  //Register signup
 
-                        //We need to fetch signups again as the response for registering for an event is not a complete signup object
+                        //Fetch event signup object again for this event id
                         Requests.FetchEventSignups(getApplicationContext(), new Requests.OnDataReceivedCallback() {
                             @Override
                             public void OnDataReceived() {
                                 UpdateRegisterButton();
                             }
-                        });
+                        }, event()._id);
 
                         //Interpret notification to show from the signup
                         int notification = 0;
-                        if(Events.eventInfos.get(eventIndex).accepted) {
-                            if(Events.eventInfos.get(eventIndex).confirmed)
+                        if(event().accepted) {
+                            if(event().confirmed)
                                 notification = R.string.register_success;
                             else
                                 notification = R.string.register_success_confirm_required;
+                            Settings.Vibrate(Settings.VibrateTime.NORMAL, getApplicationContext());
                         } else
                             notification = R.string.added_to_waiting_list;
                         Snackbar.make(scrollView, notification, Snackbar.LENGTH_LONG).show();
@@ -357,7 +377,7 @@ public class EventDetailActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams()  {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("event", Events.eventInfos.get(eventIndex)._id);
+                params.put("event", event()._id);
                 params.put("user", UserInfo.current._id);
                 return params;
             }
@@ -366,14 +386,36 @@ public class EventDetailActivity extends AppCompatActivity {
         Requests.SendRequest(request, getApplicationContext());
     }
 
+    /**
+     * Will set the register button appearance accordingly to the dates of the event and whether the user is signed up
+     */
     private void UpdateRegisterButton() {
-        if (Events.eventInfos.get(eventIndex).IsSignedUp()) {
+
+        if (event().IsSignedUp()) {
             registerButton.setEnabled(false);
             registerButton.setText(R.string.already_registered);
-        } else {
-            registerButton.setEnabled(true);
-            registerButton.setText(R.string.register_title);
+            return;
         }
+
+        Date today = Calendar.getInstance().getTime();
+        if(event().time_register_start.before(today))
+        {
+            if(event().time_register_end.after(today))
+            {
+                registerButton.setEnabled(true);
+                registerButton.setText(R.string.register_title);
+            }
+            else
+            {
+                registerButton.setEnabled(false);
+                registerButton.setText(R.string.registration_closed);
+            }
+        }
+        else {
+            registerButton.setEnabled(false);
+            registerButton.setText(R.string.register_soon);
+        }
+
     }
 
     public void ScrollToTop (View view) {

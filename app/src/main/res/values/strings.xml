@@ -11,7 +11,10 @@
     <string name="check_in_title">Check-in</string>
     <string name="barcode_id_title">Barcode ID</string>
     <string name="info_title">Info</string>
-    <string name="new_events_title">New Events</string>
+    <string name="all_events_title">New Events</string>
+    <string name="closed_events_title">Closed Events</string>
+    <string name="past_events_title">Past Events</string>
+    <string name="hidden_events_title">Hidden Events</string>
 
     <!-- Language -->
     <string name="pref_lang_title">Language - Sprache</string>
@@ -43,9 +46,12 @@
     <string name="waiting_list_size">Waiting List Size</string>
     <string name="available_places">Available Places</string>
     <string name="price_free">Free</string>
+    <string name="new_caps">NEW\u0020</string>
 
     <!-- Event Registering -->
     <string name="register_title">Register</string>
+    <string name="register_soon">Register Soon</string>
+    <string name="registration_closed">Registration Closed</string>
     <string name="register_end">Register End</string>
     <string name="register_start">Register Start</string>
     <string name="already_registered">Already Registered</string>
@@ -105,6 +111,18 @@
     <string name="invalid_url">Invalid URL</string>
     <string name="checkin_server_url">https://checkin.amiv.ethz.ch</string>
 
+    <string name="open_website">Open Website</string>
+    <string name="seconds">Seconds</string>
+    <string name="refresh_frequency_title">Refresh Frequency</string>
+    <string name="auto_refresh_title">Auto Refresh</string>
+    <string name="save">Save</string>
+    <string name="valid">Valid</string>
+    <string name="search">Search</string>
+
+    <string name="sort_membership">By Membership</string>
+    <string name="sort_name">By Name</string>
+    <string name="sort_status">By Status</string>
+    <string name="sort_legi">By Legi</string>
 
 
 
@@ -150,5 +168,6 @@
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
 
+    <!-- Unsorted/Translated Strings-->
 
 </resources>

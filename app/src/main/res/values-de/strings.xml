@@ -11,7 +11,10 @@
     <string name="check_in_title">Check-in</string>
     <string name="barcode_id_title">Barcode ID</string>
     <string name="info_title">Info</string>
-    <string name="new_events_title">Neue Events</string>
+    <string name="all_events_title">Neue Events</string>
+    <string name="closed_events_title">Anmeldung Geschlossen</string>
+    <string name="past_events_title">Alte Events</string>
+    <string name="hidden_events_title">Unsichtbare Events</string>
 
     <!-- Language -->
     <string name="pref_lang_title">Language - Sprache</string>
@@ -43,9 +46,12 @@
     <string name="waiting_list_size">Wartelistengröße</string>
     <string name="available_places">Restliche Plätze</string>
     <string name="price_free">Gratis</string>
+    <string name="new_caps">NEU\u0020</string>
 
     <!-- Event Registering -->
     <string name="register_title">Anmelden</string>
+    <string name="register_soon">Anmeldung Bald Offen</string>
+    <string name="registration_closed">Anmeldung Geschlossen</string>
     <string name="register_end">Anmelden bis</string>
     <string name="register_start">Anmelden ab</string>
     <string name="already_registered">Schon Angemeldet</string>
@@ -103,6 +109,19 @@
     <string name="invalid_pin">Falscher PIN</string>
     <string name="invalid_url">Falscher URL</string>
     <string name="checkin_server_url">https://checkin.amiv.ethz.ch</string>
+    <string name="open_website">Webseite Öffnen</string>
+
+    <string name="seconds">Sekunden</string>
+    <string name="refresh_frequency_title">Aktualisierungshäufigkeit</string>
+    <string name="auto_refresh_title">Auto Aktuaisierung</string>
+    <string name="save">Speichern</string>
+    <string name="valid">Valid</string>
+    <string name="search">Suchen</string>
+
+    <string name="sort_membership">Nach Mitgliedschaft</string>
+    <string name="sort_name">Nach Name</string>
+    <string name="sort_status">Nach Status</string>
+    <string name="sort_legi">Nach Legi</string>
 
 
 
@@ -147,7 +166,10 @@
         <item>-1</item>
     </string-array>
 
+    <!-- Unsorted/Translated Strings-->
     <string name="pref_title_system_sync_settings">System sync settings</string>
+
+
 
 
 </resources>

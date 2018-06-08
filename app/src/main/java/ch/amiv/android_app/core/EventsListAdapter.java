@@ -10,54 +10,111 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import ch.amiv.android_app.R;
 
 public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private final List<String> headerList = new ArrayList<String>();
+    private List<Pair> dataList = new ArrayList<>();
     private Activity activity;
+
+    //Whether to show hidden events, where the adverts should not have started yet, should later be set by user access group
+    private boolean showHidden = true;
+
+    private static final class ViewType {
+        private static final int HEADER      = 0;
+        private static final int SPACE       = 1;
+        private static final int EVENT       = 2;
+    }
+
+    private class Pair {
+        public int type;
+        public Object value;
+
+        private Pair(int type, Object value) {
+            this.type = type;
+            this.value = value;
+        }
+    }
     /**
      * Defining our own view holder which maps the layout items to view variables which can then later be accessed, and text value set etc
      * For each item type we have to define a viewholder. This will map the layout to the variables
      */
-    public class EventInfoHolder extends RecyclerView.ViewHolder {
+    private class EventInfoHolder extends RecyclerView.ViewHolder {
         TextView titleField;
         TextView catchphraseField;
         TextView placesField;
+        TextView newTag;
         ImageView statusImage;
 
-        public EventInfoHolder(View view) {
+        private EventInfoHolder(View view) {
             super(view);
             titleField = view.findViewById(R.id.titleField);
             catchphraseField = view.findViewById(R.id.infoField);
             placesField = view.findViewById(R.id.places_left);
+            newTag = view.findViewById(R.id.newTag);
             statusImage = view.findViewById(R.id.signupStatus);
         }
     }
 
-    public class HeaderHolder extends RecyclerView.ViewHolder {
+    private class HeaderHolder extends RecyclerView.ViewHolder {
         TextView nameField;
 
-        public HeaderHolder(View view) {
+        private HeaderHolder(View view) {
             super(view);
             nameField = view.findViewById(R.id.titleField);
         }
     }
 
-    public class SpaceHolder extends RecyclerView.ViewHolder {
+    private class SpaceHolder extends RecyclerView.ViewHolder {
         View space;
 
-        public SpaceHolder(View view) {
+        private SpaceHolder(View view) {
             super(view);
             space = view.findViewById(R.id.space);
         }
     }
 
     public EventsListAdapter(Activity activity_) {
-        headerList.add(activity_.getResources().getString(R.string.new_events_title));
-        //headerList.add("Attended Events");  //XXX Add sorting of old events, where checkin or confirmed is true
         activity = activity_;
+    }
+
+    public void RefreshData(){
+        BuildDataset();
+        notifyDataSetChanged();
+    }
+
+    public void BuildDataset ()
+    {
+        dataList.clear();
+
+        List<Integer> headers = new ArrayList<>();
+        if(showHidden)
+            headers.add(R.string.hidden_events_title);
+        headers.add(R.string.all_events_title);
+        headers.add(R.string.closed_events_title);
+        headers.add(R.string.past_events_title);
+
+        //Debug: Start at 0 to show hidden events, headers will be offset though
+        for (int i = (showHidden ? 0 : 1); i < Events.sortedEvents.size(); i++) {
+            if(i < headers.size())
+                dataList.add(new Pair(ViewType.HEADER, activity.getResources().getString(headers.get(i))));
+
+            //invert order on the specified groups
+            if(i >= Events.invertEventGroupSorting.length || !Events.invertEventGroupSorting[i]) {
+                for (int j = 0; j < Events.sortedEvents.get(i).size(); j++) {
+                    dataList.add(new Pair(ViewType.EVENT, new int[]{i, j}));
+                }
+            }
+            else{
+                for (int j = Events.sortedEvents.get(i).size() -1; j >= 0; j--) {
+                    dataList.add(new Pair(ViewType.EVENT, new int[]{i, j}));
+                }
+            }
+        }
+        dataList.add(new Pair(ViewType.SPACE, 128));
     }
 
     /**
@@ -70,15 +127,15 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         switch (viewType)
         {
-            case 0: //header
+            case ViewType.HEADER: //header
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_list_item_header, parent, false);
                 holder = new HeaderHolder(view);
                 break;
-            case 1: //space
+            case ViewType.SPACE: //space
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_list_item_space, parent, false);
                 holder = new SpaceHolder(view);
                 break;
-            case 2: //event
+            case ViewType.EVENT: //event
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_list_item_event, parent, false);
                 holder = new EventInfoHolder(view);
                 break;
@@ -94,41 +151,58 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      */
     @Override
     public int getItemViewType(int position) {      //Note stat and event info use the same layout, but types are different
-        if(position == 0 /*|| position == Events.eventInfos.size() + 1*/)
-            return 0;   //header
-        if(position < Events.eventInfos.size() +1)
-            return 2;   //events
-        else
-            return 1;   //Space
+        return dataList.get(position).type;
     }
 
     /**
      * This is where the data in the ui is set. Note that position is the position on screen whereas getAdapterPos is the position in the whole list
      */
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if(activity == null)
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int screenPosition) {    //NOTE: screenPosition supplied is position on screen not in the list!, use holder.getAdapterPosition() indstead
+        if(activity == null || holder == null)
             return;
 
-        switch (holder.getItemViewType())
+        Pair info = dataList.get(holder.getAdapterPosition());
+        Object data = info.value;
+
+        switch (info.type)
         {
-            case 0: //header
+            case ViewType.HEADER: //header
                 HeaderHolder headerHolder = (HeaderHolder)holder;
-                headerHolder.nameField.setText(headerList.get(GetHeaderIndex(holder.getAdapterPosition())));
+                //headerHolder.nameField.setText(headerList.get(GetHeaderIndex(holder.getAdapterPosition())));
+                headerHolder.nameField.setText((String)data);
                 break;
-            case 1: //space
-                SpaceHolder spaceHolder = (SpaceHolder)holder;
+
+            case ViewType.SPACE: //space
+                View space = ((SpaceHolder)holder).space;
+                ViewGroup.LayoutParams params = space.getLayoutParams();
+                params.height = (int)data;
+                space.setLayoutParams(params);
                 break;
-            case 2: //event
+
+            case ViewType.EVENT: //event
+                int[] indexes = (int[])data;
+                final int eventGroup = indexes[0];
+                final int eventIndex = indexes[1];
+                final EventInfo e = Events.sortedEvents.get(eventGroup).get(eventIndex);
                 final EventInfoHolder eventInfoHolder = (EventInfoHolder)holder;
-                final int eventIndex = holder.getAdapterPosition() - 1;
-                final EventInfo e = Events.eventInfos.get(eventIndex);
+
                 eventInfoHolder.titleField.setText(e.GetTitle(activity.getResources()));
                 eventInfoHolder.catchphraseField.setText(e.GetCatchphrase(activity.getResources()));
+
+                //Showing "new" tag if within a certain number of days of the ad start date
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(e.time_advertising_start);
+                cal.add(Calendar.DAY_OF_YEAR, Events.DAYS_NEW_TAG_ACTIVE);
+                if (eventGroup == Events.EventGroup.ALL_EVENTS && cal.getTime().after(Calendar.getInstance().getTime()))
+                    eventInfoHolder.newTag.setVisibility(View.VISIBLE);
+                else
+                    eventInfoHolder.newTag.setVisibility(View.GONE);
+
                 eventInfoHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        StartEventDetailActivity(eventIndex);
+                        StartEventDetailActivity(eventGroup, eventIndex);
                     }
                 });
 
@@ -158,24 +232,10 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      */
     @Override
     public int getItemCount() {
-        return headerList.size() + Events.eventInfos.size() + 1;  //+1 for space
+        return dataList.size();
     }
 
-    /**
-     * Will map the position in the whole list to the index in the header array.
-     */
-    private int GetHeaderIndex(int position)
-    {
-        if(position == 0)
-            return 0;
-        if(position == Events.eventInfos.size() +1)
-            return 1;
-
-        Log.e("recyclerView", "Could not determine header position within list, at position: " + position);
-        return 0;
-    }
-
-    public void StartEventDetailActivity(int eventIndex) {
-        ((MainActivity)activity).StartEventDetailActivity(eventIndex);
+    private void StartEventDetailActivity(int eventGroup, int eventIndex) {
+        ((MainActivity)activity).StartEventDetailActivity(eventGroup, eventIndex);
     }
 }

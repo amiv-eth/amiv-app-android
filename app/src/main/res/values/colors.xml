@@ -2,8 +2,9 @@
 <resources>
     <color name="colorPrimary">#e8462b</color>
     <color name="colorSecondary">#1f2d54</color>
-    <color name="colorAccent">#5D78C1</color>
+    <color name="colorAccent">#5d78c1</color>
     <color name="colorAccentDark">#374773</color>
+    <color name="colorAccentLight">#f2f2f2</color>
     <color name="backgroundDark">#131826</color>
     <color name="white">#ffffff</color>
     <color name="colorYellow">#ffc107</color>
@@ -17,4 +18,6 @@
     <color name="refresh_progress_1">@color/white</color>
     <color name="refresh_progress_2">@color/white</color>
     <color name="refresh_progress_3">@color/white</color>
+
+    <color name="textLightGray">#3f3f3f</color>
 </resources>

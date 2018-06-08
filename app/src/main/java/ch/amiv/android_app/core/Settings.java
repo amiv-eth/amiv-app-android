@@ -2,7 +2,10 @@ package ch.amiv.android_app.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Vibrator;
 import android.util.Log;
+
+import java.security.PublicKey;
 
 /**
  * This class is used to save settings so they can be restored in another session later.
@@ -24,6 +27,23 @@ public class Settings {
     private static final boolean defaultTheme = false;  //false for light
     private static final String apiTokenKey = "ch.amiv.android_app.apitoken";
 
+    private static Vibrator vibrator;
+    public static final class VibrateTime {
+        public static final int SHORT = 50;
+        public static final int NORMAL = 100;
+        public static final int LONG = 250;
+    }
+    public static void Vibrate(int millisecs, Context context){
+        if(vibrator == null)
+            vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (vibrator != null)
+            vibrator.vibrate(millisecs);
+    }
+
+    public static void CancelVibrate (){
+        if(vibrator != null)
+            vibrator.cancel();
+    }
 
     /*
      * This constructor will set the instance created as the statically accessible instance, which can be accessed anywhere
@@ -97,7 +117,6 @@ public class Settings {
         CheckInitSharedPrefs(context);
         return sharedPrefs.getBoolean(themeKey, defaultTheme);
     }
-
 
 
     //SAMPLE get set functions for a new variable to be stored in settings

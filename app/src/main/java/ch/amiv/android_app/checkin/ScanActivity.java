@@ -41,6 +41,8 @@ import java.io.IOException;
 
 import ch.amiv.android_app.R;
 
+import ch.amiv.android_app.core.Settings;
+
 public class ScanActivity extends AppCompatActivity {
     private static int NEXT_LEGI_DELAY = 1000;   //delay between the response from the server and scanning the next legi (in ms)
 
@@ -269,8 +271,7 @@ public class ScanActivity extends AppCompatActivity {
         if(mWaitingOnServer_LegiSubmit)
             return;
 
-        if(MainActivity.vibrator == null)
-            MainActivity.vibrator.vibrate(50);
+        Settings.Vibrate(Settings.VibrateTime.SHORT, getApplicationContext());
 
         if(!ServerRequests.CheckConnection(getApplicationContext())) {
             SetUIFromResponse_Invalid(0, getResources().getString(R.string.no_internet));
@@ -350,7 +351,7 @@ public class ScanActivity extends AppCompatActivity {
                 mBGTint.setColorFilter(getResources().getColor(R.color.colorOrange));
             }
 
-            MainActivity.vibrator.vibrate(100);
+            Settings.Vibrate(Settings.VibrateTime.NORMAL, getApplicationContext());
         }
         else
         {
@@ -384,7 +385,7 @@ public class ScanActivity extends AppCompatActivity {
                 mBGTint.setColorFilter(getResources().getColor(R.color.colorOrange));
             }
 
-            MainActivity.vibrator.vibrate(100);
+            Settings.Vibrate(Settings.VibrateTime.NORMAL, getApplicationContext());
         }
         else if (statusCode == 0)   //no internet
         {
@@ -404,7 +405,7 @@ public class ScanActivity extends AppCompatActivity {
             mBGTint.setVisibility(View.VISIBLE);
             mBGTint.setColorFilter(getResources().getColor(R.color.colorInvalid));
 
-            MainActivity.vibrator.vibrate(250);
+            Settings.Vibrate(Settings.VibrateTime.LONG, getApplicationContext());
         }
 
         RefreshMemberDB();

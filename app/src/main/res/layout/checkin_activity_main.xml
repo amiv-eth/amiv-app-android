@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ch.amiv.checkin.MainActivity"
+    tools:context=".checkin.MainActivity"
     tools:layout_editor_absoluteY="81dp">
 
     <EditText
@@ -12,6 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:gravity="center"
         android:hint="PIN"
         android:inputType="numberPassword"
         android:textAlignment="center"
@@ -44,10 +45,11 @@
         android:ems="10"
         android:focusable="false"
         android:focusableInTouchMode="false"
+        android:gravity="center"
         android:inputType="none"
         android:text="@string/enter_event_pin"
         android:textAlignment="center"
-        android:textSize="30sp"
+        android:textAppearance="@style/Header"
         app:layout_constraintBottom_toTopOf="@+id/PinField"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -58,8 +60,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:gravity="center"
         android:onClick="StartSettingsActivity"
-        android:text="Settings"
+        android:text="@string/settings_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -71,8 +74,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:gravity="center"
         android:onClick="GoToWebsite"
-        android:text="Open Website"
+        android:text="@string/open_website"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toTopOf="@+id/SettingsButton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -85,6 +89,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:gravity="center"
         android:text="@string/invalid_url"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
@@ -99,12 +104,12 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:contentDescription="Logo"
+        android:tint="@color/colorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/EnterEventLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/amiv_logo" />
+        app:srcCompat="@drawable/ic_amiv_logo" />
 
 
 </android.support.constraint.ConstraintLayout>

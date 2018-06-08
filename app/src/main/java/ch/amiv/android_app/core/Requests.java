@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.util.LruCache;
 import android.util.Base64;
 import android.util.Log;
@@ -77,7 +78,7 @@ public final class Requests {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
                 if(response != null) {
-                    Log.e("request", "status Code: " + response.statusCode);
+                    Log.e("request", "fetch events status Code: " + response.statusCode);
 
                     try {
                         final JSONArray eventArrayJson = new JSONObject(new String(response.data)).getJSONArray("_items");
@@ -102,7 +103,7 @@ public final class Requests {
                 }
                 else {
                     RunCallback(errorCallback);
-                    Log.e("request", "Request returned null response.");
+                    Log.e("request", "Request returned null response. fetch events");
                 }
                 return super.parseNetworkResponse(response);
             }
@@ -112,7 +113,7 @@ public final class Requests {
                 if(volleyError != null && volleyError.networkResponse != null)
                     Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
                 else
-                    Log.e("request", "Request returned null response.");
+                    Log.e("request", "Request returned null response. fetch events");
 
                 RunCallback(errorCallback);
                 return super.parseNetworkError(volleyError);
@@ -141,13 +142,14 @@ public final class Requests {
 
     /**
      * Will fetch the event signups for the current user and save them in the eventInfos list
+     * @param eventId to only fetch for a specific event id add this, else set as emoty
      */
-    public static void FetchEventSignups(final Context context, final OnDataReceivedCallback callback)
+    public static void FetchEventSignups(final Context context, final OnDataReceivedCallback callback, @NonNull String eventId)
     {
         if(!Settings.IsLoggedIn(context) || UserInfo.current == null || UserInfo.current._id.isEmpty())
             return;
 
-        String url = Settings.API_URL + "eventsignups?where={\"user\":\"" + UserInfo.current._id + "\"}";
+        String url = Settings.API_URL + "eventsignups?where={\"user\":\"" + UserInfo.current._id + "\"" + (eventId.isEmpty() ? "" : ",\"event\":\"" + eventId + "\"") + "}";
         Log.e("request", "url: " + url);
 
         StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
@@ -250,7 +252,7 @@ public final class Requests {
                     }
                 }
                 else
-                    Log.e("request", "Request returned null response.");
+                    Log.e("request", "Request returned null response. fetch user data");
                 return super.parseNetworkResponse(response);
             }
 
@@ -259,7 +261,7 @@ public final class Requests {
                 if(volleyError != null && volleyError.networkResponse != null)
                     Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
                 else
-                    Log.e("request", "Request returned null response.");
+                    Log.e("request", "Request returned null response. fetch user data");
 
                 return super.parseNetworkError(volleyError);
             }

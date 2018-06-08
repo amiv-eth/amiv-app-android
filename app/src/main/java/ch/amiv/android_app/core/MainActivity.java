@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public Requests.OnDataReceivedCallback onEventsListUpdatedCallback = new Requests.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
-            Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback);
+            Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback, "");
             pagerAdapter.RefreshCurrentList(true);
         }
     };
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void OnDataReceived() {
                     SetLoginUIDirty();
                     //Fetch the event list and then the signup information for the current user
-                    Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
+                    //Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
                 }
             });
         }
@@ -205,9 +205,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivityForResult(intent, 0);
     }
 
-    public void StartEventDetailActivity(int eventIndex)
+    public void StartEventDetailActivity(int eventGroup, int eventIndex)
     {
         Intent intent = new Intent(this, EventDetailActivity.class);
+        intent.putExtra("eventGroup", eventGroup);
         intent.putExtra("eventIndex", eventIndex);
         startActivityForResult(intent, 0);
     }
@@ -242,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             SetLoginUIDirty();
                             //Update events and signups with the new userinfo
                             if(Events.eventInfos.size() > 0)
-                                Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback);
+                                Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback, "");
                             else
                                 Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
                         }

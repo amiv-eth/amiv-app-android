@@ -94,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                         if(json.has("token")) {
                             Settings.SetToken(json.getString("token"), getApplicationContext());
                             SetSubmitButtonState(false, true);
+                            Settings.Vibrate(Settings.VibrateTime.NORMAL, getApplicationContext());
                             ReturnToCallingActivity(true);
                         }
                         else{

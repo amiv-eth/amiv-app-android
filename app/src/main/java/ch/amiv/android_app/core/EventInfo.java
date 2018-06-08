@@ -171,6 +171,11 @@ public class EventInfo {
         if(!location.isEmpty()) infos.add(new String[]{ r.getString(R.string.location), location});
         if(time_register_start != null) infos.add(new String[]{ r.getString(R.string.register_start), dateFormat.format(time_register_start)});
         if(time_register_end != null) infos.add(new String[]{ r.getString(R.string.register_end), dateFormat.format(time_register_end)});
+
+        /*//DEBUG
+        if(time_advertising_start != null) infos.add(new String[]{ ("Ad Start"), dateFormat.format(time_advertising_start)});
+        if(time_advertising_end != null) infos.add(new String[]{ ("Ad End"), dateFormat.format(time_advertising_end)});*/
+
         infos.add(new String[]{ r.getString(R.string.available_places), (spots <= 0 ? "-" : "" + Math.max(0, spots - signup_count))});
         if(spots - signup_count < 0)
             infos.add(new String[]{ r.getString(R.string.waiting_list_size), "" + (signup_count - spots)});
