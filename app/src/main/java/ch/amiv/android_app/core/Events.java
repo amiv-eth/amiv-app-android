@@ -19,7 +19,7 @@ import java.util.List;
  */
 public final class Events {
     public static List<EventInfo> eventInfos = new ArrayList<EventInfo>(); //This is a list of ALL events as received from the api, we will not use this directly
-    public static List<List<EventInfo>> sortedEvents = new ArrayList<List<EventInfo>>(4);   //A list of lists which has been sorted according to the EventGroup configuration
+    public static List<List<EventInfo>> sortedEvents = new ArrayList<List<EventInfo>>();   //A list of lists which has been sorted according to the EventGroup configuration
     public static boolean[] invertEventGroupSorting = new boolean[] {false, false, false, true};    //used to invert date sorting for the event groups
 
     //Use this class to use the correct indexes for the event group for the sortedEvents list
@@ -39,18 +39,25 @@ public final class Events {
      */
     public static void UpdateEventInfos(JSONArray json)
     {
-        eventInfos.clear();
+        boolean isInitialising = eventInfos.size() == 0;
         sortedEvents.clear();
 
         for (int i = 0; i < json.length(); i++)
         {
             try {
-                eventInfos.add(new EventInfo(json.getJSONObject(i)));
+                //if we are not initialising, search for the event id and then update it, else add a new one to the list. This ensures we do not lose the signup data
+                JSONObject jsonEvent = json.getJSONObject(i);
+                EventInfo e = new EventInfo(jsonEvent);
+                if(e._id.isEmpty())
+                    continue;
+                if(isInitialising || !UpdateSingleEvent(jsonEvent, e._id))
+                    eventInfos.add(e);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
+        //Sort list and update sorted list
         if(!eventInfos.isEmpty()){
             //sort so first elem has an advertising start date furthest in the future
             Comparator<EventInfo> comparator;
@@ -84,15 +91,19 @@ public final class Events {
     }
 
     /**
-     * Do not use this to create a single event, will update a given event with the id
+     * Will update a given event with the id
      * @param json
      * @param eventId
+     * @return true if the event was found and updated
      */
-    public static void UpdateSingleEvent(JSONObject json, @NonNull String eventId){
+    public static boolean UpdateSingleEvent(JSONObject json, @NonNull String eventId){
         for (int i = 0; i < eventInfos.size(); i++){
-            if(eventInfos.get(i)._id.equalsIgnoreCase(eventId))
+            if(eventInfos.get(i)._id.equalsIgnoreCase(eventId)) {
                 eventInfos.get(i).UpdateEvent(json);
+                return true;
+            }
         }
+        return false;
     }
 
     /**

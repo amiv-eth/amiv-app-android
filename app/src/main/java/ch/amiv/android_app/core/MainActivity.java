@@ -23,8 +23,12 @@ import android.widget.TextView;
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.checkin.BarcodeIdActivity;
 
+/**
+ * This is the first screen. features: drawer, pageview with bottom navigation bar and within each page a list view.
+ */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+//region -  ====Variables====
     private NavigationView drawerNavigation;
     private TextView drawer_title;
     private TextView drawer_subtitle;
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return false;
         }
     };
+//endregion
 
 //region Initialisation
     @Override
@@ -104,8 +109,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void OnDataReceived() {
                     SetLoginUIDirty();
-                    //Fetch the event list and then the signup information for the current user
-                    //Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
                 }
             });
         }
@@ -223,6 +226,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
     }
 
+    /*private void StartDemoActivity() {
+        Intent intent = new Intent(this, ch.amiv.android_app.demo.MainActivity.class);
+        startActivity(intent);
+    }*/
+
     /**
      * Here we can interpret the result of the login/event detail activity, if the login was successful or not, then update accordingly
      * @param requestCode
@@ -298,8 +306,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_login) {
-            if (Settings.IsLoggedIn(getApplicationContext()))
+            if (Settings.IsLoggedIn(getApplicationContext())) {
                 LogoutUser();
+                return false;
+            }
             else
                 StartLoginActivity();
         }
@@ -309,10 +319,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             StartBarcodeIdActivity();
         else if (id == R.id.nav_settings)
             StartSettingsActivity();
+        /*else if(id == R.id.nav_demo)
+            StartDemoActivity();*/
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
     }
 //endregion =====END OF DRAWER==================
 

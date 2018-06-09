@@ -29,6 +29,9 @@ import java.util.Map;
 
 import ch.amiv.android_app.R;
 
+/**
+ * This handles logging into the api, getting a token with the provided username and password
+ */
 public class LoginActivity extends AppCompatActivity {
 
     EditText userField;

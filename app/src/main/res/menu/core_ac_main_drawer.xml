@@ -24,6 +24,12 @@
                 android:id="@+id/nav_barcode_id"
                 android:icon="@drawable/ic_menu_gallery"
                 android:title="@string/barcode_id_title" />
+            <!--
+            <item
+                android:id="@+id/nav_demo"
+                android:icon="@drawable/ic_notifications"
+                android:title="Demo App" />
+                -->
         </menu>
     </item>
 </menu>

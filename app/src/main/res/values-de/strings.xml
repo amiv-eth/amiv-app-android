@@ -32,6 +32,7 @@
     <string name="login_title">Login</string>
     <string name="login_prompt">Bitte geben Sie Ihre Zugangsdaten ein</string>
     <string name="not_logged_in">Nicht Eingeloggt</string>
+    <string name="not_authorised">Nicht Berechtigt</string>
     <string name="invalid_login">Ungültige Login Daten</string>
     <string name="logout_title">Log out</string>
 
@@ -71,7 +72,7 @@
     <string name="pref_food_key">food</string>
     <string-array name="pref_food_list_values">
         <item>Alles</item>
-        <item>Vegitarisch</item>
+        <item>Vegetarisch</item>
         <item>Nichts</item>
     </string-array>
     <string-array name="pref_food_list_entries">

@@ -376,6 +376,8 @@ public class EventDetailActivity extends AppCompatActivity {
                     if(volleyError.networkResponse.statusCode == 422) {
                         Snackbar.make(scrollView, R.string.already_registered, Snackbar.LENGTH_SHORT).show();
                     }
+                    else if(volleyError.networkResponse.statusCode == 403)
+                        Snackbar.make(scrollView, R.string.not_authorised, Snackbar.LENGTH_SHORT).show();
                 }
                 else
                     Log.e("request", "Request returned null response.");
