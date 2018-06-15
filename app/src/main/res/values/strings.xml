@@ -176,9 +176,12 @@
         <item>-1</item>
     </string-array>
 
+    <!-- Unsorted/Translated Strings-->
     <string name="pref_title_system_sync_settings">System sync settings</string>
     <string name="date_created">Added</string>
+    <string name="date_available_until">Available until</string>
+    <string name="job_pdf_description">More details on your job offer</string>
+    <string name="see_notification">See Notification&#8230;</string>
 
-    <!-- Unsorted/Translated Strings-->
 
 </resources>

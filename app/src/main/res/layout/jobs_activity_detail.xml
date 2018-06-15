@@ -34,12 +34,15 @@
             android:id="@+id/scrollView_event"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scrollIndicators="right"
+            android:scrollbars="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
                 android:orientation="vertical">
 
                 <View
@@ -47,6 +50,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/company_logo_height_detail"
                     android:adjustViewBounds="true"
+                    android:clickable="true"
+                    android:focusable="auto"
                     android:onClick="ScrollToTop"
                     android:visibility="visible"
                     custom:layout_constraintTop_toBottomOf="@id/toolbar_include" />
@@ -89,15 +94,29 @@
                         android:textStyle="italic" />
 
                     <TextView
+                        android:id="@+id/dateEnd"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:text="Available Until: Tomorrow"
+                        android:textAppearance="@style/Body"
+                        android:textColor="@color/textLightGray"
+                        android:textStyle="italic" />
+
+                    <TextView
                         android:id="@+id/jobDescription"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
+                        android:autoLink="all"
+                        android:linksClickable="true"
                         android:paddingBottom="12dp"
                         android:paddingTop="8dp"
                         android:text="Description"
-                        android:textAppearance="@style/Body" />
+                        android:textAppearance="@style/Body"
+                        android:textIsSelectable="true" />
 
                     <Button
                         android:id="@+id/openPdf"

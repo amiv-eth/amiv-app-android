@@ -1,46 +1,29 @@
 package ch.amiv.android_app.jobs;
 
+import android.Manifest;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.ColorFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.NetworkImageView;
-import com.android.volley.toolbox.StringRequest;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import ch.amiv.android_app.R;
-import ch.amiv.android_app.core.LoginActivity;
 import ch.amiv.android_app.core.Requests;
-import ch.amiv.android_app.core.Settings;
-import ch.amiv.android_app.core.UserInfo;
 import ch.amiv.android_app.util.CustomNetworkImageView;
 
 /**
@@ -67,7 +50,7 @@ public class JobDetailActivity extends AppCompatActivity {
 
     private CustomNetworkImageView logoImage;
     private ScrollView scrollView;
-    private Button openPdfButton;
+    private Button downloadPdfButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,14 +98,15 @@ public class JobDetailActivity extends AppCompatActivity {
         //Link up variables with UI elements from the layout xml
         scrollView = findViewById(R.id.scrollView_event);
         logoImage = findViewById(R.id.companyLogo);
-        openPdfButton = findViewById(R.id.openPdf);
+        downloadPdfButton = findViewById(R.id.openPdf);
 
         ((TextView) findViewById(R.id.companyTitle)).setText(job().company);
         ((TextView) findViewById(R.id.jobTitle)).setText(job().GetTitle(getResources()));
         ((TextView) findViewById(R.id.jobDescription)).setText(job().GetDescription(getResources()));
 
-        DateFormat dateFormat = new SimpleDateFormat("dd - MMM - yyyy HH:mm", getResources().getConfiguration().locale);
+        DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy", getResources().getConfiguration().locale);
         ((TextView) findViewById(R.id.dateCreated)).setText(getResources().getString(R.string.date_created) + ": " + dateFormat.format(job().time_created).toString());
+        ((TextView) findViewById(R.id.dateEnd)).setText(getResources().getString(R.string.date_available_until) + ": " + dateFormat.format(job().time_end).toString());
 
         //LoadEventImage();
         logoImage.setImageUrl(job().GetLogoUrl(), Requests.GetImageLoader(getApplicationContext()));
@@ -143,18 +127,55 @@ public class JobDetailActivity extends AppCompatActivity {
     private void UpdateOpenPdfButton() {
         if(job().pdf_url != null && !job().pdf_url.isEmpty())
         {
-            openPdfButton.setEnabled(true);
-            openPdfButton.setText(R.string.open_pdf);
+            downloadPdfButton.setEnabled(true);
+            downloadPdfButton.setText(R.string.open_pdf);
         }
         else {
-            openPdfButton.setEnabled(false);
-            openPdfButton.setText(R.string.no_pdf_found);
+            downloadPdfButton.setEnabled(false);
+            downloadPdfButton.setText(R.string.no_pdf_found);
         }
     }
 
-    public void OpenJobPdf(View view){
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(job().GetPdfUrl()));
-        startActivity(browserIntent);
+    public void OpenJobPdf(View view) {
+        if (job().pdf_url.isEmpty()) {
+            UpdateOpenPdfButton();
+            return;
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) { //Get permission to write to downloads
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                //Add popup
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+            }
+            else
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            return;
+
+        Uri uri = Uri.parse(job().GetPdfUrl());
+        String savePath = job().GetTitle(getResources());
+        savePath = savePath.replace(' ', '-');
+        savePath = "/amiv/" + savePath;
+        if(!savePath.substring(savePath.length() -4, savePath.length()).equalsIgnoreCase( ".pdf"))
+            savePath += ".pdf";
+
+        savePath = savePath.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");  //remove illegal characters
+
+        DownloadManager.Request request = new DownloadManager.Request(uri)
+            .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
+            .setAllowedOverRoaming(false)
+            .setTitle(job().GetTitle(getResources()) + ".pdf")
+            .setDescription(getResources().getString(R.string.job_pdf_description))
+            .setVisibleInDownloadsUi(true)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, Uri.parse(savePath).toString());
+
+
+        Log.e("download", "Download Job PDF url: " + uri.toString() + " with filepath: " + Uri.parse(savePath));
+        ((DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(request);
+        Snackbar.make(downloadPdfButton, R.string.see_notification, Snackbar.LENGTH_SHORT).show();
     }
 
     public void ScrollToTop (View view) {

@@ -35,6 +35,7 @@ import ch.amiv.android_app.jobs.Jobs;
 public final class Requests {
     private static RequestQueue requestQueue;
     private static ImageLoader imageLoader;
+    private static final int MAX_CACHED_IMAGES = 50;
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -76,7 +77,9 @@ public final class Requests {
             return;
         }
 
-        String url = Settings.API_URL + "events" + (eventId.isEmpty() ? "" : "/" + eventId);
+        String url = Settings.API_URL + "events" + (eventId.isEmpty() ?
+                                                                        (Settings.showHiddenFeatures ? "" : "?where={\"show_website\":true}")
+                                                                        : "/" + eventId) ;
         Log.e("request", "url: " + url);
 
         StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
@@ -239,7 +242,9 @@ public final class Requests {
             return;
         }
 
-        String url = Settings.API_URL + "joboffers" + (jobId.isEmpty() ? "" : "/" + jobId);
+        String url = Settings.API_URL + "joboffers" + (jobId.isEmpty() ?
+                                                                        (Settings.showHiddenFeatures ? "" : "?where={\"show_website\":true}")
+                                                                        : "/" + jobId);
         Log.e("request", "url: " + url);
 
         StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
@@ -469,7 +474,7 @@ public final class Requests {
                 requestQueue = Volley.newRequestQueue(context);
 
             imageLoader = new ImageLoader(requestQueue, new ImageLoader.ImageCache() {
-            private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(10);
+            private final LruCache<String, Bitmap> mCache = new LruCache<>(MAX_CACHED_IMAGES);
             public void putBitmap(String url, Bitmap bitmap) {
                 mCache.put(url, bitmap);
             }

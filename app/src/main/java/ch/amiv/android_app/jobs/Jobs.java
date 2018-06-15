@@ -34,7 +34,7 @@ public class Jobs {
     public static void UpdateJobInfos(JSONArray json)
     {
         boolean isInitialising = jobInfos.size() == 0;
-        if(sortedJobs.size() == 0){
+        if(isInitialising){
             for (int k = 0; k < JobGroup.SIZE; k++)
                 sortedJobs.add(new ArrayList<JobInfo>());
         }
@@ -65,7 +65,7 @@ public class Jobs {
             comparator = new Comparator<JobInfo>() {
                 @Override
                 public int compare(JobInfo a, JobInfo b) {
-                    return b.time_end.compareTo(a.time_end);
+                    return a.time_end.compareTo(b.time_end);
                 }
             };
 

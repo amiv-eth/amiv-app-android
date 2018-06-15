@@ -18,12 +18,11 @@ import ch.amiv.android_app.core.BaseRecyclerAdapter;
 import ch.amiv.android_app.core.ListHelper;
 import ch.amiv.android_app.core.MainActivity;
 
+import static ch.amiv.android_app.core.Settings.showHiddenFeatures;
+
 public class EventsListAdapter extends BaseRecyclerAdapter {
     private List<ListHelper.Pair> dataList = new ArrayList<>();
     private Activity activity;
-
-    //Whether to show hidden events, where the adverts should not have started yet, should later be set by user access group
-    private boolean showHidden = true;
 
     private static final class ViewType {
         private static final int HEADER      = 0;
@@ -59,19 +58,17 @@ public class EventsListAdapter extends BaseRecyclerAdapter {
     @Override
     public void BuildDataset ()
     {
+        if(Events.sortedEvents.size() == 0)
+            return;
+
         dataList.clear();
 
-        List<Integer> headers = new ArrayList<>();
-        if(showHidden)
-            headers.add(R.string.hidden_events_title);
-        headers.add(R.string.all_events_title);
-        headers.add(R.string.closed_events_title);
-        headers.add(R.string.past_events_title);
+        int[] headers = new int[] {R.string.hidden_events_title, R.string.all_events_title, R.string.closed_events_title, R.string.past_events_title};
 
         //Debug: Start at 0 to show hidden events, headers will be offset though
-        for (int i = (showHidden ? 0 : 1); i < Events.sortedEvents.size(); i++) {
-            if(i < headers.size())
-                dataList.add(new ListHelper.Pair(ViewType.HEADER, activity.getResources().getString(headers.get(i))));
+        for (int i = (showHiddenFeatures ? 0 : 1); i < Events.EventGroup.SIZE; i++) {
+            if(i < headers.length)
+                dataList.add(new ListHelper.Pair(ViewType.HEADER, activity.getResources().getString(headers[i])));
 
             //invert order on the specified groups
             if(i >= Events.invertEventGroupSorting.length || !Events.invertEventGroupSorting[i]) {

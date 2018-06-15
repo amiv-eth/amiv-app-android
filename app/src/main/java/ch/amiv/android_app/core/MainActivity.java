@@ -365,6 +365,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
+            for(int i = 0; i< ListFragment.PageType.COUNT; i++)
+                pages[i] = ListFragment.NewInstance(i);
         }
 
         @Override
@@ -390,7 +392,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if(pages[position] != null)
                 pages[position].RefreshList(animate);
             else
-                Log.e("pageview", "RefreshPage(), Page does not exist, will not refresh: " + position);
+                Log.e("pageview", "RefreshPage(), Page does not exist will not refresh: " + position);
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            pages[position] = null;
+            super.destroyItem(container, position, object);
         }
     }
 

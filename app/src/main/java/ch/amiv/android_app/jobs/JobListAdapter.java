@@ -20,12 +20,11 @@ import ch.amiv.android_app.core.ListHelper;
 import ch.amiv.android_app.core.MainActivity;
 import ch.amiv.android_app.core.Requests;
 
+import static ch.amiv.android_app.core.Settings.showHiddenFeatures;
+
 public class JobListAdapter extends BaseRecyclerAdapter {
     private List<ListHelper.Pair> dataList = new ArrayList<>();
     private Activity activity;
-
-    //Whether to show hidden jobs, where the adverts should not have started yet, should later be set by user access group
-    private boolean showHidden = true;
 
     private static final class ViewType {
         private static final int HEADER      = 0;
@@ -59,15 +58,17 @@ public class JobListAdapter extends BaseRecyclerAdapter {
     @Override
     public void BuildDataset ()
     {
+        if(Jobs.sortedJobs.size() == 0)
+            return;
+
         dataList.clear();
 
         List<Integer> headers = new ArrayList<>();
-        if(showHidden)
-            headers.add(R.string.hidden_jobs_title);
+        headers.add(R.string.hidden_jobs_title);
         headers.add(R.string.all_jobs_title);
         headers.add(R.string.past_jobs_title);
 
-        for (int i = (showHidden ? 0 : 1); i < Jobs.sortedJobs.size(); i++) {
+        for (int i = (showHiddenFeatures ? 0 : 1); i < Jobs.JobGroup.SIZE; i++) {
             if(i < headers.size())
                 dataList.add(new ListHelper.Pair(JobListAdapter.ViewType.HEADER, activity.getResources().getString(headers.get(i))));
 

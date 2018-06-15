@@ -180,7 +180,9 @@
     <!-- Unsorted/Translated Strings-->
     <string name="pref_title_system_sync_settings">System sync settings</string>
     <string name="date_created">Hinzugefügt</string>
-
+    <string name="date_available_until">Verfügbar bis</string>
+    <string name="job_pdf_description">Weitere details über Ihre Jobanzeige</string>
+    <string name="see_notification">Siehe Benachrichtigung&#8230;</string>
 
 
 </resources>

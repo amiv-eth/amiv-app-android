@@ -41,7 +41,7 @@ public final class Events {
     public static void UpdateEventInfos(JSONArray json)
     {
         boolean isInitialising = eventInfos.size() == 0;
-        if(eventInfos.size() == 0){
+        if(isInitialising){
             for (int k = 0; k < EventGroup.SIZE; k++)
                 sortedEvents.add(new ArrayList<EventInfo>());
         }
