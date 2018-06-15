@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        View logo = findViewById(R.id.LogoImage);
+        View logo = findViewById(R.id.logoImage);
         if(logo != null) {
             Animation animation = AnimationUtils.loadAnimation(this, R.anim.item_anim_pop);
             animation.setDuration(150);

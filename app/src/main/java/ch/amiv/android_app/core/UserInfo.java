@@ -11,11 +11,17 @@ public class UserInfo {
     public String session_etag = "";
     public String nethz = "";
     public String legi = "";
+    public String rfid = "";
+    public String email = "";
+
     public String firstname = "";
     public String lastname = "";
-    public String email = "";
     public String membership = "";
     public String gender = "";
+    public String phone = "";
+    public String department = "";
+    public boolean send_newsletter = true;
+
 
     private UserInfo(JSONObject json, boolean isFromTokenRequest)
     {
@@ -40,6 +46,8 @@ public class UserInfo {
 
             if (json.has("legi"))
                 legi = json.getString("legi");
+            if (json.has("rfid"))
+                rfid = json.getString("rfid");
             if (json.has("firstname"))
                 firstname = json.getString("firstname");
             if (json.has("lastname"))
@@ -48,10 +56,17 @@ public class UserInfo {
                 nethz = json.getString("nethz");
             if (json.has("email"))
                 email = json.getString("email");
+
             if (json.has("membership"))
                 membership = json.getString("membership");
             if (json.has("gender"))
                 gender = json.getString("gender");
+            if (json.has("phone"))
+                phone = json.getString("phone");
+            if (json.has("department"))
+                department = json.getString("department");
+            if (json.has("send_newsletter"))
+                send_newsletter = json.getBoolean("send_newsletter");
         }
         catch (JSONException e) {
             e.printStackTrace();

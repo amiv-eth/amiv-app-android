@@ -5,16 +5,22 @@
     <string name="app_name_checkin">AMIV Check-in</string>
     <string name="title_home">Home</string>
     <string name="title_blitz">blitz</string>
+    <string name="title_jobs">Jobangebote</string>
     <string name="title_notifications">Benachrichtigungen</string>
     <string name="settings_title">Einstellungen</string>
     <string name="apps_title">Apps</string>
     <string name="check_in_title">Check-in</string>
     <string name="barcode_id_title">Barcode ID</string>
     <string name="info_title">Info</string>
+
     <string name="all_events_title">Neue Events</string>
     <string name="closed_events_title">Anmeldung Geschlossen</string>
     <string name="past_events_title">Alte Events</string>
     <string name="hidden_events_title">Unsichtbare Events</string>
+
+    <string name="all_jobs_title">Neue Jobs</string>
+    <string name="past_jobs_title">Alte Jobs</string>
+    <string name="hidden_jobs_title">Unsichtbare Jobs</string>
 
     <!-- Language -->
     <string name="pref_lang_title">Language - Sprache</string>
@@ -62,7 +68,11 @@
 
     <string name="no_internet">Kein Internet</string>
     <string name="requires_internet">Benötigt Internet</string>
-    <string name="snack_fill_all_fields">BItte füllen sie alle Felder ein</string>
+    <string name="snack_fill_all_fields">Bitte füllen sie alle Felder ein</string>
+
+    <!-- Jobs -->
+    <string name="no_pdf_found">Kein PDF Gefunden</string>
+    <string name="open_pdf">PDF Öffnen</string>
 
     <!-- Errors -->
     <string name="error_image_load">Fehler aufgetreten</string>
@@ -169,7 +179,7 @@
 
     <!-- Unsorted/Translated Strings-->
     <string name="pref_title_system_sync_settings">System sync settings</string>
-
+    <string name="date_created">Hinzugefügt</string>
 
 
 

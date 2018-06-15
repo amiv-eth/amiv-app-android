@@ -14,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +23,9 @@ import android.widget.TextView;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.checkin.BarcodeIdActivity;
+import ch.amiv.android_app.events.EventDetailActivity;
+import ch.amiv.android_app.events.Events;
+import ch.amiv.android_app.jobs.JobDetailActivity;
 
 /**
  * This is the first screen. features: drawer, pageview with bottom navigation bar and within each page a list view.
@@ -42,14 +46,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void OnDataReceived() {
             Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback, null, "");
-            pagerAdapter.RefreshCurrentList(true);
+            pagerAdapter.RefreshPage(ListFragment.PageType.EVENTS, true);
+        }
+    };
+
+    public Requests.OnDataReceivedCallback onJobsListUpdatedCallback = new Requests.OnDataReceivedCallback() {
+        @Override
+        public void OnDataReceived() {
+            pagerAdapter.RefreshPage(ListFragment.PageType.JOBS, true);
         }
     };
 
     private Requests.OnDataReceivedCallback onSignupsUpdatedCallback = new Requests.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
-            pagerAdapter.RefreshCurrentList(false);
+            pagerAdapter.RefreshPage(ListFragment.PageType.EVENTS, false);
         }
     };
 
@@ -62,15 +73,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.bottom_nav_home:
-                    viewPager.setCurrentItem(0);
+                case R.id.bottom_nav_events:
+                    viewPager.setCurrentItem(ListFragment.PageType.EVENTS);
+                    return true;
+                case R.id.bottom_nav_notifications:
+                    viewPager.setCurrentItem(ListFragment.PageType.NOTIFICATIONS);
+                    return true;
+                case R.id.bottom_nav_jobs:
+                    viewPager.setCurrentItem(ListFragment.PageType.JOBS);
                     return true;
                 /*case R.id.bottom_nav_blitz:
-                    viewPager.setCurrentItem(1);
+                    viewPager.setCurrentItem(3);
                     return true;*/
-                case R.id.bottom_nav_events:
-                    viewPager.setCurrentItem(1);
-                    return true;
             }
             return false;
         }
@@ -124,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setPageTransformer(true, new DepthPageTransformer()); //used for animating
+        viewPager.setOffscreenPageLimit(ListFragment.PageType.COUNT);//prevent pages being deleted when we swipe to far
 
         //set for the bottom nav to be updated when we swipe to change the page
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -133,12 +148,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onPageSelected(int position) {
                 //need to convert index to resource id
-                if(position == 0)
-                    position = R.id.bottom_nav_home;
+                if(position == ListFragment.PageType.EVENTS)
+                    position = R.id.bottom_nav_events;
                 /*else if (position == 1)
                     position = R.id.bottom_nav_blitz;*/
-                else if (position == 1)
-                    position = R.id.bottom_nav_events;
+                else if (position == ListFragment.PageType.NOTIFICATIONS)
+                    position = R.id.bottom_nav_notifications;
+                else if (position == ListFragment.PageType.JOBS)
+                    position = R.id.bottom_nav_jobs;
 
                 bottomNavigation.setSelectedItemId(position);
             }
@@ -160,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         UserInfo.current = null;
         Events.ClearSignups();
-        pagerAdapter.RefreshCurrentList(true);
+        pagerAdapter.RefreshPage(ListFragment.PageType.EVENTS, true);
         SetLoginUIDirty();
         System.gc();//run garbage collector explicitly to clean up user data
 
@@ -213,6 +230,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(this, EventDetailActivity.class);
         intent.putExtra("eventGroup", eventGroup);
         intent.putExtra("eventIndex", eventIndex);
+        startActivityForResult(intent, 0);
+    }
+
+    public void StartJobDetailActivity(int jobGroup, int jobIndex)
+    {
+        Intent intent = new Intent(this, JobDetailActivity.class);
+        intent.putExtra("jobGroup", jobGroup);
+        intent.putExtra("jobIndex", jobIndex);
         startActivityForResult(intent, 0);
     }
 
@@ -335,7 +360,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * This will handle changing between the pages
      */
     public class PagerAdapter extends FragmentPagerAdapter {
-        ListFragment currentFragment;
+        int currentPosition;
+        private ListFragment[] pages = new ListFragment[ListFragment.PageType.COUNT];
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
@@ -343,27 +369,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         public int getCount() {
-            return 2;
+            return ListFragment.PageType.COUNT;
         }
 
         @Override
         public Fragment getItem(int position) {
-            return ListFragment.NewInstance(position);
+            if(pages[position] == null)
+                pages[position] = ListFragment.NewInstance(position);
+            return pages[position];
         }
 
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            if (currentFragment != object) {
-                currentFragment = ((ListFragment) object);
-            }
+            currentPosition = position;
 
             super.setPrimaryItem(container, position, object);
         }
 
-        public void RefreshCurrentList(boolean animate)
-        {
-            if(currentFragment != null)
-                currentFragment.RefreshList(animate);
+        public void RefreshPage(int position, boolean animate){
+            if(pages[position] != null)
+                pages[position].RefreshList(animate);
+            else
+                Log.e("pageview", "RefreshPage(), Page does not exist, will not refresh: " + position);
         }
     }
 

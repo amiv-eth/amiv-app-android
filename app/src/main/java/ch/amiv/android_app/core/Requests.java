@@ -29,6 +29,9 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import ch.amiv.android_app.events.Events;
+import ch.amiv.android_app.jobs.Jobs;
+
 public final class Requests {
     private static RequestQueue requestQueue;
     private static ImageLoader imageLoader;
@@ -225,6 +228,90 @@ public final class Requests {
             }
         };
 
+        if(!Requests.SendRequest(request, context))
+            RunCallback(errorCallback);
+    }
+
+    public static void FetchJobList(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback, @NonNull final String jobId)
+    {
+        if(!CheckConnection(context)) {
+            RunCallback(errorCallback);
+            return;
+        }
+
+        String url = Settings.API_URL + "joboffers" + (jobId.isEmpty() ? "" : "/" + jobId);
+        Log.e("request", "url: " + url);
+
+        StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
+        {
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
+                if(response != null) {
+                    Log.e("request", "fetch jobs status Code: " + response.statusCode);
+
+                    try {
+                        final JSONObject json = new JSONObject(new String(response.data));
+
+                        //Update events on main thread
+                        if(callback != null) {
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        if(jobId.isEmpty())
+                                            Jobs.UpdateJobInfos(json.getJSONArray("_items"));
+                                        else
+                                            Jobs.UpdateSingleJob(json, jobId);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    callback.OnDataReceived();
+                                }
+                            };
+                            callbackHandler.post(runnable);
+                        }
+
+                        Log.e("request", new JSONObject(new String(response.data)).toString());
+                    } catch (JSONException e) {
+                        RunCallback(errorCallback);
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    RunCallback(errorCallback);
+                    Log.e("request", "Request returned null response. fetch jobs");
+                }
+                return super.parseNetworkResponse(response);
+            }
+
+            @Override
+            protected VolleyError parseNetworkError(final VolleyError volleyError) {
+                if(volleyError != null && volleyError.networkResponse != null)
+                    Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
+                else
+                    Log.e("request", "Request returned null response. fetch jobs");
+
+                RunCallback(errorCallback);
+                return super.parseNetworkError(volleyError);
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                if(Settings.IsLoggedIn(context)) {
+                    Map<String,String> headers = new HashMap<String, String>();
+
+                    String credentials = Settings.GetToken(context) + ":";
+                    String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                    headers.put("Authorization", auth);
+
+                    return headers;
+                }
+
+                return super.getHeaders();
+            }
+        };
+
+        //send the request and check if it failed
         if(!Requests.SendRequest(request, context))
             RunCallback(errorCallback);
     }

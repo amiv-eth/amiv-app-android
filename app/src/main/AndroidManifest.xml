@@ -50,7 +50,15 @@
                 android:value="ch.amiv.android_app.core.MainActivity" />
         </activity>
         <activity
-            android:name=".core.EventDetailActivity"
+            android:name=".events.EventDetailActivity"
+            android:configChanges="orientation|layoutDirection|locale"
+            android:theme="@style/AppThemeLight">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ch.amiv.android_app.core.MainActivity" />
+        </activity>
+        <activity
+            android:name=".jobs.JobDetailActivity"
             android:configChanges="orientation|layoutDirection|locale"
             android:theme="@style/AppThemeLight">
             <meta-data
