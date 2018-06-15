@@ -170,7 +170,7 @@ public class EventDetailActivity extends AppCompatActivity {
         }
 
         //Link up variables with UI elements from the layout xml
-        scrollView = findViewById(R.id.scrollView_event);
+        scrollView = findViewById(R.id.scrollView);
         posterProgress = findViewById(R.id.progressBar);
         posterImage = findViewById(R.id.eventPoster);
         posterMask = findViewById(R.id.posterMask);

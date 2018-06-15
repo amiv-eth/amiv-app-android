@@ -166,6 +166,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 //endregion
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if(pagerAdapter != null)
+            pagerAdapter.notifyDataSetChanged();
+    }
+
+
 //region -   ====Login====
     /**
      * Log the user out, delete token. Will not log the user out of the device with the API as this is used with other amiv services as well
@@ -356,12 +364,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 //region =====START OF PAGEVIEW==============
 
+    protected ListFragment[] pages = new ListFragment[ListFragment.PageType.COUNT];
     /**
      * This will handle changing between the pages
      */
     public class PagerAdapter extends FragmentPagerAdapter {
         int currentPosition;
-        private ListFragment[] pages = new ListFragment[ListFragment.PageType.COUNT];
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
@@ -393,12 +401,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 pages[position].RefreshList(animate);
             else
                 Log.e("pageview", "RefreshPage(), Page does not exist will not refresh: " + position);
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            pages[position] = null;
-            super.destroyItem(container, position, object);
         }
     }
 

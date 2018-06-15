@@ -11,12 +11,15 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This holds all the data about the job offers similar to the events class, for more explanations see the Events class
+ */
 public class Jobs {
-    public static List<JobInfo> jobInfos = new ArrayList<JobInfo>(); //This is a list of ALL events as received from the api, we will not use this directly
-    public static List<List<JobInfo>> sortedJobs = new ArrayList<>(JobGroup.SIZE);   //A list of lists which has been sorted according to the EventGroup configuration
-    public static boolean[] invertJobGroupSorting = new boolean[] {false, false, true};    //used to invert date sorting for the event groups
+    public static List<JobInfo> jobInfos = new ArrayList<JobInfo>();
+    public static List<List<JobInfo>> sortedJobs = new ArrayList<>(JobGroup.SIZE);
+    public static boolean[] invertJobGroupSorting = new boolean[] {false, false, true};
 
-    //Use this class to use the correct indexes for the event group for the sortedJobs list
+    //Use this class to use the correct indexes for the job group for the sortedJobs list
     public static final class JobGroup {
         public static final int SIZE          = 3;
         public static final int HIDDEN_JOBS   = 0;
@@ -28,11 +31,12 @@ public class Jobs {
     public static final int DAYS_NEW_TAG_ACTIVE = 3;
 
     /**
-     * Update the event infos with the data received from the api. This is just for updating information about the event NOT the signup
+     * Update the list of job offers with a json from the api
      * @param json json array of the events.
      */
     public static void UpdateJobInfos(JSONArray json)
     {
+        //initialise lists first or clear them
         boolean isInitialising = jobInfos.size() == 0;
         if(isInitialising){
             for (int k = 0; k < JobGroup.SIZE; k++)
@@ -47,11 +51,11 @@ public class Jobs {
         {
             try {
                 //if we are not initialising, search for the event id and then update it, else add a new one to the list. This ensures we do not lose the signup data
-                JSONObject jsonEvent = json.getJSONObject(i);
-                JobInfo e = new JobInfo(jsonEvent);
+                JSONObject jsonJob = json.getJSONObject(i);
+                JobInfo e = new JobInfo(jsonJob);
                 if(e._id.isEmpty())
                     continue;
-                if(isInitialising || !UpdateSingleJob(jsonEvent, e._id))
+                if(isInitialising || !UpdateSingleJob(jsonJob, e._id))
                     jobInfos.add(e);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -73,9 +77,9 @@ public class Jobs {
 
             Date today = Calendar.getInstance().getTime();
 
-            //fill in the sorted list according to the dates of the events
+            //fill in the sorted list according to the dates
             for (int i = 0; i < jobInfos.size(); i++){
-                if(jobInfos.get(i).time_created.after(today))
+                if(!jobInfos.get(i).show_website)
                     sortedJobs.get(JobGroup.HIDDEN_JOBS).add(jobInfos.get(i));
                 else if(jobInfos.get(i).time_end.after(today))
                     sortedJobs.get(JobGroup.ALL_JOBS).add(jobInfos.get(i));

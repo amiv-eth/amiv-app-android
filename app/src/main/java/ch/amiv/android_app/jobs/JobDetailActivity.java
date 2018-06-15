@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -67,7 +69,7 @@ public class JobDetailActivity extends AppCompatActivity {
     }
 
     /**
-     * This will retrieve the eventIndexes to display, is only set when we originate from the MainActivity, where the int is added to the intent.
+     * This will retrieve the jobIndexes to display, is only set when we originate from the MainActivity, where the int is added to the intent.
      */
     private void GetIntentData (){
         if(jobGroup == 0 && jobIndex == 0) {
@@ -96,7 +98,7 @@ public class JobDetailActivity extends AppCompatActivity {
         }
 
         //Link up variables with UI elements from the layout xml
-        scrollView = findViewById(R.id.scrollView_event);
+        scrollView = findViewById(R.id.scrollView);
         logoImage = findViewById(R.id.companyLogo);
         downloadPdfButton = findViewById(R.id.openPdf);
 
@@ -136,19 +138,36 @@ public class JobDetailActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Will start the pdf download as a notification to the downloads folder
+     * @param view
+     */
     public void OpenJobPdf(View view) {
+        OpenJobPdf(true);
+    }
+
+    //Retry downloading when the permissions have changed, but dont ask again
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        OpenJobPdf(false);
+    }
+
+    public void OpenJobPdf(boolean askForPermission) {
         if (job().pdf_url.isEmpty()) {
             UpdateOpenPdfButton();
             return;
         }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) { //Get permission to write to downloads
+        //Check first if we have the permission to write a file
+        if (askForPermission && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) { //Get permission to write to downloads
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 //Add popup
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
             }
             else
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+            return;
         }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
@@ -157,16 +176,16 @@ public class JobDetailActivity extends AppCompatActivity {
         Uri uri = Uri.parse(job().GetPdfUrl());
         String savePath = job().GetTitle(getResources());
         savePath = savePath.replace(' ', '-');
+        savePath = savePath.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");  //remove illegal characters
         savePath = "/amiv/" + savePath;
         if(!savePath.substring(savePath.length() -4, savePath.length()).equalsIgnoreCase( ".pdf"))
             savePath += ".pdf";
 
-        savePath = savePath.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");  //remove illegal characters
 
         DownloadManager.Request request = new DownloadManager.Request(uri)
             .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
             .setAllowedOverRoaming(false)
-            .setTitle(job().GetTitle(getResources()) + ".pdf")
+            .setTitle(job().GetTitle(getResources()))
             .setDescription(getResources().getString(R.string.job_pdf_description))
             .setVisibleInDownloadsUi(true)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)

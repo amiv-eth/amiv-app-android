@@ -1,4 +1,4 @@
-package ch.amiv.android_app.core;
+package ch.amiv.android_app.util;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -6,6 +6,9 @@ import android.widget.TextView;
 
 import ch.amiv.android_app.R;
 
+/**
+ * Provides common classes and variables for lists
+ */
 public final class ListHelper {
 
     public static class Pair {

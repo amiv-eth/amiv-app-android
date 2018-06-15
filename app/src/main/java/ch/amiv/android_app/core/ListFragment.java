@@ -19,7 +19,7 @@ import ch.amiv.android_app.events.EventsListAdapter;
 import ch.amiv.android_app.jobs.JobListAdapter;
 
 /**
- * An example fragment, the central view in MainActivity, for showing a list, should be replaced by a standard fragment with a custom recyclerView, create one different class for different views
+ * This class is a fragment for a list screen used in the main activity by the page viewer for events, jobs, it will use the given page position to tell which one it is
  */
 public class ListFragment extends Fragment {
     private int pagePosition; //the fragments page in the pageview of the main activity
@@ -29,7 +29,6 @@ public class ListFragment extends Fragment {
         public static final int NOTIFICATIONS  = 1;
         public static final int JOBS           = 2;
     }
-
 
     private RecyclerView recyclerView;
     private BaseRecyclerAdapter recyclerAdapter;

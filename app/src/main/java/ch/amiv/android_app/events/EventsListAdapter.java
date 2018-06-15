@@ -15,7 +15,7 @@ import java.util.List;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.core.BaseRecyclerAdapter;
-import ch.amiv.android_app.core.ListHelper;
+import ch.amiv.android_app.util.ListHelper;
 import ch.amiv.android_app.core.MainActivity;
 
 import static ch.amiv.android_app.core.Settings.showHiddenFeatures;

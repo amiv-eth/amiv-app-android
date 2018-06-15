@@ -22,7 +22,7 @@ public class JobInfo {
     public String company;
     private String logo_url;
     public String pdf_url;
-    public String show_website;
+    public boolean show_website;
 
     public Date time_end;
     public Date time_created;
@@ -46,7 +46,7 @@ public class JobInfo {
         description_en  = json.optString("description_en");
         description_de  = json.optString("description_de");
         company         = json.optString("company");
-        show_website    = json.optString("show_website");
+        show_website    = json.optBoolean("show_website", false);
 
         //Add dates
         String _end= json.optString("time_end");
@@ -111,7 +111,4 @@ public class JobInfo {
     public String GetPdfUrl() {
         return BuildFileUrl(pdf_url);
     }
-
-
-
 }

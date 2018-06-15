@@ -16,7 +16,7 @@ import java.util.List;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.core.BaseRecyclerAdapter;
-import ch.amiv.android_app.core.ListHelper;
+import ch.amiv.android_app.util.ListHelper;
 import ch.amiv.android_app.core.MainActivity;
 import ch.amiv.android_app.core.Requests;
 
@@ -165,10 +165,14 @@ public class JobListAdapter extends BaseRecyclerAdapter {
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(j.time_created);
                 cal.add(Calendar.DAY_OF_YEAR, Jobs.DAYS_NEW_TAG_ACTIVE);
-                if (jobGroup == Jobs.JobGroup.ALL_JOBS && cal.getTime().after(Calendar.getInstance().getTime()))
+                if (jobGroup == Jobs.JobGroup.ALL_JOBS && cal.getTime().after(Calendar.getInstance().getTime())) {
                     jobInfoHolder.newTag.setVisibility(View.VISIBLE);
-                else
+                    jobInfoHolder.titleField.setPadding(0,0,(int)(activity.getResources().getDisplayMetrics().density * 32 + 0.5f),0);
+                }
+                else {
                     jobInfoHolder.newTag.setVisibility(View.GONE);
+                    jobInfoHolder.titleField.setPadding(0,0,0,0);
+                }
 
                 jobInfoHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override

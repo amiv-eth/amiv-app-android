@@ -31,7 +31,7 @@
             app:srcCompat="@drawable/ic_amiv_logo" />
 
         <ScrollView
-            android:id="@+id/scrollView_event"
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollIndicators="right"
@@ -61,6 +61,12 @@
                     android:layout_height="match_parent"
                     android:background="?android:attr/colorBackground"
                     android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:alpha="0.25"
+                        android:background="@color/backgroundDark" />
 
                     <TextView
                         android:id="@+id/companyTitle"
