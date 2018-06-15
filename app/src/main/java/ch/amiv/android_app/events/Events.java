@@ -1,4 +1,4 @@
-package ch.amiv.android_app.core;
+package ch.amiv.android_app.events;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -19,11 +19,12 @@ import java.util.List;
  */
 public final class Events {
     public static List<EventInfo> eventInfos = new ArrayList<EventInfo>(); //This is a list of ALL events as received from the api, we will not use this directly
-    public static List<List<EventInfo>> sortedEvents = new ArrayList<List<EventInfo>>();   //A list of lists which has been sorted according to the EventGroup configuration
+    public static List<List<EventInfo>> sortedEvents = new ArrayList<>(EventGroup.SIZE);   //A list of lists which has been sorted according to the EventGroup configuration
     public static boolean[] invertEventGroupSorting = new boolean[] {false, false, false, true};    //used to invert date sorting for the event groups
 
     //Use this class to use the correct indexes for the event group for the sortedEvents list
     public static final class EventGroup {
+        public static final int SIZE            = 4;
         public static final int HIDDEN_EVENTS   = 0;
         public static final int ALL_EVENTS      = 1;
         public static final int CLOSED_EVENTS   = 2;
@@ -40,7 +41,14 @@ public final class Events {
     public static void UpdateEventInfos(JSONArray json)
     {
         boolean isInitialising = eventInfos.size() == 0;
-        sortedEvents.clear();
+        if(isInitialising){
+            for (int k = 0; k < EventGroup.SIZE; k++)
+                sortedEvents.add(new ArrayList<EventInfo>());
+        }
+        else {
+            for (int k = 0; k < sortedEvents.size(); k++)
+                sortedEvents.get(k).clear();
+        }
 
         for (int i = 0; i < json.length(); i++)
         {
@@ -71,10 +79,6 @@ public final class Events {
             Collections.sort(eventInfos, comparator);
 
             Date today = Calendar.getInstance().getTime();
-            sortedEvents.add(new ArrayList<EventInfo>());
-            sortedEvents.add(new ArrayList<EventInfo>());
-            sortedEvents.add(new ArrayList<EventInfo>());
-            sortedEvents.add(new ArrayList<EventInfo>());
 
             //fill in the sorted list according to the dates of the events
             for (int i = 0; i < eventInfos.size(); i++){

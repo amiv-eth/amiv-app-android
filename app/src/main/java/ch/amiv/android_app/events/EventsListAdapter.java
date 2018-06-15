@@ -1,4 +1,4 @@
-package ch.amiv.android_app.core;
+package ch.amiv.android_app.events;
 
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
@@ -11,17 +11,18 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.core.BaseRecyclerAdapter;
+import ch.amiv.android_app.util.ListHelper;
+import ch.amiv.android_app.core.MainActivity;
 
-public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<Pair> dataList = new ArrayList<>();
+import static ch.amiv.android_app.core.Settings.showHiddenFeatures;
+
+public class EventsListAdapter extends BaseRecyclerAdapter {
+    private List<ListHelper.Pair> dataList = new ArrayList<>();
     private Activity activity;
-
-    //Whether to show hidden events, where the adverts should not have started yet, should later be set by user access group
-    private boolean showHidden = true;
 
     private static final class ViewType {
         private static final int HEADER      = 0;
@@ -29,15 +30,6 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private static final int EVENT       = 2;
     }
 
-    private class Pair {
-        public int type;
-        public Object value;
-
-        private Pair(int type, Object value) {
-            this.type = type;
-            this.value = value;
-        }
-    }
     /**
      * Defining our own view holder which maps the layout items to view variables which can then later be accessed, and text value set etc
      * For each item type we have to define a viewholder. This will map the layout to the variables
@@ -59,62 +51,38 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    private class HeaderHolder extends RecyclerView.ViewHolder {
-        TextView nameField;
-
-        private HeaderHolder(View view) {
-            super(view);
-            nameField = view.findViewById(R.id.titleField);
-        }
-    }
-
-    private class SpaceHolder extends RecyclerView.ViewHolder {
-        View space;
-
-        private SpaceHolder(View view) {
-            super(view);
-            space = view.findViewById(R.id.space);
-        }
-    }
-
     public EventsListAdapter(Activity activity_) {
         activity = activity_;
     }
 
-    public void RefreshData(){
-        BuildDataset();
-        notifyDataSetChanged();
-    }
-
+    @Override
     public void BuildDataset ()
     {
+        if(Events.sortedEvents.size() == 0)
+            return;
+
         dataList.clear();
 
-        List<Integer> headers = new ArrayList<>();
-        if(showHidden)
-            headers.add(R.string.hidden_events_title);
-        headers.add(R.string.all_events_title);
-        headers.add(R.string.closed_events_title);
-        headers.add(R.string.past_events_title);
+        int[] headers = new int[] {R.string.hidden_events_title, R.string.all_events_title, R.string.closed_events_title, R.string.past_events_title};
 
         //Debug: Start at 0 to show hidden events, headers will be offset though
-        for (int i = (showHidden ? 0 : 1); i < Events.sortedEvents.size(); i++) {
-            if(i < headers.size())
-                dataList.add(new Pair(ViewType.HEADER, activity.getResources().getString(headers.get(i))));
+        for (int i = (showHiddenFeatures ? 0 : 1); i < Events.EventGroup.SIZE; i++) {
+            if(i < headers.length)
+                dataList.add(new ListHelper.Pair(ViewType.HEADER, activity.getResources().getString(headers[i])));
 
             //invert order on the specified groups
             if(i >= Events.invertEventGroupSorting.length || !Events.invertEventGroupSorting[i]) {
                 for (int j = 0; j < Events.sortedEvents.get(i).size(); j++) {
-                    dataList.add(new Pair(ViewType.EVENT, new int[]{i, j}));
+                    dataList.add(new ListHelper.Pair(ViewType.EVENT, new int[]{i, j}));
                 }
             }
             else{
                 for (int j = Events.sortedEvents.get(i).size() -1; j >= 0; j--) {
-                    dataList.add(new Pair(ViewType.EVENT, new int[]{i, j}));
+                    dataList.add(new ListHelper.Pair(ViewType.EVENT, new int[]{i, j}));
                 }
             }
         }
-        dataList.add(new Pair(ViewType.SPACE, 128));
+        dataList.add(new ListHelper.Pair(ViewType.SPACE, 128));
     }
 
     /**
@@ -129,14 +97,14 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         {
             case ViewType.HEADER: //header
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_list_item_header, parent, false);
-                holder = new HeaderHolder(view);
+                holder = new ListHelper.HeaderHolder(view);
                 break;
             case ViewType.SPACE: //space
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_list_item_space, parent, false);
-                holder = new SpaceHolder(view);
+                holder = new ListHelper.SpaceHolder(view);
                 break;
             case ViewType.EVENT: //event
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_list_item_event, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.events_list_item_event, parent, false);
                 holder = new EventInfoHolder(view);
                 break;
         }
@@ -162,19 +130,18 @@ public class EventsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if(activity == null || holder == null)
             return;
 
-        Pair info = dataList.get(holder.getAdapterPosition());
+        ListHelper.Pair info = dataList.get(holder.getAdapterPosition());
         Object data = info.value;
 
         switch (info.type)
         {
             case ViewType.HEADER: //header
-                HeaderHolder headerHolder = (HeaderHolder)holder;
-                //headerHolder.nameField.setText(headerList.get(GetHeaderIndex(holder.getAdapterPosition())));
+                ListHelper.HeaderHolder headerHolder = (ListHelper.HeaderHolder)holder;
                 headerHolder.nameField.setText((String)data);
                 break;
 
             case ViewType.SPACE: //space
-                View space = ((SpaceHolder)holder).space;
+                View space = ((ListHelper.SpaceHolder)holder).space;
                 ViewGroup.LayoutParams params = space.getLayoutParams();
                 params.height = (int)data;
                 space.setLayoutParams(params);

@@ -1,4 +1,4 @@
-package ch.amiv.android_app.core;
+package ch.amiv.android_app.events;
 
 import android.content.res.Resources;
 import android.util.Log;
@@ -13,6 +13,9 @@ import java.util.Date;
 import java.util.Locale;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.core.Requests;
+
+import static ch.amiv.android_app.util.Util.BuildFileUrl;
 
 /**
  * This is all the data about one event AND the current users signup data about that event
@@ -20,6 +23,7 @@ import ch.amiv.android_app.R;
 public class EventInfo {
 //region -   ====Variables====
     public String _id;
+    public String _etag;
     private String title_de;
     private String title_en;
     private String catchphrase_de;
@@ -75,6 +79,7 @@ public class EventInfo {
     public void UpdateEvent(JSONObject json)
     {
         _id             = json.optString("_id");
+        _etag           = json.optString("_etag");
         title_en        = json.optString("title_en");
         title_de        = json.optString("title_de");
         description_en  = json.optString("description_en");
@@ -214,6 +219,10 @@ public class EventInfo {
             return catchphrase_de;
         else
             return catchphrase_en;
+    }
+
+    public String GetPosterUrl() {
+        return BuildFileUrl(poster_url);
     }
 
     public boolean IsSignedUp ()

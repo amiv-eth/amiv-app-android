@@ -52,7 +52,7 @@
             android:layout_width="match_parent">
 
             <ScrollView
-                android:id="@+id/scrollView_event"
+                android:id="@+id/scrollView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -78,12 +78,13 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@android:color/white"
+                        android:background="?android:attr/colorBackground"
                         android:orientation="vertical">
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
+                            android:alpha="0.25"
                             android:background="@color/backgroundDark" />
 
                         <TextView
@@ -110,6 +111,7 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
+                            android:alpha="0.25"
                             android:background="@color/backgroundDark" />
 
                         <TextView

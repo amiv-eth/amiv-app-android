@@ -1,9 +1,9 @@
 package ch.amiv.android_app.core;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,18 +15,27 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.events.EventsListAdapter;
+import ch.amiv.android_app.jobs.JobListAdapter;
 
 /**
- * An example fragment, the central view in MainActivity, for showing a list, should be replaced by a standard fragment with a custom recyclerView, create one different class for different views
+ * This class is a fragment for a list screen used in the main activity by the page viewer for events, jobs, it will use the given page position to tell which one it is
  */
 public class ListFragment extends Fragment {
-    int pagePosition; //the fragments page in the pageview of the main activity
-    RecyclerView recyclerView;
-    EventsListAdapter recylcerAdaper;
-    RecyclerView.LayoutManager recyclerLayoutAdapter;
+    private int pagePosition; //the fragments page in the pageview of the main activity
+    public static final class PageType {
+        public static final int COUNT          = 3;
+        public static final int EVENTS         = 0;
+        public static final int NOTIFICATIONS  = 1;
+        public static final int JOBS           = 2;
+    }
 
-    SwipeRefreshLayout swipeRefreshLayout;
-    Requests.OnDataReceivedCallback cancelRefreshCallback = new Requests.OnDataReceivedCallback() {
+    private RecyclerView recyclerView;
+    private BaseRecyclerAdapter recyclerAdapter;
+    private RecyclerView.LayoutManager recyclerLayoutAdapter;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Requests.OnDataReceivedCallback cancelRefreshCallback = new Requests.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
             swipeRefreshLayout.setRefreshing(false);
@@ -52,30 +61,52 @@ public class ListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pagePosition = getArguments() != null ? getArguments().getInt("pagePosition") : 1;
+        pagePosition = getArguments() != null ? getArguments().getInt("pagePosition") : 0;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         swipeRefreshLayout = getView().findViewById(R.id.swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(pagePosition == 0 && getActivity() instanceof MainActivity)
+                if(!(getActivity() instanceof MainActivity))
+                    return;
+
+                if(pagePosition == PageType.EVENTS)
                     Requests.FetchEventList(getContext(), ((MainActivity)getActivity()).onEventsListUpdatedCallback, cancelRefreshCallback, "");
+                else if (pagePosition == PageType.JOBS)
+                    Requests.FetchJobList(getContext(), ((MainActivity)getActivity()).onJobsListUpdatedCallback, cancelRefreshCallback, "");
             }
         });
         //refresh on activity start
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if(pagePosition == 0 && getActivity() instanceof MainActivity) {
+                if(!(getActivity() instanceof MainActivity))
+                    return;
+
+                if(pagePosition == PageType.EVENTS) {
                     swipeRefreshLayout.setRefreshing(true);
                     Requests.FetchEventList(getContext(), ((MainActivity)getActivity()).onEventsListUpdatedCallback, cancelRefreshCallback, "");
                 }
+                else if(pagePosition == PageType.JOBS){
+                    swipeRefreshLayout.setRefreshing(true);
+                    Requests.FetchJobList(getContext(), ((MainActivity)getActivity()).onJobsListUpdatedCallback, cancelRefreshCallback, "");
+                }
             }
         });
+
+        //Disable the refresh animation after a timeout
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }, 1000*15);
 
         recyclerView = getView().findViewById(R.id.recyclerView);
 
@@ -88,36 +119,39 @@ public class ListFragment extends Fragment {
         recyclerView.setLayoutManager(recyclerLayoutAdapter);
 
         // specify an adapter (see also next example)
-        if(pagePosition == 0) {
-            recylcerAdaper = new EventsListAdapter(getActivity());
+        if(pagePosition == PageType.EVENTS)
+            recyclerAdapter = new EventsListAdapter(getActivity());
+        else if (pagePosition == PageType.JOBS)
+            recyclerAdapter = new JobListAdapter(getActivity());
+
+        if(recyclerAdapter != null) {
             recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_falldown));
-            recyclerView.setAdapter(recylcerAdaper);
+            recyclerView.setAdapter(recyclerAdapter);
+            AnimateList(null);
+
+            //Used to show feedback when touching item
+            recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+                @Override
+                public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                    return false;
+                }
+
+                @Override
+                public void onTouchEvent(RecyclerView rv, MotionEvent e) { }
+                @Override
+                public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) { }
+            });
+
         }
-
-        recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-            }
-        });
-
-        AnimateList(null);
     }
 
     public void RefreshList(boolean animate)
     {
-        recylcerAdaper.RefreshData();
+        if(recyclerAdapter == null)
+            return;
+
         swipeRefreshLayout.setRefreshing(false);
+        recyclerAdapter.RefreshData();
         if(animate)
             AnimateList(null);
     }
@@ -137,8 +171,8 @@ public class ListFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        if(recylcerAdaper != null)
-            recylcerAdaper.RefreshData();
+        if(recyclerAdapter != null)
+            recyclerAdapter.RefreshData();
     }
 
     /**
@@ -147,6 +181,9 @@ public class ListFragment extends Fragment {
      */
     public void AnimateList(View view)
     {
+        if(recyclerAdapter == null)
+            return;
+
         getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 recyclerView.invalidate();

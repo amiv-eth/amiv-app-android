@@ -1,4 +1,4 @@
-package ch.amiv.android_app.core;
+package ch.amiv.android_app.events;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -29,7 +29,6 @@ import com.android.volley.toolbox.StringRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,6 +36,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.core.LoginActivity;
+import ch.amiv.android_app.core.Requests;
+import ch.amiv.android_app.core.Settings;
+import ch.amiv.android_app.core.UserInfo;
 
 /**
  * The activity/screen used for showing a selected event in detail.
@@ -98,7 +101,7 @@ public class EventDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.core_activity_event_detail);
+        setContentView(R.layout.events_activity_detail);
         GetIntentData();
         InitUI();
     }
@@ -143,8 +146,10 @@ public class EventDetailActivity extends AppCompatActivity {
     private void GetIntentData (){
         if(eventGroup == 0 && eventIndex == 0) {
             Intent intent = getIntent();
-            eventGroup = intent.getIntExtra("eventGroup", 0);
-            eventIndex = intent.getIntExtra("eventIndex", 0);
+            if(intent.hasExtra("eventGroup") && intent.hasExtra("eventIndex")) {
+                eventGroup = intent.getIntExtra("eventGroup", 0);
+                eventIndex = intent.getIntExtra("eventIndex", 0);
+            }
         }
     }
 
@@ -165,7 +170,7 @@ public class EventDetailActivity extends AppCompatActivity {
         }
 
         //Link up variables with UI elements from the layout xml
-        scrollView = findViewById(R.id.scrollView_event);
+        scrollView = findViewById(R.id.scrollView);
         posterProgress = findViewById(R.id.progressBar);
         posterImage = findViewById(R.id.eventPoster);
         posterMask = findViewById(R.id.posterMask);
@@ -233,17 +238,8 @@ public class EventDetailActivity extends AppCompatActivity {
                     });
             }
 
-            //generate URL for the poster
-            StringBuilder posterUrl = new StringBuilder();
-            posterUrl.append(event().poster_url); //To show the banner instead change this variable
-            if(posterUrl.charAt(0) == '/')
-                posterUrl.deleteCharAt(0);
-            posterUrl.insert(0, Settings.API_URL);
-
-            //Log.e("request", "Event image url: " + posterUrl.toString());
-
             //Send a request for the image, note we can also use a NetworkImageView, but have less control then
-            ImageRequest posterRequest = new ImageRequest(posterUrl.toString(),
+            ImageRequest posterRequest = new ImageRequest(event().GetPosterUrl(),
                     new Response.Listener<Bitmap>() {
                         @Override
                         public void onResponse(final Bitmap bitmap) {

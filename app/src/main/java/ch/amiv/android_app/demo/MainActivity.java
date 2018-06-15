@@ -1,31 +1,10 @@
 package ch.amiv.android_app.demo;
 
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
-import android.util.Log;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import ch.amiv.android_app.R;
-import ch.amiv.android_app.core.EventInfo;
-import ch.amiv.android_app.core.Events;
-import ch.amiv.android_app.core.Requests;
-import ch.amiv.android_app.core.Settings;
-import ch.amiv.android_app.core.UserInfo;
 
 public class MainActivity extends AppCompatActivity {
 

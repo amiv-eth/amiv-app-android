@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".core.MyApplication"
@@ -50,7 +51,15 @@
                 android:value="ch.amiv.android_app.core.MainActivity" />
         </activity>
         <activity
-            android:name=".core.EventDetailActivity"
+            android:name=".events.EventDetailActivity"
+            android:configChanges="orientation|layoutDirection|locale"
+            android:theme="@style/AppThemeLight">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ch.amiv.android_app.core.MainActivity" />
+        </activity>
+        <activity
+            android:name=".jobs.JobDetailActivity"
             android:configChanges="orientation|layoutDirection|locale"
             android:theme="@style/AppThemeLight">
             <meta-data
