@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +15,13 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+
+import java.lang.reflect.Field;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.events.EventsListAdapter;
@@ -95,30 +102,10 @@ public class ListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         swipeRefreshLayout = getView().findViewById(R.id.swipeRefresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if(pagePosition == PageType.EVENTS)
-                    Requests.FetchEventList(MainActivity.instance, onEventsListUpdatedCallback, cancelRefreshCallback, "");
-                else if (pagePosition == PageType.JOBS)
-                    Requests.FetchJobList(MainActivity.instance, onJobsListUpdatedCallback, cancelRefreshCallback, "");
-            }
-        });
-        //refresh on activity start
-        swipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                if(pagePosition == PageType.EVENTS) {
-                    SetRefreshUI(true);
-                    Requests.FetchEventList(MainActivity.instance, onEventsListUpdatedCallback, cancelRefreshCallback, "");
-                }
-                else if(pagePosition == PageType.JOBS){
-                    SetRefreshUI(true);
-                    Requests.FetchJobList(MainActivity.instance, onJobsListUpdatedCallback, cancelRefreshCallback, "");
-                }
-            }
-        });
+        InitSwipeRefreshUI();
 
+        //refresh on activity start
+        SetRefreshUI(true);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -154,6 +141,55 @@ public class ListFragment extends Fragment {
         }
 
         RefreshList(true);
+    }
+
+    //Setup swipe down to refresh, adds the amiv logo and rotate animation
+    private void InitSwipeRefreshUI()
+    {
+        //Set on resfresh functionality
+        swipeRefreshLayout = getView().findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {    //This sets what function is called when we swipe down to refresh
+            @Override
+            public void onRefresh() {
+                OnSwipeRefreshed();
+
+                try {
+                    Field f = swipeRefreshLayout.getClass().getDeclaredField("mCircleView");
+                    f.setAccessible(true);
+                    ImageView img = (ImageView)f.get(swipeRefreshLayout);
+
+                    RotateAnimation rotate = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                    rotate.setRepeatMode(Animation.INFINITE);
+                    rotate.setDuration(1000);
+                    rotate.setRepeatCount(5);
+                    rotate.setInterpolator(new LinearInterpolator());
+                    img.startAnimation(rotate);
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        //Set Image of swipe refresh
+        try {
+            Field f = swipeRefreshLayout.getClass().getDeclaredField("mCircleView");
+            f.setAccessible(true);
+            ImageView img = (ImageView)f.get(swipeRefreshLayout);
+            img.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_amiv_logo_icon_scaled, null));
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void OnSwipeRefreshed(){
+        if(pagePosition == PageType.EVENTS)
+            Requests.FetchEventList(MainActivity.instance, onEventsListUpdatedCallback, cancelRefreshCallback, "");
+        else if (pagePosition == PageType.JOBS)
+            Requests.FetchJobList(MainActivity.instance, onJobsListUpdatedCallback, cancelRefreshCallback, "");
     }
 
     public void RefreshList(boolean animate)

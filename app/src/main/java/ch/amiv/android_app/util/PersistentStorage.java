@@ -36,7 +36,8 @@ import ch.amiv.android_app.jobs.Jobs;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
- *
+ * Use this class to save data between sessions, data is saved in the private sharedpreferences in a json form as a string
+ * You can see what is stored by opening the device file explorer, navigate to data/data/ch.amiv.android_app/shared_prefs/ch.amiv.android_app.xml
  */
 public final class PersistentStorage {
     private static SharedPreferences prefs;

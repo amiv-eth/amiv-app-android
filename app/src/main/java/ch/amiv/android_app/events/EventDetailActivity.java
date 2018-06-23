@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,6 +36,7 @@ import com.google.gson.JsonObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -185,17 +190,56 @@ public class EventDetailActivity extends AppCompatActivity {
         posterBg = findViewById(R.id.posterBg);
         registerButton = findViewById(R.id.registerButton);
 
+        InitSwipeRefreshUI();
+
+        SetUIDirty(false, false);
+    }
+
+    //Setup swipe down to refresh, adds the amiv logo and rotate animation
+    private void InitSwipeRefreshUI()
+    {
+        //Set on resfresh functionality
         swipeRefreshLayout = findViewById(R.id.swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {    //This sets what function is called when we swipe down to refresh
             @Override
             public void onRefresh() {
-                if(!hasEvent())
-                    return;
-                Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, cancelRefreshCallback, event()._id);
+                OnSwipeRefreshed();
+
+                try {
+                    Field f = swipeRefreshLayout.getClass().getDeclaredField("mCircleView");
+                    f.setAccessible(true);
+                    ImageView img = (ImageView)f.get(swipeRefreshLayout);
+
+                    RotateAnimation rotate = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                    rotate.setRepeatMode(Animation.INFINITE);
+                    rotate.setDuration(1000);
+                    rotate.setInterpolator(new LinearInterpolator());
+                    img.startAnimation(rotate);
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
-        SetUIDirty(false, false);
+        //Set Image of swipe refresh
+        try {
+            Field f = swipeRefreshLayout.getClass().getDeclaredField("mCircleView");
+            f.setAccessible(true);
+            ImageView img = (ImageView)f.get(swipeRefreshLayout);
+            img.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_amiv_logo_icon_scaled, null));
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void OnSwipeRefreshed(){
+        if(!hasEvent())
+            return;
+        Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, cancelRefreshCallback, event()._id);
     }
 
     public void SetUIDirty(boolean isRefreshing, boolean signupUpdated)
