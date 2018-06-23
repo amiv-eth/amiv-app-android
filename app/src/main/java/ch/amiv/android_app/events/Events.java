@@ -1,5 +1,6 @@
 package ch.amiv.android_app.events;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -13,6 +14,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import ch.amiv.android_app.util.PersistentStorage;
 
 /**
  * This is the central place for storing information about the events, events + signups.
@@ -38,17 +41,9 @@ public final class Events {
      * Update the event infos with the data received from the api. This is just for updating information about the event NOT the signup
      * @param json json array of the events.
      */
-    public static void UpdateEventInfos(JSONArray json)
+    public static void UpdateEventInfos(Context context, JSONArray json)
     {
         boolean isInitialising = eventInfos.size() == 0;
-        if(isInitialising){
-            for (int k = 0; k < EventGroup.SIZE; k++)
-                sortedEvents.add(new ArrayList<EventInfo>());
-        }
-        else {
-            for (int k = 0; k < sortedEvents.size(); k++)
-                sortedEvents.get(k).clear();
-        }
 
         for (int i = 0; i < json.length(); i++)
         {
@@ -63,6 +58,22 @@ public final class Events {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+
+        GenerateSortedLists(isInitialising);
+
+        PersistentStorage.SaveEvents(context);
+    }
+
+    public static void GenerateSortedLists(boolean isInitialising)
+    {
+        if(isInitialising){
+            for (int k = 0; k < EventGroup.SIZE; k++)
+                sortedEvents.add(new ArrayList<EventInfo>());
+        }
+        else {
+            for (int k = 0; k < sortedEvents.size(); k++)
+                sortedEvents.get(k).clear();
         }
 
         //Sort list and update sorted list

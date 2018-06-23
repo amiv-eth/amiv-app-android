@@ -1,6 +1,7 @@
 package ch.amiv.android_app.events;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -25,6 +26,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -407,6 +410,16 @@ public class EventDetailActivity extends AppCompatActivity {
                     params.put("email", UserInfo.current.email);
                 else
                     params.put("user", UserInfo.current._id);
+
+                //encode signup form values
+                /* Add when fully tested XXX
+                SharedPreferences prefs = getSharedPreferences(Settings.SHARED_PREFS_KEY, MODE_PRIVATE);
+                Gson gson = new Gson();
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("food_preference", prefs.getString(getResources().getString(R.string.pref_food_key), ""));
+                jsonObject.addProperty("sbb_abo", prefs.getString(getResources().getString(R.string.pref_sbb_key), ""));
+                params.put("additional_fields", jsonObject.getAsString());
+                */
                 return params;
             }
         };

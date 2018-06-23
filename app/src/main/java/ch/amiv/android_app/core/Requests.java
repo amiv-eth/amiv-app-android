@@ -98,7 +98,7 @@ public final class Requests {
                             public void run() {
                                 try {
                                     if(eventId.isEmpty())
-                                        Events.UpdateEventInfos(json.getJSONArray("_items"));
+                                        Events.UpdateEventInfos(context, json.getJSONArray("_items"));
                                     else
                                         Events.UpdateSingleEvent(json, eventId);
                                     if(callback != null)
@@ -263,7 +263,7 @@ public final class Requests {
                             public void run() {
                                 try {
                                     if(jobId.isEmpty())
-                                        Jobs.UpdateJobInfos(json.getJSONArray("_items"));
+                                        Jobs.UpdateJobInfos(context, json.getJSONArray("_items"));
                                     else
                                         Jobs.UpdateSingleJob(json, jobId);
                                     if(callback != null)

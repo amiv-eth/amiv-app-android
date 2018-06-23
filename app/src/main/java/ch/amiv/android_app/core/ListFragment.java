@@ -98,9 +98,6 @@ public class ListFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(!(MainActivity.instance instanceof MainActivity))
-                    return;
-
                 if(pagePosition == PageType.EVENTS)
                     Requests.FetchEventList(MainActivity.instance, onEventsListUpdatedCallback, cancelRefreshCallback, "");
                 else if (pagePosition == PageType.JOBS)
@@ -111,9 +108,6 @@ public class ListFragment extends Fragment {
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if(!(MainActivity.instance instanceof MainActivity))
-                    return;
-
                 if(pagePosition == PageType.EVENTS) {
                     SetRefreshUI(true);
                     Requests.FetchEventList(MainActivity.instance, onEventsListUpdatedCallback, cancelRefreshCallback, "");
@@ -136,9 +130,9 @@ public class ListFragment extends Fragment {
 
         // specify an adapter (see also next example)
         if(pagePosition == PageType.EVENTS)
-            recyclerAdapter = new EventsListAdapter(((Activity) MainActivity.instance));
+            recyclerAdapter = new EventsListAdapter((MainActivity.instance));
         else if (pagePosition == PageType.JOBS)
-            recyclerAdapter = new JobListAdapter((Activity) MainActivity.instance);
+            recyclerAdapter = new JobListAdapter(MainActivity.instance);
 
         if(recyclerAdapter != null) {
             recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(MainActivity.instance, R.anim.layout_anim_falldown));
@@ -157,8 +151,9 @@ public class ListFragment extends Fragment {
                 @Override
                 public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) { }
             });
-
         }
+
+        RefreshList(true);
     }
 
     public void RefreshList(boolean animate)

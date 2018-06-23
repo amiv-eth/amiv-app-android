@@ -97,6 +97,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bottomNavigation = findViewById(R.id.bottomNav);
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        PersistentStorage.LoadEvents(getApplicationContext());
+        PersistentStorage.LoadJobs(getApplicationContext());
         InitialisePageView();
 
         new Settings(getApplicationContext()); //creates the settings instance, so we can store/retrieve shared preferences

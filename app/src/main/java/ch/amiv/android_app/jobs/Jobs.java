@@ -1,5 +1,6 @@
 package ch.amiv.android_app.jobs;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,6 +11,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import ch.amiv.android_app.util.PersistentStorage;
 
 /**
  * This holds all the data about the job offers similar to the events class, for more explanations see the Events class
@@ -34,18 +37,10 @@ public class Jobs {
      * Update the list of job offers with a json from the api
      * @param json json array of the events.
      */
-    public static void UpdateJobInfos(JSONArray json)
+    public static void UpdateJobInfos(Context context, JSONArray json)
     {
         //initialise lists first or clear them
         boolean isInitialising = jobInfos.size() == 0;
-        if(isInitialising){
-            for (int k = 0; k < JobGroup.SIZE; k++)
-                sortedJobs.add(new ArrayList<JobInfo>());
-        }
-        else {
-            for (int k = 0; k < sortedJobs.size(); k++)
-                sortedJobs.get(k).clear();
-        }
 
         for (int i = 0; i < json.length(); i++)
         {
@@ -60,6 +55,22 @@ public class Jobs {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+
+        GenerateSortedLists(isInitialising);
+
+        PersistentStorage.SaveJobs(context);
+    }
+
+    public static void GenerateSortedLists(boolean isInitialising)
+    {
+        if(isInitialising){
+            for (int k = 0; k < JobGroup.SIZE; k++)
+                sortedJobs.add(new ArrayList<JobInfo>());
+        }
+        else {
+            for (int k = 0; k < sortedJobs.size(); k++)
+                sortedJobs.get(k).clear();
         }
 
         //Sort list
@@ -92,12 +103,12 @@ public class Jobs {
     /**
      * Will update a given event with the id
      * @param json
-     * @param eventId
+     * @param jobId
      * @return true if the event was found and updated
      */
-    public static boolean UpdateSingleJob(JSONObject json, @NonNull String eventId){
+    public static boolean UpdateSingleJob(JSONObject json, @NonNull String jobId){
         for (int i = 0; i < jobInfos.size(); i++){
-            if(jobInfos.get(i)._id.equalsIgnoreCase(eventId)) {
+            if(jobInfos.get(i)._id.equalsIgnoreCase(jobId)) {
                 jobInfos.get(i).UpdateJob(json);
                 return true;
             }
