@@ -79,8 +79,15 @@ public class LoginActivity extends AppCompatActivity {
         final String password = passwordField.getText().toString();
 
         if(username.isEmpty()) {
-            Snackbar.make(submitButton, R.string.snack_fill_all_fields, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(submitButton, R.string.snack_fill_fields, Snackbar.LENGTH_SHORT).show();
             return;
+        }
+
+        if(password.isEmpty()){
+            UserInfo.SetEmailOnlyLogin(getApplicationContext(), username, false);
+            SetSubmitButtonState(false, true);
+            Settings.Vibrate(Settings.VibrateTime.NORMAL, getApplicationContext());
+            ReturnToCallingActivity(true);
         }
 
         //Does a POST request to sessions to create a session and get a token. Does *not* use the OAuth process, see api docs
@@ -110,7 +117,7 @@ public class LoginActivity extends AppCompatActivity {
                             submitButton.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    UserInfo.UpdateCurrent(json, true);
+                                    UserInfo.UpdateCurrent(getApplicationContext(), json, true, false);
                                 }
                             });
                         }

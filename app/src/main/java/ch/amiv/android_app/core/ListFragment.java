@@ -22,6 +22,7 @@ import ch.amiv.android_app.jobs.JobListAdapter;
 
 /**
  * This class is a fragment for a list screen used in the main activity by the page viewer for events, jobs, it will use the given page position to tell which one it is
+ * NOTE: This fragment will lose its connection to the parent activity, when the app is resumed, use MainActivity.instance as the activity and context
  */
 public class ListFragment extends Fragment {
     private int pagePosition; //the fragments page in the pageview of the main activity
@@ -47,7 +48,7 @@ public class ListFragment extends Fragment {
     public Requests.OnDataReceivedCallback onEventsListUpdatedCallback = new Requests.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
-            Requests.FetchEventSignups(recyclerView.getContext(), onSignupsUpdatedCallback, null, "");
+            Requests.FetchEventSignups(MainActivity.instance, onSignupsUpdatedCallback, null, "");
             RefreshList(true);
         }
     };
@@ -97,29 +98,29 @@ public class ListFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(!(recyclerView.getContext() instanceof MainActivity))
+                if(!(MainActivity.instance instanceof MainActivity))
                     return;
 
                 if(pagePosition == PageType.EVENTS)
-                    Requests.FetchEventList(recyclerView.getContext(), onEventsListUpdatedCallback, cancelRefreshCallback, "");
+                    Requests.FetchEventList(MainActivity.instance, onEventsListUpdatedCallback, cancelRefreshCallback, "");
                 else if (pagePosition == PageType.JOBS)
-                    Requests.FetchJobList(recyclerView.getContext(), onJobsListUpdatedCallback, cancelRefreshCallback, "");
+                    Requests.FetchJobList(MainActivity.instance, onJobsListUpdatedCallback, cancelRefreshCallback, "");
             }
         });
         //refresh on activity start
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if(!(recyclerView.getContext() instanceof MainActivity))
+                if(!(MainActivity.instance instanceof MainActivity))
                     return;
 
                 if(pagePosition == PageType.EVENTS) {
                     SetRefreshUI(true);
-                    Requests.FetchEventList(recyclerView.getContext(), onEventsListUpdatedCallback, cancelRefreshCallback, "");
+                    Requests.FetchEventList(MainActivity.instance, onEventsListUpdatedCallback, cancelRefreshCallback, "");
                 }
                 else if(pagePosition == PageType.JOBS){
                     SetRefreshUI(true);
-                    Requests.FetchJobList(recyclerView.getContext(), onJobsListUpdatedCallback, cancelRefreshCallback, "");
+                    Requests.FetchJobList(MainActivity.instance, onJobsListUpdatedCallback, cancelRefreshCallback, "");
                 }
             }
         });
@@ -130,17 +131,17 @@ public class ListFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
-        recyclerLayoutAdapter = new LinearLayoutManager(recyclerView.getContext());
+        recyclerLayoutAdapter = new LinearLayoutManager(MainActivity.instance);
         recyclerView.setLayoutManager(recyclerLayoutAdapter);
 
         // specify an adapter (see also next example)
         if(pagePosition == PageType.EVENTS)
-            recyclerAdapter = new EventsListAdapter(((Activity) recyclerView.getContext()));
+            recyclerAdapter = new EventsListAdapter(((Activity) MainActivity.instance));
         else if (pagePosition == PageType.JOBS)
-            recyclerAdapter = new JobListAdapter((Activity) recyclerView.getContext());
+            recyclerAdapter = new JobListAdapter((Activity) MainActivity.instance);
 
         if(recyclerAdapter != null) {
-            recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(recyclerView.getContext(), R.anim.layout_anim_falldown));
+            recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(MainActivity.instance, R.anim.layout_anim_falldown));
             recyclerView.setAdapter(recyclerAdapter);
             AnimateList(null);
 
@@ -188,6 +189,9 @@ public class ListFragment extends Fragment {
 
         if(recyclerAdapter != null)
             recyclerAdapter.RefreshData();
+
+        //Reconnect the fragment to the mainactivity
+        MainActivity.instance.pagerAdapter.ReconnectFragment(this, pagePosition);
     }
 
     private void SetRefreshUI(boolean isRefreshing){

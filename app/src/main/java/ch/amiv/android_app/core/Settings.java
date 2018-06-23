@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Vibrator;
 import android.util.Log;
 
-import java.security.PublicKey;
-
 /**
  * This class is used to save settings so they can be restored in another session later.
  * Use this class to retrieve visible/hidden settings.
@@ -23,7 +21,7 @@ public class Settings {
 
     //Vars for saving/reading the url from shared prefs, to allow saving between sessions. For each variable, have a key to access it and a default value
     private static SharedPreferences sharedPrefs;
-    private static final String SHARED_PREFS_KEY = "ch.amiv.android_app";
+    public static final String SHARED_PREFS_KEY = "ch.amiv.android_app";
     private static final String apiUrlPrefKey = "ch.amiv.android_app.serverurl";
     private static final String defaultApiUrl = "https://api-dev.amiv.ethz.ch";
     private static final String themeKey = "ch.amiv.android_app.theme";
@@ -103,10 +101,25 @@ public class Settings {
      * Note: will only check if a token exists. This token may have expired but not have been refreshed/deleted.
      * @return True if the user is logged into the api and has an access token.
      */
-    public static boolean IsLoggedIn(Context context){
+    public static boolean HasToken(Context context){
         CheckInitSharedPrefs(context);
         String t = sharedPrefs.getString(apiTokenKey, "");
         return !t.isEmpty();
+    }
+
+    /**
+     * Will return whether the user is only loggedd in with an email, if they do not have an api login, false if current user has not be initialised
+     */
+    public static boolean IsEmailOnlyLogin(Context context){
+        return !Settings.HasToken(context) && UserInfo.current != null && !UserInfo.current.email.isEmpty();
+    }
+
+    /**
+     * Note: will only check if a token exists. This token may have expired but not have been refreshed/deleted.
+     * @return True if the user is logged into the api and has an access token.
+     */
+    public static boolean IsLoggedIn(Context context){
+        return HasToken(context) || IsEmailOnlyLogin(context);
     }
 
 

@@ -6,6 +6,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import static ch.amiv.android_app.util.Util.BuildFileUrl;
 /**
  * This is all the data about one event AND the current users signup data about that event
  */
-public class EventInfo {
+public class EventInfo implements Serializable{
 //region -   ====Variables====
     public String _id;
     public String _etag;
@@ -39,8 +40,8 @@ public class EventInfo {
     public int signup_count;
     public int spots;
 
-    public String allow_email_signup;
-    public String show_website;
+    public boolean allow_email_signup;
+    public boolean show_website;
 
     //Media
     public String poster_url;
@@ -95,8 +96,8 @@ public class EventInfo {
         signup_count        = json.optInt("signup_count");
         spots               = json.optInt("spots");
 
-        allow_email_signup  = json.optString("allow_email_signup");
-        show_website        = json.optString("show_website");
+        allow_email_signup  = json.optBoolean("allow_email_signup", false);
+        show_website        = json.optBoolean("show_website", false);
 
         //Add dates
         String _start = json.optString("time_start");

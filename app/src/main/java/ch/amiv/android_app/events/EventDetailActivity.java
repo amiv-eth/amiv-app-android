@@ -114,15 +114,20 @@ public class EventDetailActivity extends AppCompatActivity {
             boolean refreshLogin = data.getBooleanExtra("login_success", false);
             if(refreshLogin && Settings.IsLoggedIn(getApplicationContext()))
             {
-                Requests.FetchEventSignups(getApplicationContext(), new Requests.OnDataReceivedCallback() {
-                    @Override
-                    public void OnDataReceived() {
-                        UpdateRegisterButton();
-                    }
-                }, null, "");
+                if(Settings.IsEmailOnlyLogin(getApplicationContext()))
+                    Snackbar.make(posterImage, R.string.requires_login, Snackbar.LENGTH_SHORT).show();
+                else {
+                    Requests.FetchEventSignups(getApplicationContext(), new Requests.OnDataReceivedCallback() {
+                        @Override
+                        public void OnDataReceived() {
+                            UpdateRegisterButton();
+                        }
+                    }, null, "");
+                    RegisterForEvent(null);
+                }
+
                 responseIntent.putExtra("login_success", refreshLogin);
                 ScrollToBottom(null);
-                RegisterForEvent(null);
             }
         }
     }
@@ -312,7 +317,7 @@ public class EventDetailActivity extends AppCompatActivity {
         }
 
         //Redirect to the login page first
-        if(!Settings.IsLoggedIn(getApplicationContext())){
+        if(!Settings.HasToken(getApplicationContext()) && !event().allow_email_signup){
             Intent intent = new Intent(this, LoginActivity.class);
             intent.putExtra("cause", "register_event");
             startActivityForResult(intent, 0);
@@ -386,9 +391,11 @@ public class EventDetailActivity extends AppCompatActivity {
                 Map<String,String> headers = new HashMap<String, String>();
 
                 // Add basic auth with token
-                String credentials = Settings.GetToken(getApplicationContext()) + ":";
-                String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
-                headers.put("Authorization", auth);
+                if(Settings.HasToken(getApplicationContext())) {
+                    String credentials = Settings.GetToken(getApplicationContext()) + ":";
+                    String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                    headers.put("Authorization", auth);
+                }
                 return headers;
             }
 
@@ -396,7 +403,10 @@ public class EventDetailActivity extends AppCompatActivity {
             protected Map<String, String> getParams()  {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("event", event()._id);
-                params.put("user", UserInfo.current._id);
+                if(Settings.IsEmailOnlyLogin(getApplicationContext()))
+                    params.put("email", UserInfo.current.email);
+                else
+                    params.put("user", UserInfo.current._id);
                 return params;
             }
         };
@@ -421,7 +431,10 @@ public class EventDetailActivity extends AppCompatActivity {
             if(event().time_register_end.after(today))
             {
                 registerButton.setEnabled(true);
-                registerButton.setText(R.string.register_title);
+                if(Settings.IsEmailOnlyLogin(getApplicationContext()) && !event().allow_email_signup)
+                    registerButton.setText(R.string.requires_login);
+                else
+                    registerButton.setText(R.string.register_title);
             }
             else
             {
@@ -433,7 +446,6 @@ public class EventDetailActivity extends AppCompatActivity {
             registerButton.setEnabled(false);
             registerButton.setText(R.string.register_soon);
         }
-
     }
 
     public void ScrollToTop (View view) {

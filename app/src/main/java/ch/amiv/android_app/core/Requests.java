@@ -1,6 +1,5 @@
 package ch.amiv.android_app.core;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
@@ -138,7 +137,7 @@ public final class Requests {
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                if(Settings.IsLoggedIn(context)) {
+                if(Settings.HasToken(context)) {
                     Map<String,String> headers = new HashMap<String, String>();
 
                     String credentials = Settings.GetToken(context) + ":";
@@ -163,7 +162,7 @@ public final class Requests {
      */
     public static void FetchEventSignups(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback, @NonNull String eventId)
     {
-        if(!Settings.IsLoggedIn(context) || UserInfo.current == null || UserInfo.current._id.isEmpty()) {
+        if(!Settings.HasToken(context) || UserInfo.current == null || UserInfo.current._id.isEmpty()) {
             RunCallback(errorCallback);
             return;
         }
@@ -303,7 +302,7 @@ public final class Requests {
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                if(Settings.IsLoggedIn(context)) {
+                if(Settings.HasToken(context)) {
                     Map<String,String> headers = new HashMap<String, String>();
 
                     String credentials = Settings.GetToken(context) + ":";
@@ -327,7 +326,7 @@ public final class Requests {
      */
     public static void FetchUserData(final Context context, final View view, final OnDataReceivedCallback callback)
     {
-        if(!Settings.IsLoggedIn(context) || !CheckConnection(context))
+        if(!Settings.HasToken(context) || !CheckConnection(context))
             return;
 
         //Do request Token->User
@@ -344,9 +343,7 @@ public final class Requests {
                         callbackHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                UserInfo.UpdateCurrent(json, false);
-                                /*UserInfo user = new UserInfo(json, false);
-                                user.SetAsCurrent();*/
+                                UserInfo.UpdateCurrent(context, json, false, false);
                             }
                         });
 
@@ -398,11 +395,14 @@ public final class Requests {
      */
     public static void DeleteCurrentSession(final Context context)
     {
+        if(Settings.IsEmailOnlyLogin(context))
+            return;
+
         final UserInfo user = UserInfo.current;
         final String token = Settings.GetToken(context);
         Settings.SetToken("", context);
 
-        if(!Settings.IsLoggedIn(context) || UserInfo.current == null || UserInfo.current.session_id.isEmpty())
+        if(!Settings.HasToken(context) || UserInfo.current == null || UserInfo.current.session_id.isEmpty())
             return;
 
         //Do request Token->User

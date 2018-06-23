@@ -1,9 +1,17 @@
 package ch.amiv.android_app.core;
 
+import android.content.Context;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class UserInfo {
+import java.io.Serializable;
+import java.util.EmptyStackException;
+import java.util.zip.CheckedOutputStream;
+
+import ch.amiv.android_app.util.PersistentStorage;
+
+public class UserInfo implements Serializable{
     public static UserInfo current;
 
     public String _id = "";
@@ -22,10 +30,21 @@ public class UserInfo {
     public String department = "";
     public boolean send_newsletter = true;
 
-
     private UserInfo(JSONObject json, boolean isFromTokenRequest)
     {
         Update(json, isFromTokenRequest);
+    }
+
+    private UserInfo (String email){
+        Update(email);
+    }
+
+    /**
+     * Used when the user only logs in with an email
+     * @param email_
+     */
+    public void Update(String email_){
+        email = email_;
     }
 
     /**
@@ -38,10 +57,15 @@ public class UserInfo {
             if (json.has(isFromTokenRequest ? "user" : "_id"))
                 _id = json.getString(isFromTokenRequest ? "user" : "_id");
 
-            if(isFromTokenRequest && json.has("_etag"))
+            if(json.has("session_etag"))
+                session_etag = json.getString("session_etag");  //if from a gson saved locally
+            else if(isFromTokenRequest && json.has("_etag"))
                 session_etag = json.getString("_etag");
 
-            if(isFromTokenRequest && json.has("_id"))
+
+            if(json.has("session_id"))
+                session_id = json.getString("session_id");
+            else if(isFromTokenRequest && json.has("_id"))
                 session_id = json.getString("_id");
 
             if (json.has("legi"))
@@ -77,15 +101,25 @@ public class UserInfo {
      * Will safely update the current user or create it
      * @param isFromTokenRequest This ensures the correct values are retrieved from the json. Set to true when the json is from a /sessions POST request, where the user ID is "user" not "_id" as usually
      */
-    public static void UpdateCurrent(JSONObject json, boolean isFromTokenRequest){
+    public static void UpdateCurrent(Context context, JSONObject json, boolean isFromTokenRequest, boolean isSavedInstance){
         if(current != null)
             current.Update(json, isFromTokenRequest);
         else {
             current = new UserInfo(json, isFromTokenRequest);
         }
+
+        if(!isSavedInstance)
+            PersistentStorage.SaveUserInfo(context);
     }
 
-    public void SetAsCurrent(){
-        current = this;
+    public static void SetEmailOnlyLogin(Context context, String email, boolean isSavedInstance){
+        if(current != null)
+            current.Update(email);
+        else {
+            current = new UserInfo(email);
+        }
+
+        if(!isSavedInstance)
+            PersistentStorage.SaveUserInfo(context);
     }
 }

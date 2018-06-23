@@ -1,8 +1,8 @@
 <resources>
     <!-- Titles -->
-    <string name="title">AMIV</string>
-    <string name="app_name">AMIV</string>
-    <string name="app_name_checkin">AMIV Check-in</string>
+    <string name="title">amiv</string>
+    <string name="app_name">amiv</string>
+    <string name="app_name_checkin">amiv Check-in</string>
     <string name="title_home">Home</string>
     <string name="title_blitz">blitz</string>
     <string name="title_jobs">Job Offers</string>
@@ -38,6 +38,7 @@
     <!-- Login -->
     <string name="login_title">Login</string>
     <string name="login_prompt">Please enter your login details</string>
+    <string name="login_prompt_email">To log in with just your email, leave password empty</string>
     <string name="not_logged_in">Not Logged In</string>
     <string name="not_authorised">Not Authorised</string>
     <string name="invalid_login">Invalid Login Details</string>
@@ -182,6 +183,8 @@
     <string name="date_available_until">Available until</string>
     <string name="job_pdf_description">More details on your job offer</string>
     <string name="see_notification">See Notification&#8230;</string>
+    <string name="email_only_login">Email only login</string>
+    <string name="requires_login">Requires Login</string>
 
 
 </resources>

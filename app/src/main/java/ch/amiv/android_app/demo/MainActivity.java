@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 Map<String,String> headers = new HashMap<String, String>();
 
                 //This adds basic auth using our token if it exists, this can be retrieved from core.Settings
-                if(Settings.IsLoggedIn(getApplicationContext())) {
+                if(Settings.HasToken(getApplicationContext())) {
                     String credentials = Settings.GetToken(getApplicationContext()) + ":";
                     String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
                     headers.put("Authorization", auth);
