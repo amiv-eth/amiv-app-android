@@ -1,5 +1,6 @@
 package ch.amiv.android_app.core;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
@@ -93,23 +94,23 @@ public final class Requests {
                         final JSONObject json = new JSONObject(new String(response.data));
 
                         //Update events on main thread
-                        if(callback != null) {
-                            Runnable runnable = new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        if(eventId.isEmpty())
-                                            Events.UpdateEventInfos(json.getJSONArray("_items"));
-                                        else
-                                            Events.UpdateSingleEvent(json, eventId);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                    callback.OnDataReceived();
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    if(eventId.isEmpty())
+                                        Events.UpdateEventInfos(json.getJSONArray("_items"));
+                                    else
+                                        Events.UpdateSingleEvent(json, eventId);
+                                    if(callback != null)
+                                        callback.OnDataReceived();
+                                } catch (JSONException e) {
+                                    RunCallback(errorCallback);
+                                    e.printStackTrace();
                                 }
-                            };
-                            callbackHandler.post(runnable);
-                        }
+                            }
+                        };
+                        callbackHandler.post(runnable);
 
                         Log.e("request", new JSONObject(new String(response.data)).toString());
                     } catch (JSONException e) {
@@ -257,24 +258,24 @@ public final class Requests {
                     try {
                         final JSONObject json = new JSONObject(new String(response.data));
 
-                        //Update events on main thread
-                        if(callback != null) {
-                            Runnable runnable = new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        if(jobId.isEmpty())
-                                            Jobs.UpdateJobInfos(json.getJSONArray("_items"));
-                                        else
-                                            Jobs.UpdateSingleJob(json, jobId);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                    callback.OnDataReceived();
+                        //Update on main thread
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    if(jobId.isEmpty())
+                                        Jobs.UpdateJobInfos(json.getJSONArray("_items"));
+                                    else
+                                        Jobs.UpdateSingleJob(json, jobId);
+                                    if(callback != null)
+                                        callback.OnDataReceived();
+                                } catch (JSONException e) {
+                                    RunCallback(errorCallback);
+                                    e.printStackTrace();
                                 }
-                            };
-                            callbackHandler.post(runnable);
-                        }
+                            }
+                        };
+                        callbackHandler.post(runnable);
 
                         Log.e("request", new JSONObject(new String(response.data)).toString());
                     } catch (JSONException e) {
@@ -492,6 +493,9 @@ public final class Requests {
      */
     public static boolean CheckConnection(Context context)
     {
+        if(context == null)//If we cannot check the connection then fallback to no internet
+            return false;
+
         ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 

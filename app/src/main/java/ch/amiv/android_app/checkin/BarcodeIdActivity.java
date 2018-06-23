@@ -17,7 +17,6 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.lang.reflect.Field;
-import java.nio.file.attribute.UserDefinedFileAttributeView;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.core.UserInfo;

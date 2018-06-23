@@ -1,5 +1,7 @@
 package ch.amiv.android_app.core;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -38,7 +40,29 @@ public class ListFragment extends Fragment {
     private Requests.OnDataReceivedCallback cancelRefreshCallback = new Requests.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
-            swipeRefreshLayout.setRefreshing(false);
+            SetRefreshUI(false);
+        }
+    };
+
+    public Requests.OnDataReceivedCallback onEventsListUpdatedCallback = new Requests.OnDataReceivedCallback() {
+        @Override
+        public void OnDataReceived() {
+            Requests.FetchEventSignups(recyclerView.getContext(), onSignupsUpdatedCallback, null, "");
+            RefreshList(true);
+        }
+    };
+
+    public Requests.OnDataReceivedCallback onJobsListUpdatedCallback = new Requests.OnDataReceivedCallback() {
+        @Override
+        public void OnDataReceived() {
+            RefreshList(true);
+        }
+    };
+
+    private Requests.OnDataReceivedCallback onSignupsUpdatedCallback = new Requests.OnDataReceivedCallback() {
+        @Override
+        public void OnDataReceived() {
+            RefreshList(false);
         }
     };
 
@@ -66,66 +90,57 @@ public class ListFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        recyclerView = getView().findViewById(R.id.recyclerView);
         super.onViewCreated(view, savedInstanceState);
 
         swipeRefreshLayout = getView().findViewById(R.id.swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(!(getActivity() instanceof MainActivity))
+                if(!(recyclerView.getContext() instanceof MainActivity))
                     return;
 
                 if(pagePosition == PageType.EVENTS)
-                    Requests.FetchEventList(getContext(), ((MainActivity)getActivity()).onEventsListUpdatedCallback, cancelRefreshCallback, "");
+                    Requests.FetchEventList(recyclerView.getContext(), onEventsListUpdatedCallback, cancelRefreshCallback, "");
                 else if (pagePosition == PageType.JOBS)
-                    Requests.FetchJobList(getContext(), ((MainActivity)getActivity()).onJobsListUpdatedCallback, cancelRefreshCallback, "");
+                    Requests.FetchJobList(recyclerView.getContext(), onJobsListUpdatedCallback, cancelRefreshCallback, "");
             }
         });
         //refresh on activity start
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if(!(getActivity() instanceof MainActivity))
+                if(!(recyclerView.getContext() instanceof MainActivity))
                     return;
 
                 if(pagePosition == PageType.EVENTS) {
-                    swipeRefreshLayout.setRefreshing(true);
-                    Requests.FetchEventList(getContext(), ((MainActivity)getActivity()).onEventsListUpdatedCallback, cancelRefreshCallback, "");
+                    SetRefreshUI(true);
+                    Requests.FetchEventList(recyclerView.getContext(), onEventsListUpdatedCallback, cancelRefreshCallback, "");
                 }
                 else if(pagePosition == PageType.JOBS){
-                    swipeRefreshLayout.setRefreshing(true);
-                    Requests.FetchJobList(getContext(), ((MainActivity)getActivity()).onJobsListUpdatedCallback, cancelRefreshCallback, "");
+                    SetRefreshUI(true);
+                    Requests.FetchJobList(recyclerView.getContext(), onJobsListUpdatedCallback, cancelRefreshCallback, "");
                 }
             }
         });
 
-        //Disable the refresh animation after a timeout
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        }, 1000*15);
-
-        recyclerView = getView().findViewById(R.id.recyclerView);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
-        recyclerLayoutAdapter = new LinearLayoutManager(getContext());
+        recyclerLayoutAdapter = new LinearLayoutManager(recyclerView.getContext());
         recyclerView.setLayoutManager(recyclerLayoutAdapter);
 
         // specify an adapter (see also next example)
         if(pagePosition == PageType.EVENTS)
-            recyclerAdapter = new EventsListAdapter(getActivity());
+            recyclerAdapter = new EventsListAdapter(((Activity) recyclerView.getContext()));
         else if (pagePosition == PageType.JOBS)
-            recyclerAdapter = new JobListAdapter(getActivity());
+            recyclerAdapter = new JobListAdapter((Activity) recyclerView.getContext());
 
         if(recyclerAdapter != null) {
-            recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_falldown));
+            recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(recyclerView.getContext(), R.anim.layout_anim_falldown));
             recyclerView.setAdapter(recyclerAdapter);
             AnimateList(null);
 
@@ -150,7 +165,7 @@ public class ListFragment extends Fragment {
         if(recyclerAdapter == null)
             return;
 
-        swipeRefreshLayout.setRefreshing(false);
+        SetRefreshUI(false);
         recyclerAdapter.RefreshData();
         if(animate)
             AnimateList(null);
@@ -175,6 +190,22 @@ public class ListFragment extends Fragment {
             recyclerAdapter.RefreshData();
     }
 
+    private void SetRefreshUI(boolean isRefreshing){
+        //Disable the refresh animation after a timeout
+        swipeRefreshLayout.setRefreshing(isRefreshing);
+
+        if(!isRefreshing)
+            return;
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }, 1000*15);
+    }
+
     /**
      * Animation is stored in an xml in the res/anim folder, it is applied to the views in xml, this just triggers the anim
      * @param view Used to allow UI elems to call this, pass null otherwise
@@ -184,7 +215,7 @@ public class ListFragment extends Fragment {
         if(recyclerAdapter == null)
             return;
 
-        getActivity().runOnUiThread(new Runnable() {
+        recyclerView.post(new Runnable() {
             public void run() {
                 recyclerView.invalidate();
                 recyclerView.scheduleLayoutAnimation();
