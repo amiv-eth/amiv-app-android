@@ -20,6 +20,41 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="portrait"
         android:theme="@style/AppThemeLight">
+
+        <activity
+            android:name=".core.SplashActivity"
+            android:theme="@style/SplashTheme"
+            android:label="@string/app_name"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".core.MainActivity"
+            android:configChanges="keyboardHidden|orientation|layoutDirection|screenSize|locale"
+            android:theme="@style/AppThemeLight"
+            android:windowSoftInputMode="adjustNothing">
+        </activity>
+
+        <activity
+            android:name=".core.LoginActivity"
+            android:configChanges="keyboardHidden|orientation|layoutDirection|screenSize|locale"
+            android:label="">
+            <!--android:windowSoftInputMode="stateVisible"  use this to make the keyboard show when the activity is started-->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ch.amiv.android_app.core.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".core.IntroActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="locale" />
+
         <activity
             android:name=".core.SettingsActivity"
             android:configChanges="layoutDirection|locale"
@@ -29,27 +64,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ch.amiv.android_app.core.MainActivity" />
         </activity>
-        <activity
-            android:name=".core.MainActivity"
-            android:configChanges="keyboardHidden|orientation|layoutDirection|screenSize|locale"
-            android:label="@string/app_name"
-            android:theme="@style/AppThemeLight"
-            android:windowSoftInputMode="adjustNothing">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".core.LoginActivity"
-            android:configChanges="keyboardHidden|orientation|layoutDirection|screenSize|locale"
-            android:label=""
-            android:windowSoftInputMode="stateVisible">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ch.amiv.android_app.core.MainActivity" />
-        </activity>
         <activity
             android:name=".events.EventDetailActivity"
             android:configChanges="orientation|layoutDirection|locale"
@@ -58,6 +73,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ch.amiv.android_app.core.MainActivity" />
         </activity>
+
         <activity
             android:name=".jobs.JobDetailActivity"
             android:configChanges="orientation|layoutDirection|locale"
@@ -66,18 +82,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ch.amiv.android_app.core.MainActivity" />
         </activity>
+
         <activity
             android:name=".checkin.BarcodeIdActivity"
             android:configChanges="layoutDirection|locale"
             android:parentActivityName=".core.MainActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
 
         <!-- Checkin -->
         <activity
             android:name=".checkin.MainActivity"
             android:label="@string/app_name_checkin"
             android:screenOrientation="portrait"
-            android:theme="@style/CheckinTheme"></activity>
+            android:theme="@style/CheckinTheme" />
+
         <activity
             android:name=".checkin.ScanActivity"
             android:label="@string/app_name_checkin"
@@ -87,6 +105,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".checkin.MainActivity" />
         </activity>
+
         <activity
             android:name=".checkin.SettingsActivity"
             android:label="@string/app_name_checkin"
@@ -96,6 +115,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".checkin.MainActivity" />
         </activity>
+
         <activity
             android:name=".checkin.MemberListActivity"
             android:label="@string/app_name_checkin"
@@ -111,6 +131,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".checkin.ScanActivity" />
         </activity>
+
         <activity
             android:name=".checkin.SearchMembersActivity"
             android:label="@string/app_name_checkin"
@@ -119,14 +140,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".checkin.MemberListActivity" />
         </activity>
-        
+
         <!-- Demo -->
-        <activity android:name=".demo.MainActivity"
+        <activity
+            android:name=".demo.MainActivity"
             android:configChanges="layoutDirection|locale"
             android:parentActivityName=".core.MainActivity"
-            android:screenOrientation="portrait">
-            
-        </activity>
-    </application>
+            android:screenOrientation="portrait" />
 
+    </application>
 </manifest>

@@ -34,6 +34,8 @@ import ch.amiv.android_app.R;
  */
 public class LoginActivity extends AppCompatActivity {
 
+    boolean isIntroLogin;
+
     EditText userField;
     EditText passwordField;
     Button submitButton;
@@ -43,15 +45,34 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        isIntroLogin = !Settings.GetIntroDone(this);
+
         //Set for the keyboard to resize the window so the snackbars appear just above the keyboard
         prevLayoutParams = getWindow().getAttributes().softInputMode;
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         setContentView(R.layout.core_activity_login);
 
+        //Show skip button if this is in the intro
+        Button btnSkip = findViewById(R.id.buttonSkip);
+        if (isIntroLogin) {
+            btnSkip.setVisibility(View.VISIBLE);
+            btnSkip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ReturnToCallingActivity(false, false);
+                }
+            });
+        }
+        else {
+            btnSkip.setVisibility(View.GONE);
+        }
+
         //Add the toolbar and back navigation
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null)//XXX doesnt always work, ensure that the back arrow is visible
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Link UI elements to xml
         userField = findViewById(R.id.usernameField);
@@ -87,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             UserInfo.SetEmailOnlyLogin(getApplicationContext(), username, false);
             SetSubmitButtonState(false, true);
             Settings.Vibrate(Settings.VibrateTime.NORMAL, getApplicationContext());
-            ReturnToCallingActivity(true);
+            ReturnToCallingActivity(true, false);
         }
 
         //Does a POST request to sessions to create a session and get a token. Does *not* use the OAuth process, see api docs
@@ -105,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
                             Settings.SetToken(json.getString("token"), getApplicationContext());
                             SetSubmitButtonState(false, true);
                             Settings.Vibrate(Settings.VibrateTime.NORMAL, getApplicationContext());
-                            ReturnToCallingActivity(true);
+                            ReturnToCallingActivity(true, false);
                         }
                         else{
                             Snackbar.make(userField, R.string.snack_error_retry, Snackbar.LENGTH_SHORT).show();
@@ -187,31 +208,30 @@ public class LoginActivity extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                ReturnToCallingActivity(false);
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            ReturnToCallingActivity(false, true);
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
     public void onBackPressed() {
-        ReturnToCallingActivity(false);
+        ReturnToCallingActivity(false, true);
     }
 
     /**
      * Will return to the calling activity and pass the login success parameter
      * @param success is the user now logged in
      */
-    private void ReturnToCallingActivity(final boolean success) {
+    private void ReturnToCallingActivity(final boolean success, final boolean canceled) {
         submitButton.post(new Runnable() {
             @Override
             public void run() {
                 getWindow().setSoftInputMode(prevLayoutParams); //reset the keyboard and window layout to how it was before
-                Intent data = new Intent();
-                data.putExtra("login_success", success);
-                setResult(RESULT_OK, data);
+                Intent intent = new Intent();
+                intent.putExtra("login_success", success);
+                setResult(canceled ? RESULT_CANCELED : RESULT_OK, intent);
                 finish();   //return to the calling activity
             }
         });

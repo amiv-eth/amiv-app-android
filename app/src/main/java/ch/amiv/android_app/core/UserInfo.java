@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.EmptyStackException;
 import java.util.zip.CheckedOutputStream;
 
+import ch.amiv.android_app.events.Events;
 import ch.amiv.android_app.util.PersistentStorage;
 
 public class UserInfo implements Serializable{
@@ -121,5 +122,19 @@ public class UserInfo implements Serializable{
 
         if(!isSavedInstance)
             PersistentStorage.SaveUserInfo(context);
+    }
+
+    public static void LogoutUser(Context context){
+        if(Settings.IsEmailOnlyLogin(context)) {
+            Settings.SetToken("", context);
+        }
+        else {
+            //delete session at the server and then clear the token
+            Requests.DeleteCurrentSession(context);
+            Events.ClearSignups();
+        }
+
+        PersistentStorage.ClearUser(context);
+        UserInfo.current = null;
     }
 }

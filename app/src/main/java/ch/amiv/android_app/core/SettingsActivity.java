@@ -156,20 +156,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             langPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    //CHange local/language
-                    Resources res = getResources();
-                    Configuration conf = res.getConfiguration();
-                    conf.locale = new Locale(newValue.toString());
-                    res.updateConfiguration(conf, res.getDisplayMetrics());
-
+                    Settings.SetLanguage(newValue.toString(), getContext());
                     //update summary
                     sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, newValue);
 
                     //Restart app to apply language
-                    Intent i = getActivity().getBaseContext().getPackageManager()
-                            .getLaunchIntentForPackage( getActivity().getBaseContext().getPackageName() );
-                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(i);
+                    Intent intent = getActivity().getBaseContext().getPackageManager()
+                                        .getLaunchIntentForPackage(getActivity().getBaseContext().getPackageName());
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
 
                     return true;
                 }

@@ -34,6 +34,15 @@
         <item>de</item>
     </string-array>
 
+    <!-- Intro -->
+    <string name="select_language_universal">Select Your Language\nWähle Deine Sprache</string>
+    <string name="intro_header_app_uses">Benutze diese App zum:</string>
+    <string name="intro_info_events">Events Anmelden</string>
+    <string name="intro_info_jobs">Job Angebote lesen</string>
+    <string name="intro_info_microapps">amiv Microapps verwenden</string>
+    <string name="intro_info_barcode_id">Barcode ID</string>
+    <string name="intro_info_helper_apps">Mehr amiv Helfer Apps</string>
+
     <!-- Login -->
     <string name="login_title">Login</string>
     <string name="login_prompt">Bitte geben Sie Ihre Zugangsdaten ein</string>
@@ -186,6 +195,9 @@
     <string name="see_notification">Siehe Benachrichtigung&#8230;</string>
     <string name="email_only_login">Nur mit email eingeloggt</string>
     <string name="requires_login">Login Benötigt</string>
+    <string name="next">Weiter</string>
+    <string name="skip">Überspringen</string>
+    <string name="lets_go">Los Geht\'s</string>
 
 
 </resources>

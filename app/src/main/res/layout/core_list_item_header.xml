@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorAccentLight"
+    android:background="@color/accentLight"
     android:orientation="vertical"
     android:paddingTop="8dp">
 
@@ -22,6 +22,6 @@
         android:id="@+id/dividerLine"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@color/colorAccentDark" />
+        android:background="@color/accentDark" />
 </LinearLayout>
 

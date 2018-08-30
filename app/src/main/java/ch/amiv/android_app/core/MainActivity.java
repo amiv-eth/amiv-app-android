@@ -158,17 +158,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     public void LogoutUser()
     {
-        if(Settings.IsEmailOnlyLogin(getApplicationContext())) {
-            Settings.SetToken("", getApplicationContext());
-        }
-        else {
-            //delete session at the server and then clear the token
-            Requests.DeleteCurrentSession(getApplicationContext());
-            Events.ClearSignups();
-        }
+        UserInfo.LogoutUser(getApplicationContext());
 
-        PersistentStorage.ClearUser(getApplicationContext());
-        UserInfo.current = null;
         pagerAdapter.RefreshPage(ListFragment.PageType.EVENTS, true);
         SetLoginUIDirty();
 
@@ -314,9 +305,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        }/* else {
+            super.onBackPressed();    //main activity is the root activity, so dont call super else we leave the app
+        }*/
     }
     //region ========START OF DRAWER=========
 

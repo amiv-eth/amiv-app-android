@@ -96,7 +96,7 @@
                         android:layout_marginRight="16dp"
                         android:text="Posted: Today"
                         android:textAppearance="@style/Body"
-                        android:textColor="@color/textLightGray"
+                        android:textColor="@color/darkGrey"
                         android:textStyle="italic" />
 
                     <TextView
@@ -107,7 +107,7 @@
                         android:layout_marginRight="16dp"
                         android:text="Available Until: Tomorrow"
                         android:textAppearance="@style/Body"
-                        android:textColor="@color/textLightGray"
+                        android:textColor="@color/darkGrey"
                         android:textStyle="italic" />
 
                     <TextView

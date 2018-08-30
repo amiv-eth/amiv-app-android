@@ -329,7 +329,7 @@ public class ScanActivity extends AppCompatActivity {
             mTickImage.setVisibility(View.VISIBLE);
             mBGTint.setVisibility(View.VISIBLE);
             mTickImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_anim_grow));
-            mTickImage.setColorFilter(getResources().getColor(R.color.colorValid));
+            mTickImage.setColorFilter(getResources().getColor(R.color.valid));
 
             if(EventDatabase.instance.eventData.eventType == EventData.EventType.Counter) {
                 mCheckinCountLabel.setVisibility(View.VISIBLE);
@@ -342,13 +342,13 @@ public class ScanActivity extends AppCompatActivity {
 
             if(member.membership.equalsIgnoreCase("regular"))
             {
-                mTickImage.setColorFilter(getResources().getColor(R.color.colorValid));
-                mBGTint.setColorFilter(getResources().getColor(R.color.colorValid));
+                mTickImage.setColorFilter(getResources().getColor(R.color.valid));
+                mBGTint.setColorFilter(getResources().getColor(R.color.valid));
             }
             else
             {
-                mTickImage.setColorFilter(getResources().getColor(R.color.colorOrange));
-                mBGTint.setColorFilter(getResources().getColor(R.color.colorOrange));
+                mTickImage.setColorFilter(getResources().getColor(R.color.orange));
+                mBGTint.setColorFilter(getResources().getColor(R.color.orange));
             }
 
             Settings.Vibrate(Settings.VibrateTime.NORMAL, getApplicationContext());
@@ -369,20 +369,20 @@ public class ScanActivity extends AppCompatActivity {
             mResponseLabel.setVisibility(View.VISIBLE);
             mResponseLabel.setText(responseText);
             mTickImage.setVisibility(View.VISIBLE);
-            mTickImage.setColorFilter(getResources().getColor(R.color.colorValid));
+            mTickImage.setColorFilter(getResources().getColor(R.color.valid));
             mTickImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_anim_grow));
             mBGTint.setVisibility(View.VISIBLE);
 
 
             if(responseText.substring(0, 12).equalsIgnoreCase("regular"))
             {
-                mTickImage.setColorFilter(getResources().getColor(R.color.colorValid));
-                mBGTint.setColorFilter(getResources().getColor(R.color.colorValid));
+                mTickImage.setColorFilter(getResources().getColor(R.color.valid));
+                mBGTint.setColorFilter(getResources().getColor(R.color.valid));
             }
             else
             {
-                mTickImage.setColorFilter(getResources().getColor(R.color.colorOrange));
-                mBGTint.setColorFilter(getResources().getColor(R.color.colorOrange));
+                mTickImage.setColorFilter(getResources().getColor(R.color.orange));
+                mBGTint.setColorFilter(getResources().getColor(R.color.orange));
             }
 
             Settings.Vibrate(Settings.VibrateTime.NORMAL, getApplicationContext());
@@ -394,7 +394,7 @@ public class ScanActivity extends AppCompatActivity {
             mCrossImage.setVisibility(View.VISIBLE);
             mCrossImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_anim_grow));
             mBGTint.setVisibility(View.VISIBLE);
-            mBGTint.setColorFilter(getResources().getColor(R.color.colorInvalid));
+            mBGTint.setColorFilter(getResources().getColor(R.color.invalid));
         }
         else
         {                  //invalid legi/already checked in etc
@@ -403,7 +403,7 @@ public class ScanActivity extends AppCompatActivity {
             mCrossImage.setVisibility(View.VISIBLE);
             mCrossImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_anim_grow));
             mBGTint.setVisibility(View.VISIBLE);
-            mBGTint.setColorFilter(getResources().getColor(R.color.colorInvalid));
+            mBGTint.setColorFilter(getResources().getColor(R.color.invalid));
 
             Settings.Vibrate(Settings.VibrateTime.LONG, getApplicationContext());
         }

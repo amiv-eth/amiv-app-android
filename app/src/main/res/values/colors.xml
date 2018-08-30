@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#e8462b</color>
-    <color name="colorSecondary">#1f2d54</color>
-    <color name="colorAccent">#5d78c1</color>
-    <color name="colorAccentDark">#374773</color>
-    <color name="colorAccentLight">#f2f2f2</color>
+    <color name="primary">#e8462b</color>
+    <color name="secondary">#1f2d54</color>
+    <color name="accent">#5d78c1</color>
+    <color name="accentDark">#374773</color>
+    <color name="accentLight">#f2f2f2</color>
     <color name="backgroundDark">#131826</color>
     <color name="white">#ffffff</color>
-    <color name="colorYellow">#ffc107</color>
-    <color name="colorGreen">#4caf50</color>
+    <color name="yellow">#ffc107</color>
+    <color name="green">#4caf50</color>
 
-    <color name="colorValid">#FF669900</color>
-    <color name="colorInvalid">#FFCC0000</color>
-    <color name="colorOrange">#F79C3B</color>
-    <color name="colorLightGrey">#d1d1d1</color>
-
-    <color name="refresh_progress_1">@color/white</color>
-    <color name="refresh_progress_2">@color/white</color>
-    <color name="refresh_progress_3">@color/white</color>
-
-    <color name="textLightGray">#3f3f3f</color>
+    <color name="valid">#FF669900</color>
+    <color name="invalid">#FFCC0000</color>
+    <color name="orange">#F79C3B</color>
+    <color name="lightGrey">#d1d1d1</color>
+    <color name="darkGrey">#3f3f3f</color>
 </resources>

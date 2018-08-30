@@ -255,7 +255,7 @@
         android:focusable="true"
         android:onClick="StartMemberListActivity"
         android:tint="@android:color/white"
-        app:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_format_list_bulleted_black_24dp" />

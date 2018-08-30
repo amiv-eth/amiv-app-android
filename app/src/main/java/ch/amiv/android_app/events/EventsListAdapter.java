@@ -177,13 +177,13 @@ public class EventsListAdapter extends BaseRecyclerAdapter {
                     eventInfoHolder.statusImage.setVisibility(View.VISIBLE);
                     eventInfoHolder.placesField.setVisibility(View.GONE);
                     eventInfoHolder.statusImage.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_check, activity.getTheme()));
-                    eventInfoHolder.statusImage.setColorFilter(activity.getResources().getColor(R.color.colorGreen, activity.getTheme()));
+                    eventInfoHolder.statusImage.setColorFilter(activity.getResources().getColor(R.color.green, activity.getTheme()));
                 }
                 else if (e.accepted || e.confirmed || e.IsSignedUp()) {
                     eventInfoHolder.statusImage.setVisibility(View.VISIBLE);
                     eventInfoHolder.placesField.setVisibility(View.GONE);
                     eventInfoHolder.statusImage.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_pending, activity.getTheme()));
-                    eventInfoHolder.statusImage.setColorFilter(activity.getResources().getColor(R.color.colorYellow, activity.getTheme()));
+                    eventInfoHolder.statusImage.setColorFilter(activity.getResources().getColor(R.color.yellow, activity.getTheme()));
                 }
                 else {
                     eventInfoHolder.statusImage.setVisibility(View.GONE);

@@ -2,8 +2,14 @@ package ch.amiv.android_app.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Vibrator;
 import android.util.Log;
+
+import java.util.Locale;
+
+import ch.amiv.android_app.R;
 
 /**
  * This class is used to save settings so they can be restored in another session later.
@@ -27,6 +33,7 @@ public class Settings {
     private static final String themeKey = "ch.amiv.android_app.theme";
     private static final boolean defaultTheme = false;  //false for light
     private static final String apiTokenKey = "ch.amiv.android_app.apitoken";
+    private static final String introDoneKey = "ch.amiv.android_app.introdone";
 
     private static Vibrator vibrator;
     public static final class VibrateTime {
@@ -123,20 +130,43 @@ public class Settings {
     }
 
 
-    // Theme
-    public static void SetIsDarkTheme(boolean value, Context context) {
+    /**
+     * Will change the language, NOTE: Highly advised to restart the app/activty for changes to take effect.
+     * New strings that are loaded will be in the correct language, but UI that is already created/still in memory will NOT change.
+     * Returns true if the language has been changed
+     */
+    public static void SetLanguage(String value, Context context) {
         CheckInitSharedPrefs(context);
-        sharedPrefs.edit().putBoolean(themeKey, value).apply();
+
+        sharedPrefs.edit().putString(context.getResources().getString(R.string.pref_lang_key), value).commit();//need to use commit(blocks current thread) instead of apply(multithreaded)
+
+        //Change locale/language
+        Resources res = context.getResources();
+        Configuration conf = res.getConfiguration();
+        conf.locale = new Locale(value);
+        res.updateConfiguration(conf, res.getDisplayMetrics());
     }
 
-    public static boolean GetIsDarkTheme(Context context) {
+    public static String GetLanguage(Context context) {
         CheckInitSharedPrefs(context);
-        return sharedPrefs.getBoolean(themeKey, defaultTheme);
+        Resources res = context.getResources();
+        return sharedPrefs.getString(res.getString(R.string.pref_lang_key), "");
     }
 
+    public static void SetIntroDone(boolean value, Context context) {
+        CheckInitSharedPrefs(context);
+        sharedPrefs.edit().putBoolean(introDoneKey, value).apply();
+    }
+
+    public static boolean GetIntroDone(Context context)
+    {
+        CheckInitSharedPrefs(context);  //will ensure that shared prefs exists so we can edit
+        return sharedPrefs.getBoolean(introDoneKey, false);
+    }
 
     //SAMPLE get set functions for a new variable to be stored in settings
-    /*public static void SetMyValue(String value) {
+    /*public static void SetMyValue(String value, Context context) {
+        CheckInitSharedPrefs(context);
         sharedPrefs.edit().putString(MY_VALUE_PREF_KEY, value).apply();
     }
 
