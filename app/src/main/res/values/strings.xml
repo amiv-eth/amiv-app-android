@@ -1,15 +1,15 @@
 <resources>
     <!-- Titles -->
-    <string name="title">amiv</string>
-    <string name="app_name">amiv</string>
-    <string name="app_name_checkin">amiv Check-in</string>
-    <string name="title_home">Home</string>
-    <string name="title_blitz">blitz</string>
+    <string name="title" translatable="false">amiv</string>
+    <string name="app_name" translatable="false">amiv</string>
+    <string name="app_name_checkin" translatable="false">amiv Check-in</string>
+    <string name="title_events">Events</string>
+    <string name="title_blitz" translatable="false">blitz</string>
     <string name="title_jobs">Job Offers</string>
     <string name="title_notifications">Notifications</string>
     <string name="settings_title">Settings</string>
-    <string name="apps_title">Apps</string>
-    <string name="check_in_title">Check-in</string>
+    <string name="apps_title" translatable="false">Apps</string>
+    <string name="check_in_title" translatable="false">Check-in</string>
     <string name="barcode_id_title">Barcode ID</string>
     <string name="info_title">Info</string>
 
@@ -25,7 +25,7 @@
 
     <!-- Language -->
     <string name="pref_lang_title">Language - Sprache</string>
-    <string name="pref_lang_key">lang</string>
+    <string name="pref_lang_key" translatable="false">lang</string>
     <string-array name="pref_lang_list_values">
         <item>English</item>
         <item>Deutsch</item>
@@ -43,6 +43,10 @@
     <string name="intro_info_microapps">Use amiv Microapps</string>
     <string name="intro_info_barcode_id">Barcode ID</string>
     <string name="intro_info_helper_apps">More amiv Helper apps</string>
+    <string name="rfid" translatable="false">RFID</string>
+    <string name="rfid_no">RFID No.</string>
+    <string name="intro_rfid_hint">A 6-Digit number on the back of your Legi</string>
+    <string name="intro_profile_title">Please Update Your Info</string>
 
     <!-- Login -->
     <string name="login_title">Login</string>
@@ -96,18 +100,20 @@
         <item>Everything</item>
         <item>Vegetarian</item>
         <item>Nothing</item>
+        <item>Other</item>
     </string-array>
     <string-array name="pref_food_list_entries">
         <item>all</item>
         <item>veg</item>
         <item>nothing</item>
+        <item>other</item>
     </string-array>
 
     <string name="pref_sbb_title">Public Transport</string>
-    <string name="pref_sbb_key">sbb_list</string>
+    <string name="pref_sbb_key" translatable="false">sbb_list</string>
     <string-array name="pref_sbb_list_values">
         <item>GA</item>
-        <item>Gleis7</item>
+        <item>Gleis 7</item>
         <item>Half Tax</item>
         <item>Nothing</item>
     </string-array>
@@ -120,7 +126,7 @@
 
     <string name="pref_notifications_title">Receive Notifications</string>
     <string name="pref_notifications_desc">Get updates about events</string>
-    <string name="pref_notifications_key">notif_enabled</string>
+    <string name="pref_notifications_key" translatable="false">notif_enabled</string>
 
 
     <!-- CHECKIN Package -->
@@ -131,7 +137,7 @@
     <string name="no_barcode_detected">No Barcode Detected</string>
     <string name="invalid_pin">Invalid PIN</string>
     <string name="invalid_url">Invalid URL</string>
-    <string name="checkin_server_url">https://checkin.amiv.ethz.ch</string>
+    <string name="checkin_server_url" translatable="false">https://checkin.amiv.ethz.ch</string>
 
     <string name="open_website">Open Website</string>
     <string name="seconds">Seconds</string>
@@ -197,6 +203,7 @@
     <string name="next">Next</string>
     <string name="skip">Skip</string>
     <string name="lets_go">Let\'s Go</string>
-
+    <string name="other">Other</string>
+    <string name="intro_event_prefs_title">Set Your Event Preferences</string>
 
 </resources>

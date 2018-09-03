@@ -3,8 +3,8 @@
 
     <item
         android:id="@+id/bottom_nav_events"
-        android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/title_home" />
+        android:icon="@drawable/ic_event"
+        android:title="@string/title_events" />
 
     <!--
     <item

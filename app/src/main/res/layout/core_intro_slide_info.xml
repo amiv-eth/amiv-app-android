@@ -8,7 +8,7 @@
     android:background="@color/primary">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -35,161 +35,166 @@
         android:background="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/title" />
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/line">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="72dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:tint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/line"
-                app:srcCompat="@drawable/ic_event" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:text="@string/intro_info_events"
-                android:textColor="@android:color/white" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="72dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:tint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/line"
-                app:srcCompat="@drawable/ic_suitcase" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:text="@string/intro_info_jobs"
-                android:textColor="@android:color/white" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="16dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp">
 
-            <ImageView
-                android:layout_width="72dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:tint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/line"
-                app:srcCompat="@drawable/ic_apps" />
-
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="8dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/intro_info_microapps"
-                android:textColor="@android:color/white" />
+                android:orientation="horizontal">
 
-        </LinearLayout>
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:tint="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/line"
+                    app:srcCompat="@drawable/ic_event" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="24dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/intro_info_events"
+                    android:textColor="@android:color/white" />
 
-            <ImageView
-                android:layout_width="72dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:tint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/line"
-                app:srcCompat="@drawable/ic_card" />
+            </LinearLayout>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="8dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
                 android:layout_weight="1"
-                android:text="@string/intro_info_barcode_id"
-                android:textColor="@android:color/white" />
+                android:orientation="horizontal">
 
-        </LinearLayout>
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:tint="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/line"
+                    app:srcCompat="@drawable/ic_suitcase" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="24dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/intro_info_jobs"
+                    android:textColor="@android:color/white" />
 
-            <ImageView
-                android:layout_width="72dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:tint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/line"
-                app:srcCompat="@drawable/ic_menu_camera" />
+            </LinearLayout>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="8dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
                 android:layout_weight="1"
-                android:text="@string/intro_info_helper_apps"
-                android:textColor="@android:color/white" />
+                android:orientation="horizontal">
 
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:tint="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/line"
+                    app:srcCompat="@drawable/ic_apps" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/intro_info_microapps"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:tint="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/line"
+                    app:srcCompat="@drawable/ic_card" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/intro_info_barcode_id"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:tint="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/line"
+                    app:srcCompat="@drawable/ic_menu_camera" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/intro_info_helper_apps"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
         </LinearLayout>
-
-    </LinearLayout>
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>

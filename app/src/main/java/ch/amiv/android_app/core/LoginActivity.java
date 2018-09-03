@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        isIntroLogin = !Settings.GetIntroDone(this);
+        isIntroLogin = !Settings.GetBoolPref(Settings.introDoneKey, getApplicationContext());
 
         //Set for the keyboard to resize the window so the snackbars appear just above the keyboard
         prevLayoutParams = getWindow().getAttributes().softInputMode;

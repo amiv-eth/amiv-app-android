@@ -101,9 +101,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         PersistentStorage.LoadJobs(getApplicationContext());
         InitialisePageView();
 
-        new Settings(getApplicationContext()); //creates the settings instance, so we can store/retrieve shared preferences
         //fetch the user info if we are logged in, there exists a token from the previous session, should be cached.
-
         if(!PersistentStorage.LoadUserInfo(getApplicationContext()) || UserInfo.current._id.isEmpty() && !Settings.IsEmailOnlyLogin(getApplicationContext())) {
             Requests.FetchUserData(getApplicationContext(), drawerNavigation, new Requests.OnDataReceivedCallback() {
                 @Override

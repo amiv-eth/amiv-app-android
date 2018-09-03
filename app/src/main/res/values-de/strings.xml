@@ -1,15 +1,9 @@
 <resources>
     <!-- Titles -->
-    <string name="title">amiv</string>
-    <string name="app_name">amiv</string>
-    <string name="app_name_checkin">amiv Check-in</string>
-    <string name="title_home">Home</string>
-    <string name="title_blitz">blitz</string>
+    <string name="title_events">Events</string>
     <string name="title_jobs">Jobangebote</string>
     <string name="title_notifications">Benachrichtigungen</string>
     <string name="settings_title">Einstellungen</string>
-    <string name="apps_title">Apps</string>
-    <string name="check_in_title">Check-in</string>
     <string name="barcode_id_title">Barcode ID</string>
     <string name="info_title">Info</string>
 
@@ -24,7 +18,6 @@
 
     <!-- Language -->
     <string name="pref_lang_title">Language - Sprache</string>
-    <string name="pref_lang_key">lang</string>
     <string-array name="pref_lang_list_values">
         <item>English</item>
         <item>Deutsch</item>
@@ -42,6 +35,9 @@
     <string name="intro_info_microapps">amiv Microapps verwenden</string>
     <string name="intro_info_barcode_id">Barcode ID</string>
     <string name="intro_info_helper_apps">Mehr amiv Helfer Apps</string>
+    <string name="intro_rfid_hint">Eine 6-stellige Zahl auf der Rückseite Ihrer Legi</string>
+    <string name="rfid_no">RFID Nr.</string>
+    <string name="intro_profile_title">Bitte Ihre Daten Aktualisieren</string>
 
     <!-- Login -->
     <string name="login_title">Login</string>
@@ -63,7 +59,7 @@
     <string name="waiting_list_size">Wartelistengröße</string>
     <string name="available_places">Restliche Plätze</string>
     <string name="price_free">Gratis</string>
-    <string name="new_caps">NEU\u0020</string>
+    <string name="new_caps">NEU\\u0020</string>
 
     <!-- Event Registering -->
     <string name="register_title">Anmelden</string>
@@ -88,21 +84,22 @@
     <string name="error_image_load">Fehler aufgetreten</string>
     <string name="snack_error_retry">Fehler aufgetreten, bitte erneut versuchen</string>
 
-    <string name="pref_food_title">Essen Preferenz</string>
+    <string name="pref_food_title">Essen Präferenz</string>
     <string name="pref_food_key">food</string>
     <string-array name="pref_food_list_values">
         <item>Alles</item>
         <item>Vegetarisch</item>
         <item>Nichts</item>
+        <item>Anderes</item>
     </string-array>
     <string-array name="pref_food_list_entries">
         <item>all</item>
         <item>veg</item>
         <item>nothing</item>
+        <item>other</item>
     </string-array>
 
     <string name="pref_sbb_title">ÖV Abo</string>
-    <string name="pref_sbb_key">sbb_list</string>
     <string-array name="pref_sbb_list_values">
         <item>GA</item>
         <item>Gleis7</item>
@@ -118,7 +115,6 @@
 
     <string name="pref_notifications_title">Benachrichtigungen</string>
     <string name="pref_notifications_desc">Erhalte benachrichtigungen über events</string>
-    <string name="pref_notifications_key">notif_enabled</string>
 
 
     <!-- CHECKIN Package -->
@@ -129,7 +125,6 @@
     <string name="no_barcode_detected">Kein Barcode Gefunden</string>
     <string name="invalid_pin">Falscher PIN</string>
     <string name="invalid_url">Falscher URL</string>
-    <string name="checkin_server_url">https://checkin.amiv.ethz.ch</string>
     <string name="open_website">Webseite Öffnen</string>
 
     <string name="seconds">Sekunden</string>
@@ -198,6 +193,8 @@
     <string name="next">Weiter</string>
     <string name="skip">Überspringen</string>
     <string name="lets_go">Los Geht\'s</string>
+    <string name="other">Anderes</string>
+    <string name="intro_event_prefs_title">Wähle Deine Event Präferenzen</string>
 
 
 </resources>

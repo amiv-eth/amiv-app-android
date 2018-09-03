@@ -16,6 +16,7 @@ public class UserInfo implements Serializable{
     public static UserInfo current;
 
     public String _id = "";
+    public String _etag = "";
     public String session_id = "";
     public String session_etag = "";
     public String nethz = "";
@@ -57,6 +58,8 @@ public class UserInfo implements Serializable{
             //dont use optString as this will overwrite the current value to "" if it does not exist
             if (json.has(isFromTokenRequest ? "user" : "_id"))
                 _id = json.getString(isFromTokenRequest ? "user" : "_id");
+            if (json.has("_etag"))
+                _etag = json.getString("_etag");
 
             if(json.has("session_etag"))
                 session_etag = json.getString("session_etag");  //if from a gson saved locally

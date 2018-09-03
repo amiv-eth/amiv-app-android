@@ -2,6 +2,7 @@ package ch.amiv.android_app.core;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -12,11 +13,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.ui.NonSwipeableViewPager;
+import ch.amiv.android_app.ui.PrefDetailView;
+import ch.amiv.android_app.util.Util;
 
 public class IntroActivity extends AppCompatActivity {
 
@@ -25,18 +29,38 @@ public class IntroActivity extends AppCompatActivity {
     private LinearLayout dotsLayout;
     private TextView[] dots;
     private Button btnSkip, btnNext;
+    private EditText rfidField;
 
     //page configs & layouts
     private int[] layouts = {
             R.layout.core_intro_slide_language,
             R.layout.core_intro_slide_info,
             R.layout.core_intro_slide_profile,
-            R.layout.core_intro_slide_event_prefs};
-    private boolean[] allowSkip = {false, false, true, false};
-    private int[] nextText = {0, R.string.next, 0, R.string.lets_go};//set to 0 to hide next button
+            R.layout.core_intro_slide_event_prefs,
+            R.layout.core_intro_slide_pref_detail};//Used for editing an enum pref
+
+    private static final class Page {
+        private static final int LANGUAGE = 0;
+        private static final int APP_INFO = 1;
+        private static final int EDIT_PROFILE = 2;
+        private static final int EVENT_PREF = 3;
+        private static final int PREF_DETAIL = 4;
+    }
+
+    private boolean[] allowSkip = {false, false, true, false, false};
+    private int[] nextText = {0, R.string.next, R.string.next, R.string.lets_go, 0};//set to 0 to hide next button
 
     private boolean hasLoggedIn;    //used when using back after the login page
     private String langSetIntentKey = "lang_set";
+
+    private View.OnClickListener onNextClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (viewPager.getCurrentItem() == 2)//If we press next on the profile page, submit new data
+                UpdateProfile();
+            NextPage(true);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +71,7 @@ public class IntroActivity extends AppCompatActivity {
         dotsLayout = findViewById(R.id.layoutDots);
         btnSkip = findViewById(R.id.buttonSkip);
         btnNext = findViewById(R.id.buttonNext);
+        rfidField = findViewById(R.id.rfidField);
 
         boolean hasSetLang = false;
         Intent intent = getIntent();
@@ -66,12 +91,7 @@ public class IntroActivity extends AppCompatActivity {
             }
         });
 
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NextPage(true);
-            }
-        });
+        btnNext.setOnClickListener(onNextClick);
 
         if(hasSetLang)
             NextPage(true);
@@ -82,17 +102,17 @@ public class IntroActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         int currentPos = viewPager.getCurrentItem();
-        if(currentPos == 2) {
+        if(currentPos == Page.EDIT_PROFILE) {
             StartLoginActivity(true);
         }
-        else if(currentPos == 3){
+        else if(currentPos == Page.EVENT_PREF){
             if(hasLoggedIn)
-                viewPager.setCurrentItem(2);
+                SetPage(Page.EDIT_PROFILE, true);
             else
                 StartLoginActivity(true);
         }
         else if(currentPos > 0)
-            viewPager.setCurrentItem(currentPos -1);
+            SetPage(currentPos -1, true);
 
         //Dont call super.onBackPressed as we will otherwise leave the app
     }
@@ -113,7 +133,10 @@ public class IntroActivity extends AppCompatActivity {
      * Will update the page dots at the bottom, to indicate which page we are on. note: the views are deleted and recreated
      */
     private void RefreshPageDots(int currentPage) {
-        dots = new TextView[layouts.length +1]; //+1 for login acitivty
+        if(currentPage > layouts.length -2)//pref detail view
+            return;
+
+        dots = new TextView[layouts.length]; //+1 for login acitivty, -1 for pref detail
 
         int inactive = ContextCompat.getColor(this, R.color.darkGrey);
         dotsLayout.removeAllViews();
@@ -126,17 +149,40 @@ public class IntroActivity extends AppCompatActivity {
         }
 
         if (dots.length > 0)//change indexes for login activity
-            dots[currentPage < 2 ? currentPage : currentPage +1].setTextColor(ContextCompat.getColor(this, R.color.lightGrey));
+            dots[currentPage < Page.EDIT_PROFILE ? currentPage : currentPage +1].setTextColor(ContextCompat.getColor(this, R.color.lightGrey));
     }
 
     private void NextPage(boolean success){
-        int nextPos = viewPager.getCurrentItem() + 1;
-        if (nextPos == 2)//go to login first
+        int currentPos = viewPager.getCurrentItem();
+        if(currentPos == Page.EDIT_PROFILE)
+            Util.HideKeyboard(this);
+
+        if (currentPos == Page.APP_INFO)//go to login first
             StartLoginActivity(false);
-        else if (nextPos < layouts.length) {
-            viewPager.setCurrentItem(nextPos);
-        } else {
+        else if (currentPos == Page.EVENT_PREF)
             StartMainAcivity();
+        else if (currentPos +1 < layouts.length)
+            SetPage(currentPos +1, true);
+
+    }
+
+    private void SetPage(int page, boolean setupPage){
+        viewPager.setCurrentItem(page);//This actually changes the page, otherwise we are just setting up the new page
+
+        if(!setupPage)
+            return;
+
+        //Setup Next Page
+        if(page == Page.EVENT_PREF){//Setup pref values XXXXX Check this
+            TextView foodLabel = findViewById(R.id.foodPrefText);
+            String foodValue = Settings.GetPref(Settings.foodPrefKey, getApplicationContext());
+            if(foodLabel != null)
+                foodLabel.setText(foodValue);
+
+            TextView sbbLabel = findViewById(R.id.sbbPrefText);
+            String sbbValue = Settings.GetPref(Settings.sbbPrefKey, getApplicationContext());
+            if(sbbLabel != null)
+                sbbLabel.setText(sbbValue);
         }
     }
 
@@ -204,10 +250,23 @@ public class IntroActivity extends AppCompatActivity {
             if(hasLoggedIn)
                 hasLoggedIn = Settings.HasToken(getApplicationContext());//check if user is only logged in by mail, or if we have no user profile to edit
 
-            if(resultCode == RESULT_OK)
-                viewPager.setCurrentItem(hasLoggedIn ? 2 : 3);
+            if(resultCode == RESULT_OK) {
+                if(hasLoggedIn){
+                    SetPage(Page.EDIT_PROFILE, true);
+                    Snackbar.make(viewPager, "Fetching Profile", 1000).show();
+                    Requests.FetchUserData(getApplicationContext(), viewPager, new Requests.OnDataReceivedCallback() {
+                        @Override
+                        public void OnDataReceived() {
+                            SetProfileUI();
+                        }
+                    });
+                }
+                else
+                    SetPage(Page.EVENT_PREF, true);
+
+            }
             else
-                viewPager.setCurrentItem(1);//means the user canceled using back, show the previous page
+                SetPage(Page.APP_INFO, true);//means the user canceled using back, show the previous page
         }
     }
 
@@ -218,7 +277,7 @@ public class IntroActivity extends AppCompatActivity {
     }
 
     private void StartMainAcivity() {
-        Settings.SetIntroDone(true, this);
+        Settings.SetBoolPref(Settings.introDoneKey, true, this);
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
@@ -250,6 +309,90 @@ public class IntroActivity extends AppCompatActivity {
 
     //region---Profile---
 
+    /**
+     * Use this to fill in the profile text fields once the userInfo has been received
+     */
+    private void SetProfileUI(){
+        if(rfidField == null)
+            rfidField = findViewById(R.id.rfidField);
+        rfidField.setText(UserInfo.current.rfid);
+    }
+
+    /**
+     * Use this to update the profile info and submit to the server
+     */
+    private void UpdateProfile(){
+        String newRfid = rfidField.getText().toString();
+        if(newRfid.isEmpty() || newRfid.equalsIgnoreCase(UserInfo.current.rfid))
+            return;
+
+        UserInfo.current.rfid = newRfid;
+        Requests.PatchUserData(getApplicationContext());
+    }
+    //endregion
+
+    //region---Prefs---
+    public void EditFoodPrefs(View view){
+        SetPage(Page.PREF_DETAIL, true);
+
+        final PrefDetailView.OnButtonIndexClicked onClick = new PrefDetailView.OnButtonIndexClicked() {
+            @Override
+            public void OnClick(int enumIndex) {//use length-1 when other is used
+                if(enumIndex < 0)
+                    return;
+                SetPage(Page.EVENT_PREF, false);
+
+                //Set the event pref
+                String value = getResources().getStringArray(R.array.pref_food_list_values)[enumIndex];
+                Settings.SetPref(Settings.foodPrefKey, value, getApplicationContext());
+                if(enumIndex == getResources().getStringArray(R.array.pref_food_list_values).length -1 && findViewById(R.id.otherField) != null) {
+                    Settings.SetPref(Settings.specialFoodPrefKey, ((EditText)findViewById(R.id.otherField)).getText().toString(), getApplicationContext());
+                }
+
+                TextView label = findViewById(R.id.foodPrefText);
+                if(label != null)
+                    label.setText(getResources().getStringArray(R.array.pref_food_list_values)[enumIndex]);
+                btnNext.setOnClickListener(onNextClick);
+            }
+        };
+
+        PrefDetailView.InitialiseList(this, R.string.pref_food_title, onClick, getResources().getStringArray(R.array.pref_food_list_values), true);
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClick.OnClick(getResources().getStringArray(R.array.pref_food_list_values).length -1);
+            }
+        });
+    }
+
+    public void EditSBBPrefs(View view){
+        SetPage(Page.PREF_DETAIL, true);
+
+        final PrefDetailView.OnButtonIndexClicked onClick = new PrefDetailView.OnButtonIndexClicked() {
+            @Override
+            public void OnClick(int enumIndex) {//use length-1 when other is used
+                if(enumIndex < 0)
+                    return;
+                SetPage(Page.EVENT_PREF, false);
+
+                String value = getResources().getStringArray(R.array.pref_sbb_list_values)[enumIndex];
+                Settings.SetPref(Settings.sbbPrefKey, value, getApplicationContext());
+
+                TextView label = findViewById(R.id.sbbPrefText);
+                if(label != null)
+                    label.setText(getResources().getStringArray(R.array.pref_sbb_list_values)[enumIndex]);
+                btnNext.setOnClickListener(onNextClick);
+            }
+        };
+
+        PrefDetailView.InitialiseList(this, R.string.pref_sbb_title, onClick, getResources().getStringArray(R.array.pref_sbb_list_values), false);
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClick.OnClick(getResources().getStringArray(R.array.pref_sbb_list_values).length -1);
+            }
+        });
+    }
     //endregion
     //endregion
 }

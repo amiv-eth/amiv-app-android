@@ -32,10 +32,27 @@ import java.util.Map;
 import ch.amiv.android_app.events.Events;
 import ch.amiv.android_app.jobs.Jobs;
 
+/**
+ * A static class to do backround http requests to the amiv api. Access these requests anywhere
+ * Most requests have a callback, so you can execute code when the request has returned or failed
+ * See API Docs to see what requests can be done: https://api.amiv.ethz.ch/docs  or via github site https://github.com/amiv-eth/amivapi
+ *
+ * It is advised to test requests first with Postman or similar.
+ * To see the output of the requests setup Postman as a proxy server, and then set your computer's IP as the proxy in the phones wi-fi setting for the current connection
+ *
+ * Generally, call a FetchX function from anywhere, which will create and format the request then use SendRequest to submit the formatted request
+ * When creating your own, have a look at the override functions available for the StringRequest. Note the difference between getHeaders and getParams
+ *
+ * To add auth with a token, from settings see one of the functions as an example, eg. FetchEventSignups
+ *
+ * To load images, don't use a request directly, use a networkImageView, which will handle everything for you including caching
+ *
+ * Libary used for network stuff: volley, note: we use our own modified version of the libary as a git submodule
+ */
 public final class Requests {
     private static RequestQueue requestQueue;
     private static ImageLoader imageLoader;
-    private static final int MAX_CACHED_IMAGES = 50;
+    private static final int MAX_CACHED_IMAGES = 75;
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -383,6 +400,64 @@ public final class Requests {
                 headers.put("Authorization", auth);
 
                 return headers;
+            }
+        };
+
+        boolean hasSent = Requests.SendRequest(request, context);
+    }
+
+    /**
+     * Will update the user data in the amiv api
+     * XXX buffer and send request when internet is regained, and retry there is an error
+     */
+    public static void PatchUserData(final Context context){
+        if(!Settings.HasToken(context) || !CheckConnection(context))
+            return;
+
+        //Do patch request to /user/{userId}
+        String url = Settings.API_URL + "users/" + UserInfo.current._id;
+        StringRequest request = new StringRequest(Request.Method.PATCH, url,null, null)
+        {
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
+                if(response != null) {
+                    Log.e("request", "status Code: " + response.statusCode);
+                }
+                else
+                    Log.e("request", "Request returned null response. fetch user data");
+                return super.parseNetworkResponse(response);
+            }
+
+            @Override
+            protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
+                if(volleyError != null && volleyError.networkResponse != null)
+                    Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
+                else
+                    Log.e("request", "Request returned null response. fetch user data");
+
+                return super.parseNetworkError(volleyError);
+            }
+
+            @Override
+            public Map<String, String> getHeaders()  {
+                Map<String,String> headers = new HashMap<String, String>();
+
+                // Add basic auth with token
+                String credentials = Settings.GetToken(context) + ":";
+                String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                headers.put("Authorization", auth);
+
+                headers.put("if-match", UserInfo.current._etag);
+
+                return headers;
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("rfid", UserInfo.current.rfid);
+
+                return params;
             }
         };
 

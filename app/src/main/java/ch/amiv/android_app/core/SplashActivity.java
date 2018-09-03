@@ -16,10 +16,11 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //DEBUG to access intro
-        //Settings.SetIntroDone(false, this);
+        Settings.ClearSharedPrefs(getApplicationContext());
+
 
         Intent intent;
-        if(Settings.GetIntroDone(this))
+        if(Settings.GetBoolPref(Settings.introDoneKey, getApplicationContext()))
             intent = new Intent(this, MainActivity.class);
         else
             intent = new Intent(this, IntroActivity.class);
