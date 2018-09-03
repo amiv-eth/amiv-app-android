@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.ui.NonSwipeableViewPager;
-import ch.amiv.android_app.ui.PrefDetailView;
+import ch.amiv.android_app.ui.EnumViewGenerator;
 import ch.amiv.android_app.util.Util;
 
 public class IntroActivity extends AppCompatActivity {
@@ -173,16 +173,24 @@ public class IntroActivity extends AppCompatActivity {
             return;
 
         //Setup Next Page
-        if(page == Page.EVENT_PREF){//Setup pref values XXXXX Check this
+        if(page == Page.EVENT_PREF){//Setup pref values
             TextView foodLabel = findViewById(R.id.foodPrefText);
             String foodValue = Settings.GetPref(Settings.foodPrefKey, getApplicationContext());
-            if(foodLabel != null)
-                foodLabel.setText(foodValue);
+            if(foodLabel != null) {
+                if(foodValue.isEmpty())
+                foodLabel.setText(R.string.tap_to_set);
+                else
+                    foodLabel.setText(foodValue);
+            }
 
             TextView sbbLabel = findViewById(R.id.sbbPrefText);
             String sbbValue = Settings.GetPref(Settings.sbbPrefKey, getApplicationContext());
-            if(sbbLabel != null)
-                sbbLabel.setText(sbbValue);
+            if(sbbLabel != null) {
+                if(sbbValue.isEmpty())
+                    sbbLabel.setText(R.string.tap_to_set);
+                else
+                    sbbLabel.setText(sbbValue);
+            }
         }
     }
 
@@ -253,7 +261,8 @@ public class IntroActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK) {
                 if(hasLoggedIn){
                     SetPage(Page.EDIT_PROFILE, true);
-                    Snackbar.make(viewPager, "Fetching Profile", 1000).show();
+                    RefreshPageUI(Page.EDIT_PROFILE);
+                    btnNext.setVisibility(View.INVISIBLE);
                     Requests.FetchUserData(getApplicationContext(), viewPager, new Requests.OnDataReceivedCallback() {
                         @Override
                         public void OnDataReceived() {
@@ -308,11 +317,15 @@ public class IntroActivity extends AppCompatActivity {
     //endregion
 
     //region---Profile---
-
     /**
-     * Use this to fill in the profile text fields once the userInfo has been received
+     * Use this to fill/show in the profile text fields once the userInfo has been received
      */
     private void SetProfileUI(){
+        findViewById(R.id.loadingCircle).setVisibility(View.GONE);
+        findViewById(R.id.scrollView).setVisibility(View.VISIBLE);
+        RefreshPageUI(Page.EDIT_PROFILE);
+
+        //fill in values for the profile fields
         if(rfidField == null)
             rfidField = findViewById(R.id.rfidField);
         rfidField.setText(UserInfo.current.rfid);
@@ -322,27 +335,25 @@ public class IntroActivity extends AppCompatActivity {
      * Use this to update the profile info and submit to the server
      */
     private void UpdateProfile(){
-        String newRfid = rfidField.getText().toString();
-        if(newRfid.isEmpty() || newRfid.equalsIgnoreCase(UserInfo.current.rfid))
-            return;
-
-        UserInfo.current.rfid = newRfid;
-        Requests.PatchUserData(getApplicationContext());
+        if(UserInfo.current.SetRFID(rfidField.getText().toString()))
+            Requests.PatchUserData(getApplicationContext());
     }
     //endregion
 
     //region---Prefs---
+    /**
+     * This changes the page to edit the food pref, UI content is generated using EnumViewGenerator
+     */
     public void EditFoodPrefs(View view){
         SetPage(Page.PREF_DETAIL, true);
 
-        final PrefDetailView.OnButtonIndexClicked onClick = new PrefDetailView.OnButtonIndexClicked() {
+        final EnumViewGenerator.OnButtonIndexClicked onClick = new EnumViewGenerator.OnButtonIndexClicked() {
             @Override
             public void OnClick(int enumIndex) {//use length-1 when other is used
                 if(enumIndex < 0)
                     return;
                 SetPage(Page.EVENT_PREF, false);
 
-                //Set the event pref
                 String value = getResources().getStringArray(R.array.pref_food_list_values)[enumIndex];
                 Settings.SetPref(Settings.foodPrefKey, value, getApplicationContext());
                 if(enumIndex == getResources().getStringArray(R.array.pref_food_list_values).length -1 && findViewById(R.id.otherField) != null) {
@@ -352,11 +363,13 @@ public class IntroActivity extends AppCompatActivity {
                 TextView label = findViewById(R.id.foodPrefText);
                 if(label != null)
                     label.setText(getResources().getStringArray(R.array.pref_food_list_values)[enumIndex]);
-                btnNext.setOnClickListener(onNextClick);
+
+                btnNext.setOnClickListener(onNextClick);//reset next button
             }
         };
 
-        PrefDetailView.InitialiseList(this, R.string.pref_food_title, onClick, getResources().getStringArray(R.array.pref_food_list_values), true);
+        EnumViewGenerator.InitialiseEnumList(this, R.string.pref_food_title, onClick, getResources().getStringArray(R.array.pref_food_list_values), true);
+
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -368,7 +381,7 @@ public class IntroActivity extends AppCompatActivity {
     public void EditSBBPrefs(View view){
         SetPage(Page.PREF_DETAIL, true);
 
-        final PrefDetailView.OnButtonIndexClicked onClick = new PrefDetailView.OnButtonIndexClicked() {
+        final EnumViewGenerator.OnButtonIndexClicked onClick = new EnumViewGenerator.OnButtonIndexClicked() {
             @Override
             public void OnClick(int enumIndex) {//use length-1 when other is used
                 if(enumIndex < 0)
@@ -381,11 +394,13 @@ public class IntroActivity extends AppCompatActivity {
                 TextView label = findViewById(R.id.sbbPrefText);
                 if(label != null)
                     label.setText(getResources().getStringArray(R.array.pref_sbb_list_values)[enumIndex]);
+
                 btnNext.setOnClickListener(onNextClick);
             }
         };
 
-        PrefDetailView.InitialiseList(this, R.string.pref_sbb_title, onClick, getResources().getStringArray(R.array.pref_sbb_list_values), false);
+        EnumViewGenerator.InitialiseEnumList(this, R.string.pref_sbb_title, onClick, getResources().getStringArray(R.array.pref_sbb_list_values), false);
+
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

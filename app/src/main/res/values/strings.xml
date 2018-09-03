@@ -47,6 +47,7 @@
     <string name="rfid_no">RFID No.</string>
     <string name="intro_rfid_hint">A 6-Digit number on the back of your Legi</string>
     <string name="intro_profile_title">Please Update Your Info</string>
+    <string name="intro_event_prefs_title">Set Your Event Preferences</string>
 
     <!-- Login -->
     <string name="login_title">Login</string>
@@ -204,6 +205,6 @@
     <string name="skip">Skip</string>
     <string name="lets_go">Let\'s Go</string>
     <string name="other">Other</string>
-    <string name="intro_event_prefs_title">Set Your Event Preferences</string>
+    <string name="tap_to_set">Tap to set</string>
 
 </resources>

@@ -11,18 +11,19 @@ import android.widget.TextView;
 
 import ch.amiv.android_app.R;
 
-public class PrefDetailView {
+public class EnumViewGenerator {
     public interface OnButtonIndexClicked {
         void OnClick(int enumIndex);
     }
 
-    public static void InitialiseList(final Activity activity, int header, final OnButtonIndexClicked onClick, String[] titles, boolean addOtherField){
+    public static void InitialiseEnumList(final Activity activity, int header, final OnButtonIndexClicked onClick, String[] titles, boolean addOtherField){
         TextView titleView = activity.findViewById(R.id.title);
         titleView.setText(header);
 
         ViewGroup parent = activity.findViewById(R.id.listParent);
         parent.removeAllViews();
 
+        //Add list of options as buttons as children of the list parent (Linear layout)
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         for (int i = 0; i < titles.length + (addOtherField ? -1:0); i++) {
             Button btn = (Button) inflater.inflate(R.layout.core_intro_pref_button, null);
@@ -38,6 +39,7 @@ public class PrefDetailView {
             });
         }
 
+        //add other text field, show the save button other is tapped
         if(addOtherField){
             EditText text = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_intro_pref_other_field, parent).findViewById(R.id.otherField);
             text.setHint(titles[titles.length-1]);

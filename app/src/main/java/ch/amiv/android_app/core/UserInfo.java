@@ -127,6 +127,18 @@ public class UserInfo implements Serializable{
             PersistentStorage.SaveUserInfo(context);
     }
 
+    /**
+     * Will set the rfid if it is valid. Valid if it has 6 chars
+     * @return If the given rfid was valid/different to the current
+     */
+    public boolean SetRFID (String newRFID){
+        if(newRFID == null || newRFID.length() != 6 || newRFID.equalsIgnoreCase(UserInfo.current.rfid))
+            return false;
+
+        rfid = newRFID;
+        return true;
+    }
+
     public static void LogoutUser(Context context){
         if(Settings.IsEmailOnlyLogin(context)) {
             Settings.SetToken("", context);

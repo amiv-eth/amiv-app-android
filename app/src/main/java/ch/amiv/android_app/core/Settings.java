@@ -96,6 +96,15 @@ public class Settings {
         CheckInitSharedPrefs(context);
         sharedPrefs.edit().clear().commit();
     }
+
+    /**
+     * Note:only for string prefs
+     * @return True if the pref is at the default value
+     */
+    public static boolean IsPrefDefault(String[] key, Context context){
+        return GetPref(key, context).equals(key[1]);
+    }
+
     //endregion
 
     //region ---Auth---

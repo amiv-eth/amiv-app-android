@@ -38,6 +38,7 @@
     <string name="intro_rfid_hint">Eine 6-stellige Zahl auf der Rückseite Ihrer Legi</string>
     <string name="rfid_no">RFID Nr.</string>
     <string name="intro_profile_title">Bitte Ihre Daten Aktualisieren</string>
+    <string name="intro_event_prefs_title">Wähle Deine Event Präferenzen</string>
 
     <!-- Login -->
     <string name="login_title">Login</string>
@@ -194,7 +195,7 @@
     <string name="skip">Überspringen</string>
     <string name="lets_go">Los Geht\'s</string>
     <string name="other">Anderes</string>
-    <string name="intro_event_prefs_title">Wähle Deine Event Präferenzen</string>
+    <string name="tap_to_set">Setzen</string>
 
 
 </resources>
