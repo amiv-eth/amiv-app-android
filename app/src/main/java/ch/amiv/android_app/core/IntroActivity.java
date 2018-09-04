@@ -2,7 +2,6 @@ package ch.amiv.android_app.core;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -263,7 +262,7 @@ public class IntroActivity extends AppCompatActivity {
                     SetPage(Page.EDIT_PROFILE, true);
                     RefreshPageUI(Page.EDIT_PROFILE);
                     btnNext.setVisibility(View.INVISIBLE);
-                    Requests.FetchUserData(getApplicationContext(), viewPager, new Requests.OnDataReceivedCallback() {
+                    Request.FetchUserData(getApplicationContext(), viewPager, new Request.OnDataReceivedCallback() {
                         @Override
                         public void OnDataReceived() {
                             SetProfileUI();
@@ -336,7 +335,7 @@ public class IntroActivity extends AppCompatActivity {
      */
     private void UpdateProfile(){
         if(UserInfo.current.SetRFID(rfidField.getText().toString()))
-            Requests.PatchUserData(getApplicationContext());
+            Request.PatchUserData(getApplicationContext());
     }
     //endregion
 

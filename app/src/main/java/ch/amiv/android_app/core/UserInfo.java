@@ -6,8 +6,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.EmptyStackException;
-import java.util.zip.CheckedOutputStream;
 
 import ch.amiv.android_app.events.Events;
 import ch.amiv.android_app.util.PersistentStorage;
@@ -145,11 +143,57 @@ public class UserInfo implements Serializable{
         }
         else {
             //delete session at the server and then clear the token
-            Requests.DeleteCurrentSession(context);
+            Request.DeleteCurrentSession(context);
             Events.ClearSignups();
         }
 
         PersistentStorage.ClearUser(context);
         UserInfo.current = null;
     }
+
+    //region ---Access Level---
+    /**
+     * Use this to determine features only accessible to certain users
+     */
+    public static final class AccessLevel{
+        public static final int EVERYONE = 0;
+        public static final int EMAIL = 1; //email only login or greater
+        public static final int LOGIN = 2;  //anyone with a login
+        public static final int ADMIN = 3;  //anyone in the admin user group
+
+        //Other API user groups
+        public static final int CHECKIN = 4; //anyone in the checkin user group
+    }
+
+    /**
+     * @return If the current user is in the accessgroup
+     */
+    public static boolean IsAuthorised(int accessLevel, Context context){
+        //if(BuildConfig.DEBUG) return true;
+        //if(UserInfo.current.email.equals("dev")) return true;
+
+        switch (accessLevel){
+            case AccessLevel.EMAIL:
+                return Settings.IsLoggedIn(context);
+            case AccessLevel.LOGIN:
+                return Settings.HasToken(context);
+
+            //XXX request to see if user is in API user group
+            case AccessLevel.ADMIN:
+                return true;
+            case AccessLevel.CHECKIN:
+                return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return True if hidden features should be shown
+     */
+    public static boolean ShowHiddenFeatures(Context context){
+        return IsAuthorised(AccessLevel.ADMIN, context);
+    }
+
+    //endregion
 }

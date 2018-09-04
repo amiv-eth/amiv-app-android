@@ -15,10 +15,9 @@ import java.util.List;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.core.BaseRecyclerAdapter;
+import ch.amiv.android_app.core.UserInfo;
 import ch.amiv.android_app.util.ListHelper;
 import ch.amiv.android_app.core.MainActivity;
-
-import static ch.amiv.android_app.core.Settings.showHiddenFeatures;
 
 public class EventsListAdapter extends BaseRecyclerAdapter {
     private List<ListHelper.Pair> dataList = new ArrayList<>();
@@ -66,7 +65,7 @@ public class EventsListAdapter extends BaseRecyclerAdapter {
         int[] headers = new int[] {R.string.hidden_events_title, R.string.all_events_title, R.string.closed_events_title, R.string.past_events_title};
 
         //Debug: Start at 0 to show hidden events, headers will be offset though
-        for (int i = (showHiddenFeatures ? 0 : 1); i < Events.EventGroup.SIZE; i++) {
+        for (int i = (UserInfo.ShowHiddenFeatures(activity.getApplicationContext()) ? 0 : 1); i < Events.EventGroup.SIZE; i++) {
             if(i < headers.length)
                 dataList.add(new ListHelper.Pair(ViewType.HEADER, activity.getResources().getString(headers[i])));
 

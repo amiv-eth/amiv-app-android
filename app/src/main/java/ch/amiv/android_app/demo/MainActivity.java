@@ -27,9 +27,9 @@ public class MainActivity extends AppCompatActivity {
         EventInfo eventInfo = Events.sortedEvents.get(0).get(1);//sorted into groups by date
         eventInfo = Events.eventInfos.get(0);//unsorted list
 
-        //To Send a request to the api or elsewhere see core.Requests class for examples. Basic structure is as below
+        //To Send a request to the api or elsewhere see core.Request class for examples. Basic structure is as below
         //START of request
-        if(!Requests.CheckConnection(getApplicationContext())) {
+        if(!Request.CheckConnection(getApplicationContext())) {
             //return;
         }
 
@@ -110,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
         };
 
         //send the request and check if it failed, this will use a request queue and handle internet connection issues
-        boolean hasSent = Requests.SendRequest(request, getApplicationContext());
+        boolean hasSent = Request.SendRequest(request, getApplicationContext());
 
-        //See the Requests class for real examples, using Crl+B can be useful to jump to the definition, Crl+F for searching the whole project for a function
+        //See the Request class for real examples, using Crl+B can be useful to jump to the definition, Crl+F for searching the whole project for a function
         //END of request
 */
     }

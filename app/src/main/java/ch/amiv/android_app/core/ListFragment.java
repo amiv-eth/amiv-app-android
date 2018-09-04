@@ -1,7 +1,5 @@
 package ch.amiv.android_app.core;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -34,10 +32,10 @@ import ch.amiv.android_app.jobs.JobListAdapter;
 public class ListFragment extends Fragment {
     private int pagePosition; //the fragments page in the pageview of the main activity
     public static final class PageType {
-        public static final int COUNT          = 3;
+        public static final int COUNT          = 2;
         public static final int EVENTS         = 0;
-        public static final int NOTIFICATIONS  = 1;
-        public static final int JOBS           = 2;
+        public static final int JOBS           = 1;
+        //public static final int NOTIFICATIONS  = 2;
     }
 
     private RecyclerView recyclerView;
@@ -45,29 +43,29 @@ public class ListFragment extends Fragment {
     private RecyclerView.LayoutManager recyclerLayoutAdapter;
 
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Requests.OnDataReceivedCallback cancelRefreshCallback = new Requests.OnDataReceivedCallback() {
+    private Request.OnDataReceivedCallback cancelRefreshCallback = new Request.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
             SetRefreshUI(false);
         }
     };
 
-    public Requests.OnDataReceivedCallback onEventsListUpdatedCallback = new Requests.OnDataReceivedCallback() {
+    public Request.OnDataReceivedCallback onEventsListUpdatedCallback = new Request.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
-            Requests.FetchEventSignups(MainActivity.instance, onSignupsUpdatedCallback, null, "");
+            Request.FetchEventSignups(MainActivity.instance, onSignupsUpdatedCallback, null, "");
             RefreshList(true);
         }
     };
 
-    public Requests.OnDataReceivedCallback onJobsListUpdatedCallback = new Requests.OnDataReceivedCallback() {
+    public Request.OnDataReceivedCallback onJobsListUpdatedCallback = new Request.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
             RefreshList(true);
         }
     };
 
-    private Requests.OnDataReceivedCallback onSignupsUpdatedCallback = new Requests.OnDataReceivedCallback() {
+    private Request.OnDataReceivedCallback onSignupsUpdatedCallback = new Request.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
             RefreshList(false);
@@ -187,9 +185,9 @@ public class ListFragment extends Fragment {
 
     private void OnSwipeRefreshed(){
         if(pagePosition == PageType.EVENTS)
-            Requests.FetchEventList(MainActivity.instance, onEventsListUpdatedCallback, cancelRefreshCallback, "");
+            Request.FetchEventList(MainActivity.instance, onEventsListUpdatedCallback, cancelRefreshCallback, "");
         else if (pagePosition == PageType.JOBS)
-            Requests.FetchJobList(MainActivity.instance, onJobsListUpdatedCallback, cancelRefreshCallback, "");
+            Request.FetchJobList(MainActivity.instance, onJobsListUpdatedCallback, cancelRefreshCallback, "");
     }
 
     public void RefreshList(boolean animate)

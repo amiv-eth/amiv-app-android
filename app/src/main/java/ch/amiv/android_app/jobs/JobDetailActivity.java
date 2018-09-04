@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -25,7 +24,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import ch.amiv.android_app.R;
-import ch.amiv.android_app.core.Requests;
+import ch.amiv.android_app.core.Request;
 import ch.amiv.android_app.util.CustomNetworkImageView;
 
 /**
@@ -111,8 +110,8 @@ public class JobDetailActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.dateEnd)).setText(getResources().getString(R.string.date_available_until) + ": " + dateFormat.format(job().time_end).toString());
 
         //LoadEventImage();
-        logoImage.setImageUrl(job().GetLogoUrl(), Requests.GetImageLoader(getApplicationContext()));
-        logoImage.onImageLoaded = new Requests.OnDataReceivedCallback() {
+        logoImage.setImageUrl(job().GetLogoUrl(), Request.GetImageLoader(getApplicationContext()));
+        logoImage.onImageLoaded = new Request.OnDataReceivedCallback() {
             @Override
             public void OnDataReceived() {
                 logoImage.setColorFilter(null);

@@ -23,9 +23,6 @@ public class Settings {
     //public static final String API_URL = "http://192.168.1.105:5000/";
     public static final String API_URL = "https://api-dev.amiv.ethz.ch/";
 
-    //Whether to show hidden events, where the adverts should not have started yet, should later be set by user access group
-    public static final boolean showHiddenFeatures = true;
-
     //---PREF KEYS---- Vars for saving/reading the url from shared prefs, to allow saving between sessions. For each variable, have a key to access it and a default value
     private static SharedPreferences sharedPrefs;
     public static final String SHARED_PREFS_KEY = "ch.amiv.android_app";
@@ -125,8 +122,8 @@ public class Settings {
     }
 
     /**
-     * Note: will only check if a token exists. This token may have expired but not have been refreshed/deleted.
-     * @return True if the user is logged into the api and has an access token.
+     * Note: token may have expired but not have been refreshed/deleted.
+     * @return True if there is a token or an email login
      */
     public static boolean IsLoggedIn(Context context){
         return HasToken(context) || IsEmailOnlyLogin(context);

@@ -6,7 +6,8 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import ch.amiv.android_app.core.Requests;
+
+import ch.amiv.android_app.core.Request;
 
 import static ch.amiv.android_app.util.Util.BuildFileUrl;
 
@@ -54,7 +55,7 @@ public class JobInfo {
         String _updated = json.optString("_updated");
 
         //convert dates
-        SimpleDateFormat format = Requests.dateFormat;
+        SimpleDateFormat format = Request.dateFormat;
         try {
             if(!_end.isEmpty())
                 time_end = format.parse(_end);

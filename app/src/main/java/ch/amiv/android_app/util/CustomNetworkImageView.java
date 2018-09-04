@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 
 import com.android.volley.toolbox.NetworkImageView;
 
-import ch.amiv.android_app.core.Requests;
+import ch.amiv.android_app.core.Request;
 
 /**
  * This is a class to override the networkimageview which is a very easy class for a layout where volley will load the image for use automatically and cache the image etc
@@ -17,7 +17,7 @@ import ch.amiv.android_app.core.Requests;
 public class CustomNetworkImageView extends NetworkImageView {
 
     private static final int FADE_IN_TIME_MS = 200;
-    public Requests.OnDataReceivedCallback onImageLoaded;   //use this as a callback when the image was loaded
+    public Request.OnDataReceivedCallback onImageLoaded;   //use this as a callback when the image was loaded
 
     public CustomNetworkImageView(Context context) {
         super(context);

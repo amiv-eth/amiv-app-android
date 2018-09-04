@@ -24,7 +24,6 @@ import android.widget.TextView;
 import java.util.Vector;
 
 import ch.amiv.android_app.R;
-import ch.amiv.android_app.checkin.BarcodeIdActivity;
 import ch.amiv.android_app.events.EventDetailActivity;
 import ch.amiv.android_app.events.Events;
 import ch.amiv.android_app.jobs.JobDetailActivity;
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
 //region -  ====Variables====
-    private NavigationView drawerNavigation;
+    private NavigationView drawerNav;
     private TextView drawer_title;
     private TextView drawer_subtitle;
 
@@ -59,9 +58,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case R.id.bottom_nav_events:
                     viewPager.setCurrentItem(ListFragment.PageType.EVENTS);
                     return true;
-                case R.id.bottom_nav_notifications:
+                /*case R.id.bottom_nav_notifications:
                     viewPager.setCurrentItem(ListFragment.PageType.NOTIFICATIONS);
-                    return true;
+                    return true;*/
                 case R.id.bottom_nav_jobs:
                     viewPager.setCurrentItem(ListFragment.PageType.JOBS);
                     return true;
@@ -89,10 +88,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        drawerNavigation = findViewById(R.id.nav_view);
-        drawerNavigation.setNavigationItemSelectedListener(this);
-        drawer_title = drawerNavigation.getHeaderView(0).findViewById(R.id.drawer_user_title);
-        drawer_subtitle = drawerNavigation.getHeaderView(0).findViewById(R.id.drawer_user_subtitle);
+        drawerNav = findViewById(R.id.nav_view);
+        drawerNav.setNavigationItemSelectedListener(this);
+        drawer_title = drawerNav.getHeaderView(0).findViewById(R.id.drawer_user_title);
+        drawer_subtitle = drawerNav.getHeaderView(0).findViewById(R.id.drawer_user_subtitle);
 
         bottomNavigation = findViewById(R.id.bottomNav);
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -103,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //fetch the user info if we are logged in, there exists a token from the previous session, should be cached.
         if(!PersistentStorage.LoadUserInfo(getApplicationContext()) || UserInfo.current._id.isEmpty() && !Settings.IsEmailOnlyLogin(getApplicationContext())) {
-            Requests.FetchUserData(getApplicationContext(), drawerNavigation, new Requests.OnDataReceivedCallback() {
+            Request.FetchUserData(getApplicationContext(), drawerNav, new Request.OnDataReceivedCallback() {
                 @Override
                 public void OnDataReceived() {
                     SetLoginUIDirty();
@@ -136,8 +135,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     position = R.id.bottom_nav_events;
                 /*else if (position == 1)
                     position = R.id.bottom_nav_blitz;*/
-                else if (position == ListFragment.PageType.NOTIFICATIONS)
-                    position = R.id.bottom_nav_notifications;
+                /*else if (position == ListFragment.PageType.NOTIFICATIONS)
+                    position = R.id.bottom_nav_notifications;*/
                 else if (position == ListFragment.PageType.JOBS)
                     position = R.id.bottom_nav_jobs;
 
@@ -161,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         pagerAdapter.RefreshPage(ListFragment.PageType.EVENTS, true);
         SetLoginUIDirty();
 
-        Requests.FetchEventList(getApplicationContext(), pages.get(ListFragment.PageType.EVENTS).onEventsListUpdatedCallback, null, "");
+        Request.FetchEventList(getApplicationContext(), pages.get(ListFragment.PageType.EVENTS).onEventsListUpdatedCallback, null, "");
     }
 
     /**
@@ -170,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void SetLoginUIDirty ()
     {
         if(Settings.IsLoggedIn(getApplicationContext())) {
-            drawerNavigation.getMenu().findItem(R.id.nav_login)
+            drawerNav.getMenu().findItem(R.id.nav_login)
                 .setTitle(R.string.logout_title)
                 .setChecked(false);
             if(UserInfo.current != null)
@@ -184,15 +183,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     drawer_subtitle.setText(UserInfo.current.email);
                 }
             }
+            ///else XXX
+            ///  fetchuserinfo
         }
         else
         {
-            drawerNavigation.getMenu().findItem(R.id.nav_login)
+            drawerNav.getMenu().findItem(R.id.nav_login)
                 .setTitle(R.string.login_title)
                 .setChecked(false);
             drawer_title.setText(R.string.not_logged_in);
             drawer_subtitle.setText("");
         }
+
+        MicroApp.RefreshDrawer(this);
     }
 //endregion
 
@@ -227,21 +230,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivityForResult(intent, 0);
     }
 
-    private void StartCheckinActivity() {
-        Intent intent = new Intent(this, ch.amiv.android_app.checkin.MainActivity.class);
-        startActivity(intent);
-    }
-
-    private void StartBarcodeIdActivity() {
-        Intent intent = new Intent(this, BarcodeIdActivity.class);
-        startActivity(intent);
-    }
-
-    /*private void StartDemoActivity() {
-        Intent intent = new Intent(this, ch.amiv.android_app.demo.MainActivity.class);
-        startActivity(intent);
-    }*/
-
     /**
      * Here we can interpret the result of the login/event detail activity, if the login was successful or not, then update accordingly
      * @param requestCode
@@ -256,15 +244,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if(refreshLogin && Settings.IsLoggedIn(getApplicationContext()))
             {
                 SetLoginUIDirty();
-                Requests.FetchUserData(getApplicationContext(), drawerNavigation, new Requests.OnDataReceivedCallback() {
+                Request.FetchUserData(getApplicationContext(), drawerNav, new Request.OnDataReceivedCallback() {
                     @Override
                     public void OnDataReceived() {
                         SetLoginUIDirty();
                         //Update events and signups with the new userinfo
                         if(Events.eventInfos.size() > 0)
-                            Requests.FetchEventSignups(getApplicationContext(), pages.get(ListFragment.PageType.EVENTS).onEventsListUpdatedCallback, null, "");
+                            Request.FetchEventSignups(getApplicationContext(), pages.get(ListFragment.PageType.EVENTS).onEventsListUpdatedCallback, null, "");
                         else
-                            Requests.FetchEventList(getApplicationContext(), pages.get(ListFragment.PageType.EVENTS).onEventsListUpdatedCallback, null, "");
+                            Request.FetchEventList(getApplicationContext(), pages.get(ListFragment.PageType.EVENTS).onEventsListUpdatedCallback, null, "");
                     }
                 });
 
@@ -280,6 +268,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Use this to add an option item (three dots on top right of actionBar)
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -289,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //noinspection SimplifiableIfStatement
         /*if (id == R.id.action_favorite) {
-            Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
+            Request.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
             return true;
         }*/
 
@@ -323,14 +314,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             else
                 StartLoginActivity();
         }
-        else if (id == R.id.nav_checkin)
-            StartCheckinActivity();
-        else if (id == R.id.nav_barcode_id)
-            StartBarcodeIdActivity();
-        else if (id == R.id.nav_settings)
-            StartSettingsActivity();
-        /*else if(id == R.id.nav_demo)
-            StartDemoActivity();*/
+        //Note:microapp clicking is handled in MicroApp
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

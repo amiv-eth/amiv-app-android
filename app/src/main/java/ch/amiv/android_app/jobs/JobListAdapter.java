@@ -16,11 +16,10 @@ import java.util.List;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.core.BaseRecyclerAdapter;
+import ch.amiv.android_app.core.Request;
+import ch.amiv.android_app.core.UserInfo;
 import ch.amiv.android_app.util.ListHelper;
 import ch.amiv.android_app.core.MainActivity;
-import ch.amiv.android_app.core.Requests;
-
-import static ch.amiv.android_app.core.Settings.showHiddenFeatures;
 
 public class JobListAdapter extends BaseRecyclerAdapter {
     private List<ListHelper.Pair> dataList = new ArrayList<>();
@@ -68,7 +67,7 @@ public class JobListAdapter extends BaseRecyclerAdapter {
         headers.add(R.string.all_jobs_title);
         headers.add(R.string.past_jobs_title);
 
-        for (int i = (showHiddenFeatures ? 0 : 1); i < Jobs.JobGroup.SIZE; i++) {
+        for (int i = (UserInfo.ShowHiddenFeatures(activity.getApplicationContext()) ? 0 : 1); i < Jobs.JobGroup.SIZE; i++) {
             if(i < headers.size())
                 dataList.add(new ListHelper.Pair(JobListAdapter.ViewType.HEADER, activity.getResources().getString(headers.get(i))));
 
@@ -159,7 +158,7 @@ public class JobListAdapter extends BaseRecyclerAdapter {
                 jobInfoHolder.titleField.setText(j.GetTitle(activity.getResources()));
                 jobInfoHolder.companyField.setText(j.company);
 
-                jobInfoHolder.logoImage.setImageUrl(j.GetLogoUrl(), Requests.GetImageLoader(activity.getApplicationContext()));
+                jobInfoHolder.logoImage.setImageUrl(j.GetLogoUrl(), Request.GetImageLoader(activity.getApplicationContext()));
 
                 //Showing "new" tag if within a certain number of days of the ad start date
                 Calendar cal = Calendar.getInstance();

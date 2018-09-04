@@ -13,7 +13,6 @@ import android.view.View;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -49,7 +48,7 @@ import ch.amiv.android_app.jobs.Jobs;
  *
  * Libary used for network stuff: volley, note: we use our own modified version of the libary as a git submodule
  */
-public final class Requests {
+public final class Request {
     private static RequestQueue requestQueue;
     private static ImageLoader imageLoader;
     private static final int MAX_CACHED_IMAGES = 75;
@@ -70,7 +69,7 @@ public final class Requests {
      * @param request A volley request of generic type, eg StringRequest, JsonRequest
      * @return true if the request was sent successfully
      */
-    public static boolean SendRequest(Request request, Context context){
+    public static boolean SendRequest(com.android.volley.Request request, Context context){
         if(!CheckConnection(context))
             return false;
 
@@ -95,11 +94,11 @@ public final class Requests {
         }
 
         String url = Settings.API_URL + "events" + (eventId.isEmpty() ?
-                                                                        (Settings.showHiddenFeatures ? "" : "?where={\"show_website\":true}")
+                                                                        (UserInfo.ShowHiddenFeatures(context) ? "" : "?where={\"show_website\":true}")
                                                                         : "/" + eventId) ;
         Log.e("request", "url: " + url);
 
-        StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
+        StringRequest request = new StringRequest(com.android.volley.Request.Method.GET, url,null, null)
         {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
@@ -169,7 +168,7 @@ public final class Requests {
         };
 
         //send the request and check if it failed
-        if(!Requests.SendRequest(request, context))
+        if(!Request.SendRequest(request, context))
             RunCallback(errorCallback);
     }
 
@@ -187,7 +186,7 @@ public final class Requests {
         String url = Settings.API_URL + "eventsignups?where={\"user\":\"" + UserInfo.current._id + "\"" + (eventId.isEmpty() ? "" : ",\"event\":\"" + eventId + "\"") + "}";
         Log.e("request", "url: " + url);
 
-        StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
+        StringRequest request = new StringRequest(com.android.volley.Request.Method.GET, url,null, null)
         {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
@@ -248,7 +247,7 @@ public final class Requests {
             }
         };
 
-        if(!Requests.SendRequest(request, context))
+        if(!Request.SendRequest(request, context))
             RunCallback(errorCallback);
     }
 
@@ -260,11 +259,11 @@ public final class Requests {
         }
 
         String url = Settings.API_URL + "joboffers" + (jobId.isEmpty() ?
-                                                                        (Settings.showHiddenFeatures ? "" : "?where={\"show_website\":true}")
+                                                                        (UserInfo.ShowHiddenFeatures(context) ? "" : "?where={\"show_website\":true}")
                                                                         : "/" + jobId);
         Log.e("request", "url: " + url);
 
-        StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
+        StringRequest request = new StringRequest(com.android.volley.Request.Method.GET, url,null, null)
         {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
@@ -334,7 +333,7 @@ public final class Requests {
         };
 
         //send the request and check if it failed
-        if(!Requests.SendRequest(request, context))
+        if(!Request.SendRequest(request, context))
             RunCallback(errorCallback);
     }
 
@@ -348,7 +347,7 @@ public final class Requests {
 
         //Do request Token->User
         String url = Settings.API_URL + "sessions/" + Settings.GetToken(context) + "?embedded={\"user\":1}";
-        StringRequest request = new StringRequest(Request.Method.GET, url,null, null)
+        StringRequest request = new StringRequest(com.android.volley.Request.Method.GET, url,null, null)
         {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
@@ -403,7 +402,7 @@ public final class Requests {
             }
         };
 
-        boolean hasSent = Requests.SendRequest(request, context);
+        boolean hasSent = Request.SendRequest(request, context);
     }
 
     /**
@@ -416,7 +415,7 @@ public final class Requests {
 
         //Do patch request to /user/{userId}
         String url = Settings.API_URL + "users/" + UserInfo.current._id;
-        StringRequest request = new StringRequest(Request.Method.PATCH, url,null, null)
+        StringRequest request = new StringRequest(com.android.volley.Request.Method.PATCH, url,null, null)
         {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
@@ -461,7 +460,7 @@ public final class Requests {
             }
         };
 
-        boolean hasSent = Requests.SendRequest(request, context);
+        boolean hasSent = Request.SendRequest(request, context);
     }
 
     /**
@@ -482,7 +481,7 @@ public final class Requests {
 
         //Do request Token->User
         String url = Settings.API_URL + "sessions/" + user.session_id;
-        StringRequest request = new StringRequest(Request.Method.DELETE, url,null, null)
+        StringRequest request = new StringRequest(com.android.volley.Request.Method.DELETE, url,null, null)
         {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
@@ -521,7 +520,7 @@ public final class Requests {
         };
 
         Settings.SetToken("", context);
-        Requests.SendRequest(request, context);
+        Request.SendRequest(request, context);
     }
 
     /**

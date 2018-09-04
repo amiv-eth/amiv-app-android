@@ -19,17 +19,19 @@
             <item
                 android:id="@+id/nav_checkin"
                 android:icon="@drawable/ic_menu_camera"
+                android:visible="false"
                 android:title="@string/check_in_title" />
             <item
                 android:id="@+id/nav_barcode_id"
                 android:icon="@drawable/ic_menu_gallery"
+                android:visible="false"
                 android:title="@string/barcode_id_title" />
-            <!--
+            <!-- Add your menu item to the drawer here, set visible=false if it should not be visible to everyone
             <item
                 android:id="@+id/nav_demo"
                 android:icon="@drawable/ic_notifications"
-                android:title="Demo App" />
-                -->
+                android:visible="false"
+                android:title="Demo App" /> -->
         </menu>
     </item>
 </menu>

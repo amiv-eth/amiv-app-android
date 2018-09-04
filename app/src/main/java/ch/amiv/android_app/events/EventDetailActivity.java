@@ -1,7 +1,6 @@
 package ch.amiv.android_app.events;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -25,13 +24,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +41,7 @@ import java.util.Map;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.core.LoginActivity;
-import ch.amiv.android_app.core.Requests;
+import ch.amiv.android_app.core.Request;
 import ch.amiv.android_app.core.Settings;
 import ch.amiv.android_app.core.UserInfo;
 
@@ -82,23 +78,23 @@ public class EventDetailActivity extends AppCompatActivity {
     private Intent responseIntent = new Intent();   //used for sending back a result to the calling activity, used for telling MainActivity if the login has changed
 
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Requests.OnDataReceivedCallback cancelRefreshCallback = new Requests.OnDataReceivedCallback() {
+    private Request.OnDataReceivedCallback cancelRefreshCallback = new Request.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
             swipeRefreshLayout.setRefreshing(false);
         }
     };
 
-    public Requests.OnDataReceivedCallback onEventsListUpdatedCallback = new Requests.OnDataReceivedCallback() {
+    public Request.OnDataReceivedCallback onEventsListUpdatedCallback = new Request.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
             SetUIDirty(true, false);
-            Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback, cancelRefreshCallback, event()._id);
+            Request.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback, cancelRefreshCallback, event()._id);
             LoadEventImage(true);
         }
     };
 
-    private Requests.OnDataReceivedCallback onSignupsUpdatedCallback = new Requests.OnDataReceivedCallback() {
+    private Request.OnDataReceivedCallback onSignupsUpdatedCallback = new Request.OnDataReceivedCallback() {
         @Override
         public void OnDataReceived() {
             SetUIDirty(true, true);
@@ -125,7 +121,7 @@ public class EventDetailActivity extends AppCompatActivity {
                 if(Settings.IsEmailOnlyLogin(getApplicationContext()))
                     Snackbar.make(posterImage, R.string.requires_login, Snackbar.LENGTH_SHORT).show();
                 else {
-                    Requests.FetchEventSignups(getApplicationContext(), new Requests.OnDataReceivedCallback() {
+                    Request.FetchEventSignups(getApplicationContext(), new Request.OnDataReceivedCallback() {
                         @Override
                         public void OnDataReceived() {
                             UpdateRegisterButton();
@@ -239,7 +235,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private void OnSwipeRefreshed(){
         if(!hasEvent())
             return;
-        Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, cancelRefreshCallback, event()._id);
+        Request.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, cancelRefreshCallback, event()._id);
     }
 
     public void SetUIDirty(boolean isRefreshing, boolean signupUpdated)
@@ -261,7 +257,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private void LoadEventImage (boolean isRefreshing)
     {
         //Image loading and masking. the posterMask is a small arrow image but we use the layout margin to add some transparent 'padding' to the top of the scrollview
-        if(event().poster_url.isEmpty() || !Requests.CheckConnection(getApplicationContext()))
+        if(event().poster_url.isEmpty() || !Request.CheckConnection(getApplicationContext()))
         {
             //Hide the image and mask if there is no poster linked with the event or we have no internet
             if(!isRefreshing) {
@@ -325,7 +321,7 @@ public class EventDetailActivity extends AppCompatActivity {
                         }
                     });
 
-            if(!Requests.SendRequest(posterRequest, getApplicationContext())){
+            if(!Request.SendRequest(posterRequest, getApplicationContext())){
                 //Only enter here if the request was not sent, usually because of missing internet
                 posterProgress.setVisibility(View.GONE);
             }
@@ -358,7 +354,7 @@ public class EventDetailActivity extends AppCompatActivity {
      */
     public void RegisterForEvent(View view)
     {
-        if(!Requests.CheckConnection(getApplicationContext())) {
+        if(!Request.CheckConnection(getApplicationContext())) {
             Snackbar.make(view, R.string.requires_internet, Snackbar.LENGTH_LONG).show();
             return;
         }
@@ -375,7 +371,7 @@ public class EventDetailActivity extends AppCompatActivity {
         final int registerEventIndex = eventIndex;
         String url = Settings.API_URL + "eventsignups";
 
-        StringRequest request = new StringRequest(Request.Method.POST, url,null, null)
+        StringRequest request = new StringRequest(com.android.volley.Request.Method.POST, url,null, null)
         {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
@@ -388,7 +384,7 @@ public class EventDetailActivity extends AppCompatActivity {
                         event().AddSignup(json);  //Register signup
 
                         //Fetch event signup object again for this event id
-                        Requests.FetchEventSignups(getApplicationContext(), new Requests.OnDataReceivedCallback() {
+                        Request.FetchEventSignups(getApplicationContext(), new Request.OnDataReceivedCallback() {
                             @Override
                             public void OnDataReceived() {
                                 UpdateRegisterButton();
@@ -468,7 +464,7 @@ public class EventDetailActivity extends AppCompatActivity {
             }
         };
 
-        Requests.SendRequest(request, getApplicationContext());
+        Request.SendRequest(request, getApplicationContext());
     }
 
     /**

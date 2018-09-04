@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -109,10 +108,11 @@ public class LoginActivity extends AppCompatActivity {
             SetSubmitButtonState(false, true);
             Settings.Vibrate(Settings.VibrateTime.NORMAL, getApplicationContext());
             ReturnToCallingActivity(true, false);
+            return;
         }
 
         //Does a POST request to sessions to create a session and get a token. Does *not* use the OAuth process, see api docs
-        StringRequest request = new StringRequest(Request.Method.POST, Settings.API_URL + "sessions", null, null)
+        StringRequest request = new StringRequest(com.android.volley.Request.Method.POST, Settings.API_URL + "sessions", null, null)
         {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) {
@@ -179,7 +179,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-        boolean wasSent = Requests.SendRequest(request, getApplicationContext());
+        boolean wasSent = Request.SendRequest(request, getApplicationContext());
         if(wasSent)
             SetSubmitButtonState(false, false);
         else
