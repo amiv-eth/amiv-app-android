@@ -75,7 +75,6 @@ public class EventInfo implements Serializable{
 
     /**
      * Overwrite the current data
-     * @param json
      */
     public void UpdateEvent(JSONObject json)
     {
@@ -172,7 +171,6 @@ public class EventInfo implements Serializable{
 
     /**
      * Choose the key value pairs to be displayed in the event info section when viewing the event in detail
-     * @return
      */
     public ArrayList<String[]> GetInfos(Resources r){
         if(infos != null && infos.size() > 0)

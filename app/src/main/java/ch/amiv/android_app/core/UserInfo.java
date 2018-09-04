@@ -41,7 +41,6 @@ public class UserInfo implements Serializable{
 
     /**
      * Used when the user only logs in with an email
-     * @param email_
      */
     public void Update(String email_){
         email = email_;

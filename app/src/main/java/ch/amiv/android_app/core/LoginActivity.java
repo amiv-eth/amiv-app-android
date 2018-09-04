@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
         //Add the toolbar and back navigation
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null)//XXX doesnt always work, ensure that the back arrow is visible
+        if(getSupportActionBar() != null)//XXX doesn't always work, ensure that the back arrow is visible
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Link UI elements to xml
@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
                             SetSubmitButtonState(true, false);
                         }
 
-                        //Store the detials in the current user, do this on the main thread to prevent multi thread errors, as several requests could be editing the userinfo at the same time otherwise
+                        //Store the details in the current user, do this on the main thread to prevent multi thread errors, as several requests could be editing the userinfo at the same time otherwise
                         if(json.has("user")) {
                             submitButton.post(new Runnable() {
                                 @Override

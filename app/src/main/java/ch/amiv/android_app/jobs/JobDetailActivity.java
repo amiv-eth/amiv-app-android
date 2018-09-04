@@ -91,7 +91,7 @@ public class JobDetailActivity extends AppCompatActivity {
 
         //Check that we have been given a job that exists else return to the calling activity
         if(!hasJob()) {
-            Log.e("jobs", "invlaid job index selected during InitUI(), (groupIndex, jobIndex): (" + jobGroup + "," + jobIndex + "), total job size" + Jobs.jobInfos.size() + ". Ensure that you are not clearing/overwiting the jobs list while viewing a job.");
+            Log.e("jobs", "invalid job index selected during InitUI(), (groupIndex, jobIndex): (" + jobGroup + "," + jobIndex + "), total job size" + Jobs.jobInfos.size() + ". Ensure that you are not clearing/overwriting the jobs list while viewing a job.");
             onBackPressed();
             return;
         }
@@ -139,7 +139,6 @@ public class JobDetailActivity extends AppCompatActivity {
 
     /**
      * Will start the pdf download as a notification to the downloads folder
-     * @param view
      */
     public void OpenJobPdf(View view) {
         OpenJobPdf(true);

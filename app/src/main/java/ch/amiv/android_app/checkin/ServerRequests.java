@@ -49,7 +49,6 @@ public final class ServerRequests {
 
     /**
      * Call this to check with the server if a pin is valid
-     * @return whether there is internet or not
      * @param callback A function to execute when the response has been received
      */
     public static void CheckPin (final Context context, final OnCheckPinReceivedCallback callback)
@@ -102,7 +101,7 @@ public final class ServerRequests {
     {
         //Note: server will send a Json if the response is valid, ie the person has been checked in, else a string. This is to get the member type. Yet we still need to do a stringRequest
         StringRequest req = new StringRequest(Request.Method.POST, SettingsActivity.GetServerURL(context) + ON_SUBMIT_LEGI_URL_EXT
-                , new Response.Listener<String>() { @Override public void onResponse(String response) {}}       //initalise with empty response listeners as we will handle the response in the parseNetworkResponse and parseNetworkError functions
+                , new Response.Listener<String>() { @Override public void onResponse(String response) {}}       //initialise with empty response listeners as we will handle the response in the parseNetworkResponse and parseNetworkError functions
                 , new Response.ErrorListener() {@Override public void onErrorResponse(VolleyError error) {}})
         {
             @Override
@@ -159,7 +158,7 @@ public final class ServerRequests {
         Log.e("postrequest", "Params sent: pin=" + MainActivity.CurrentPin + ", URL used: " + SettingsActivity.GetServerURL(context) + GET_DATA_URL_EXT);
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, SettingsActivity.GetServerURL(context) + GET_DATA_URL_EXT,
-                (JSONObject) null, new Response.Listener<JSONObject>() {
+                null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 // Parsing json object response and save to the static memberDB, parse each part in a separate try catch, so we get as much info as possible
@@ -238,7 +237,7 @@ public final class ServerRequests {
         requestQueue.add(req);
     }
 
-    /**         // Note: Is currently commented out as the server side is giving us the eventData as part of the /gchecking_update_data json, however may change to be separate request, so it is only sent at the start of a session
+    /**         // Note: Is currently commented out as the server side is giving us the eventData as part of the /checking_update_data json, however may change to be separate request, so it is only sent at the start of a session
      * Will update the event data, only call this when entering a session
      * @param callback Use this callback for executing code when the data has been received
      */

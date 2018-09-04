@@ -144,7 +144,7 @@ public class ListFragment extends Fragment {
     //Setup swipe down to refresh, adds the amiv logo and rotate animation
     private void InitSwipeRefreshUI()
     {
-        //Set on resfresh functionality
+        //Set on refresh functionality
         swipeRefreshLayout = getView().findViewById(R.id.swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {    //This sets what function is called when we swipe down to refresh
             @Override

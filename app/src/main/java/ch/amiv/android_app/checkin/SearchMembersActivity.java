@@ -20,8 +20,8 @@ import ch.amiv.android_app.R;
 
 public class SearchMembersActivity extends AppCompatActivity {
 
-    RecyclerView mRecylerView;  //for displaying the list of members in the same way as in the memberListActivity
-    RecyclerView.Adapter mRecylcerAdaper;
+    RecyclerView mRecyclerView;  //for displaying the list of members in the same way as in the memberListActivity
+    RecyclerView.Adapter mRecyclerAdapter;
     RecyclerView.LayoutManager mRecyclerLayoutAdapter;
 
     public List<Member> searchResults = new ArrayList<Member>();    //This is the list of search results, will dynamically change size of course
@@ -74,7 +74,7 @@ public class SearchMembersActivity extends AppCompatActivity {
                     RunSearch(newText, false);
                     if(newText.isEmpty()) {
                         searchResults.clear();
-                        mRecylcerAdaper.notifyDataSetChanged();
+                        mRecyclerAdapter.notifyDataSetChanged();
                     }
                 }
                 return false;
@@ -101,15 +101,15 @@ public class SearchMembersActivity extends AppCompatActivity {
     private void InitialiseListView()   //same as in the memberlistactivity
     {
         //=====Recycler View====
-        mRecylerView = findViewById(R.id.recyclerView);
-        mRecylerView.setHasFixedSize(true);
+        mRecyclerView = findViewById(R.id.recyclerView);
+        mRecyclerView.setHasFixedSize(true);
 
         mRecyclerLayoutAdapter = new LinearLayoutManager(this);
-        mRecylerView.setLayoutManager(mRecyclerLayoutAdapter);
+        mRecyclerView.setLayoutManager(mRecyclerLayoutAdapter);
 
-        mRecylcerAdaper = new SearchMembersListAdapter(searchResults);
-        mRecylerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(this, R.anim.layout_anim_falldown));     //Here we give the searchResults array and use the SearchMemberListAdapter
-        mRecylerView.setAdapter(mRecylcerAdaper);
+        mRecyclerAdapter = new SearchMembersListAdapter(searchResults);
+        mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(this, R.anim.layout_anim_falldown));     //Here we give the searchResults array and use the SearchMemberListAdapter
+        mRecyclerView.setAdapter(mRecyclerAdapter);
 
         AnimateList(null);
     }
@@ -133,17 +133,17 @@ public class SearchMembersActivity extends AppCompatActivity {
                 searchResults.add(EventDatabase.instance.members.get(i));
         }
 
-        mRecylcerAdaper.notifyDataSetChanged();
+        mRecyclerAdapter.notifyDataSetChanged();
         return true;
     }
 
     private void UpdateList()
     {
-        if(mRecylerView == null)
+        if(mRecyclerView == null)
             InitialiseListView();
 
         if(!RunSearch(prevQuery, true))
-            mRecylcerAdaper.notifyDataSetChanged();
+            mRecyclerAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -154,8 +154,8 @@ public class SearchMembersActivity extends AppCompatActivity {
     {
         this.runOnUiThread(new Runnable() {
             public void run() {
-                mRecylerView.invalidate();
-                mRecylerView.scheduleLayoutAnimation();
+                mRecyclerView.invalidate();
+                mRecyclerView.scheduleLayoutAnimation();
             }
         });
     }

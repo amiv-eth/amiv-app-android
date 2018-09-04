@@ -85,7 +85,6 @@ public final class PersistentStorage {
 
     /**
      * Clears the stored userinfo, done in async
-     * @param context
      */
     public static void ClearUser(Context context)
     {

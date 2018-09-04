@@ -51,7 +51,7 @@
                     android:layout_height="@dimen/company_logo_height_detail"
                     android:adjustViewBounds="true"
                     android:clickable="true"
-                    android:focusable="auto"
+                    android:focusable="true"
                     android:onClick="ScrollToTop"
                     android:visibility="visible"
                     custom:layout_constraintTop_toBottomOf="@id/toolbar_include" />

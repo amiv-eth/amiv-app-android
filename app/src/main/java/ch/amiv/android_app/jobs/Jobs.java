@@ -102,8 +102,6 @@ public class Jobs {
 
     /**
      * Will update a given event with the id
-     * @param json
-     * @param jobId
      * @return true if the event was found and updated
      */
     public static boolean UpdateSingleJob(JSONObject json, @NonNull String jobId){

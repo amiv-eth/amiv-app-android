@@ -32,7 +32,7 @@ import ch.amiv.android_app.events.Events;
 import ch.amiv.android_app.jobs.Jobs;
 
 /**
- * A static class to do backround http requests to the amiv api. Access these requests anywhere
+ * A static class to do background http requests to the amiv api. Access these requests anywhere
  * Most requests have a callback, so you can execute code when the request has returned or failed
  * See API Docs to see what requests can be done: https://api.amiv.ethz.ch/docs  or via github site https://github.com/amiv-eth/amivapi
  *
@@ -46,7 +46,7 @@ import ch.amiv.android_app.jobs.Jobs;
  *
  * To load images, don't use a request directly, use a networkImageView, which will handle everything for you including caching
  *
- * Libary used for network stuff: volley, note: we use our own modified version of the libary as a git submodule
+ * Library used for network stuff: volley, note: we use our own modified version of the library as a git submodule
  */
 public final class Request {
     private static RequestQueue requestQueue;
@@ -82,9 +82,8 @@ public final class Request {
 
     /**
      * Will fetch the list of events from the server, note does not require an access token.
-     * @param errorCallback Use this to know when an error occured to stop loading animations etc
-     * @param eventId to only fetch for a specific event id add this, else set as emoty
-     * @return True if the request was sent.
+     * @param errorCallback Use this to know when an error occurred to stop loading animations etc
+     * @param eventId to only fetch for a specific event id add this, else set as empty
      */
     public static void FetchEventList(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback, @NonNull final String eventId)
     {
@@ -174,7 +173,7 @@ public final class Request {
 
     /**
      * Will fetch the event signups for the current user and save them in the eventInfos list
-     * @param eventId to only fetch for a specific event id add this, else set as emoty
+     * @param eventId to only fetch for a specific event id add this, else set as empty
      */
     public static void FetchEventSignups(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback, @NonNull String eventId)
     {
@@ -525,7 +524,6 @@ public final class Request {
 
     /**
      * Will run the callback on the main thread, use this for easily executing callbacks, which do not have any additional code on the main thread
-     * @param callback
      */
     private static void RunCallback (final OnDataReceivedCallback callback)
     {

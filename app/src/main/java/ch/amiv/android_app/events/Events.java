@@ -107,8 +107,6 @@ public final class Events {
 
     /**
      * Will update a given event with the id
-     * @param json
-     * @param eventId
      * @return true if the event was found and updated
      */
     public static boolean UpdateSingleEvent(JSONObject json, @NonNull String eventId){
@@ -123,7 +121,6 @@ public final class Events {
 
     /**
      * Add signups to their events, use this when the data is received from the api in a jsonArray
-     * @param json
      */
     public static void AddSignupArray(JSONArray json) {
         boolean[] hasUpdatedEvent = new boolean[eventInfos.size()];

@@ -36,7 +36,6 @@ public class JobInfo {
 
     /**
      * Overwrite the current data
-     * @param json
      */
     public void UpdateJob(JSONObject json)
     {

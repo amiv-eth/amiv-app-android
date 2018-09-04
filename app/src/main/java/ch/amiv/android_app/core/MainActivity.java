@@ -232,9 +232,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * Here we can interpret the result of the login/event detail activity, if the login was successful or not, then update accordingly
-     * @param requestCode
-     * @param resultCode
-     * @param data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -383,8 +380,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         /**
          * Used to reconnect the link to the fragment in onresume
-         * @param fragment
-         * @param position
          */
         public void ReconnectFragment(ListFragment fragment, int position){
             try {

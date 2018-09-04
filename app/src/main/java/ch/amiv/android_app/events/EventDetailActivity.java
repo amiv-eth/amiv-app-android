@@ -114,7 +114,7 @@ public class EventDetailActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 0 && resultCode == RESULT_OK) {
-            // If we are returning from the login activity and have had a successfuly login, refresh the user info and login UI
+            // If we are returning from the login activity and have had a successfully login, refresh the user info and login UI
             boolean refreshLogin = data.getBooleanExtra("login_success", false);
             if(refreshLogin && Settings.IsLoggedIn(getApplicationContext()))
             {
@@ -173,7 +173,7 @@ public class EventDetailActivity extends AppCompatActivity {
 
         //Check that we have been given an event that exists else return to the calling activity
         if(!hasEvent()) {
-            Log.e("events", "invlaid event index selected during InitUI(), (groupIndex, eventIndex): (" + eventGroup + "," + eventIndex + "), total event size" + Events.eventInfos.size() + ". Ensure that you are not clearing/overwiting the events list while viewing an event.");
+            Log.e("events", "invalid event index selected during InitUI(), (groupIndex, eventIndex): (" + eventGroup + "," + eventIndex + "), total event size" + Events.eventInfos.size() + ". Ensure that you are not clearing/overwriting the events list while viewing an event.");
             onBackPressed();
             return;
         }
@@ -194,7 +194,7 @@ public class EventDetailActivity extends AppCompatActivity {
     //Setup swipe down to refresh, adds the amiv logo and rotate animation
     private void InitSwipeRefreshUI()
     {
-        //Set on resfresh functionality
+        //Set on refresh functionality
         swipeRefreshLayout = findViewById(R.id.swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {    //This sets what function is called when we swipe down to refresh
             @Override
@@ -252,7 +252,6 @@ public class EventDetailActivity extends AppCompatActivity {
 
     /**
      * Will load the poster for the event if it exists and handle progress bars etc. Can call this again to refresh the poster
-     * @param isRefreshing
      */
     private void LoadEventImage (boolean isRefreshing)
     {
@@ -329,7 +328,7 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     /**
-     * This creates the short list under Infos, to display specific details. We get which details to dispkay from the EventInfo
+     * This creates the short list under Infos, to display specific details. We get which details to display from the EventInfo
      */
     private void AddRegisterInfos()
     {
@@ -350,7 +349,6 @@ public class EventDetailActivity extends AppCompatActivity {
 
     /**
      * Will send a request to register the user for the event the activity is showing
-     * @param view
      */
     public void RegisterForEvent(View view)
     {

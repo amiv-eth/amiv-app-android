@@ -125,7 +125,7 @@ public class EventsListAdapter extends BaseRecyclerAdapter {
      * This is where the data in the ui is set. Note that position is the position on screen whereas getAdapterPos is the position in the whole list
      */
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int screenPosition) {    //NOTE: screenPosition supplied is position on screen not in the list!, use holder.getAdapterPosition() indstead
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int screenPosition) {    //NOTE: screenPosition supplied is position on screen not in the list!, use holder.getAdapterPosition() instead
         if(activity == null || holder == null)
             return;
 

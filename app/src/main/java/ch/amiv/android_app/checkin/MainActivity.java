@@ -86,8 +86,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Submit a pin for an event to the server and act on response accondingly, ie open scanActivity if valid, or request pin entry again
-     * @param view
+     * Submit a pin for an event to the server and act on response accordingly, ie open scanActivity if valid, or request pin entry again
      */
     public void SubmitPin(View view)
     {

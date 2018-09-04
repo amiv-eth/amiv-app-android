@@ -115,7 +115,7 @@ public class Settings {
     }
 
     /**
-     * Will return whether the user is only loggedd in with an email, if they do not have an api login, false if current user has not be initialised
+     * Will return whether the user is only logged in with an email, if they do not have an api login, false if current user has not be initialised
      */
     public static boolean IsEmailOnlyLogin(Context context){
         return !Settings.HasToken(context) && UserInfo.current != null && !UserInfo.current.email.isEmpty();
@@ -132,7 +132,7 @@ public class Settings {
 
     //region ---Language---
     /**
-     * Will change the language, NOTE: Highly advised to restart the app/activty for changes to take effect.
+     * Will change the language, NOTE: Highly advised to restart the app/activity for changes to take effect.
      * New strings that are loaded will be in the correct language, but UI that is already created/still in memory will NOT change.
      * Returns true if the language has been changed
      */

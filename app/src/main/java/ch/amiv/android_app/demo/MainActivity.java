@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
             //====Handling of the response of the request
             @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) { //this is called if we have received a reponse from the server with a successful status code, eg 2xx, not 4xx
+            protected Response<String> parseNetworkResponse(NetworkResponse response) { //this is called if we have received a response from the server with a successful status code, eg 2xx, not 4xx
                 if(response != null) {
                     Log.e("request", "fetch demo data status Code: " + response.statusCode);
 

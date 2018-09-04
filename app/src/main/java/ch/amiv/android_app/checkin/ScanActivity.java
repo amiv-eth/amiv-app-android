@@ -243,7 +243,6 @@ public class ScanActivity extends AppCompatActivity {
 
     /**
      * Call this to submit a legi nr from a UI Element
-     * @param view
      */
     public void SubmitLegiNrFromTextField(View view)
     {
