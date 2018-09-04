@@ -1,0 +1,42 @@
+image: registry.gitlab.com/showcheap/android-ci:react-native
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+before_script:
+  - sdkmanager "platforms;android-27"
+  - sdkmanager "build-tools;28.0.2"
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+  - chmod +x ./gradlew
+  - npm install
+  - echo $PLAYSTORE_KEY > app/google-play-key.json
+  - echo $SIGNING_KEYSTORE > app/keystore.properties
+
+cache:
+  key: "$CI_COMMIT_REF_NAME"
+  paths:
+     - .gradle/
+
+stages:
+  - test
+  - build
+  - deploy
+
+test:
+  stage: test
+  script:
+     - ./gradlew check
+
+build:
+  stage: build
+  script:
+     - ./gradlew assembleRelease
+  artifacts:
+    paths:
+      - app/build/outputs/
+
+deploy:
+  stage: deploy
+  when: manual
+  script:
+     - ./gradlew publishRelease
