@@ -158,7 +158,7 @@ public final class ServerRequests {
         Log.e("postrequest", "Params sent: pin=" + MainActivity.CurrentPin + ", URL used: " + SettingsActivity.GetServerURL(context) + GET_DATA_URL_EXT);
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, SettingsActivity.GetServerURL(context) + GET_DATA_URL_EXT,
-                null, new Response.Listener<JSONObject>() {
+                (JSONObject) null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 // Parsing json object response and save to the static memberDB, parse each part in a separate try catch, so we get as much info as possible

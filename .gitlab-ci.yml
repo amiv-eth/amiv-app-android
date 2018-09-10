@@ -4,13 +4,16 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 before_script:
+  - echo $PLAYSTORE_KEY > app/google-play-key.json
+  - echo $SIGNING_KEYSTORE > app/keystore.properties
+  - sed -i 's/\s\+/\n/g' app/keystore.properties
+  # Note: Gitlab CI variables show newlines as a space, this will render the storePath as incorrect->Throws error that signingConfig was not found
+
   - sdkmanager "platforms;android-27"
-  - sdkmanager "build-tools;28.0.2"
+  - sdkmanager "build-tools;27.0.3"
   - export GRADLE_USER_HOME=`pwd`/.gradle
   - chmod +x ./gradlew
   - npm install
-  - echo $PLAYSTORE_KEY > app/google-play-key.json
-  - echo $SIGNING_KEYSTORE > app/keystore.properties
 
 cache:
   key: "$CI_COMMIT_REF_NAME"
@@ -24,6 +27,7 @@ stages:
 
 test:
   stage: test
+  when: manual
   script:
      - ./gradlew check
 
@@ -38,5 +42,7 @@ build:
 deploy:
   stage: deploy
   when: manual
+  dependencies:
+     - build
   script:
      - ./gradlew publishRelease
