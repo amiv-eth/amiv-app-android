@@ -37,6 +37,9 @@ public class Settings {
     public static final String[] specialFoodPrefKey = {"ch.amiv.android_app.special_food_pref", ""};
     public static final String[] sbbPrefKey         = {"ch.amiv.android_app.sbb_abo", ""};
 
+    //---checkin
+    public static final String[] recentEventPin     = {"ch.amiv.android_app.recent_event_pin", ""};
+
     //region ---SharedPrefs---
     /**
      * Will check that the shared prefs instance is set so we can edit/retrieve values

@@ -20,6 +20,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText mPinField;
     private TextView mInvalidPinLabel;
+    private Button mOpenRecent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     {
         mPinField = findViewById(R.id.PinField);
         mInvalidPinLabel = findViewById(R.id.InvalidPinLabel);
+        mOpenRecent = findViewById(R.id.openRecent);
 
         mPinField.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View view, int keyCode, KeyEvent keyevent) {
@@ -64,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        String lastPin = Settings.GetPref(Settings.recentEventPin, getApplicationContext());
+        mOpenRecent.setEnabled(!lastPin.isEmpty());
 
         View logo = findViewById(R.id.logoImage);
         if(logo != null) {
@@ -86,16 +92,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Function called by button, set in xml
+     */
+    public void SubmitRecentPin(View view){
+        SubmitPin(true);
+    }
+
+    public void SubmitPin(View view){
+        SubmitPin(false);
+    }
+
+    /**
      * Submit a pin for an event to the server and act on response accordingly, ie open scanActivity if valid, or request pin entry again
      */
-    public void SubmitPin(View view)
+    public void SubmitPin(boolean openRecent)
     {
         Settings.Vibrate(Settings.VibrateTime.SHORT, getApplicationContext());
-        View button = findViewById(R.id.SubmitPin);
+        View button = findViewById(openRecent ? R.id.openRecent : R.id.SubmitPin);
         if(button != null)
             button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_anim_pop));
 
-        if(mWaitingOnServer || mPinField.getText().toString().isEmpty())  //prevents submitting a second pin while still waiting on the response for the first pin
+        if(mWaitingOnServer || (!openRecent && mPinField.getText().toString().isEmpty()))  //prevents submitting a second pin while still waiting on the response for the first pin
             return;
         mWaitingOnServer = true;
 
@@ -104,7 +121,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        CurrentPin = mPinField.getText().toString();
+        if(openRecent)
+            CurrentPin = Settings.GetPref(Settings.recentEventPin, getApplicationContext());
+        else
+            CurrentPin = mPinField.getText().toString();
+
+
 
         //Create a callback, this is what happens when we get the response
         ServerRequests.OnCheckPinReceivedCallback callback = new ServerRequests.OnCheckPinReceivedCallback() {
@@ -141,6 +163,8 @@ public class MainActivity extends AppCompatActivity {
         Log.e("postrequest", "Response from server for pin submission: " + statusCode + " with text: " + responseText + " on event pin: " + MainActivity.CurrentPin);
 
         if(statusCode == 200) { //success
+            Settings.SetPref(Settings.recentEventPin, CurrentPin, getApplicationContext()); //store as last used pin
+            mOpenRecent.setEnabled(true);
             StartScanActivity();
         }
         else if(statusCode == 401)//invalid pin
