@@ -95,7 +95,7 @@ public class ScanActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        setContentView(R.layout.checkin_activity_scan);
+        setContentView(R.layout.checkin_scan);
 
         InitialiseUI();
         InitialiseBarcodeDetection();
@@ -287,7 +287,7 @@ public class ScanActivity extends AppCompatActivity {
 
         Settings.Vibrate(Settings.VibrateTime.SHORT, getApplicationContext());
 
-        if(!ServerRequests.CheckConnection(getApplicationContext())) {
+        if(!Requests.CheckConnection(getApplicationContext())) {
             SetUIFromResponse_Invalid(0, getResources().getString(R.string.no_internet));
             return;
         }
@@ -295,7 +295,7 @@ public class ScanActivity extends AppCompatActivity {
         SetWaitingOnServer(true);       //Clear UI
         mResponseLabel.setVisibility(View.INVISIBLE);
 
-        ServerRequests.OnJsonReceivedCallback callback = new ServerRequests.OnJsonReceivedCallback() {
+        Requests.OnJsonReceivedCallback callback = new Requests.OnJsonReceivedCallback() {
             @Override
             public void OnJsonReceived(final int statusCode, final JSONObject data) {
                 mResponseLabel.post(new Runnable() {    //delay to other thread by using a ui element, as this is in a callback on another thread
@@ -304,7 +304,7 @@ public class ScanActivity extends AppCompatActivity {
                         Log.e("json", "mutate json received: " + data.toString());
                         try {
                             msg = data.getString("message");
-                            Member m = new Member(data.getJSONObject("signup"));
+                            MemberData m = new MemberData(data.getJSONObject("signup"));
                             SetUIFromResponse_Valid(statusCode, msg, m);
                         }
                         catch (JSONException e){
@@ -322,7 +322,7 @@ public class ScanActivity extends AppCompatActivity {
             }
         };
 
-        ServerRequests.CheckLegi(this, callback, leginr, mIsCheckingIn);
+        Requests.CheckLegi(this, callback, leginr, mIsCheckingIn);
     }
 
     /**
@@ -330,7 +330,7 @@ public class ScanActivity extends AppCompatActivity {
      * @param statusCode http status code from the response, eg 200 or 400
      * @param member the text received from the server about our post request
      */
-    private void SetUIFromResponse_Valid(int statusCode, String message, Member member)
+    private void SetUIFromResponse_Valid(int statusCode, String message, MemberData member)
     {
         SetWaitingOnServer(false);
         if(message.isEmpty())
@@ -341,7 +341,7 @@ public class ScanActivity extends AppCompatActivity {
             mResponseLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, mResponseLabelDefFontSize);
             mTickImage.setVisibility(View.VISIBLE);
             mBGTint.setVisibility(View.VISIBLE);
-            mTickImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_anim_grow));
+            mTickImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_grow));
             mTickImage.setColorFilter(getResources().getColor(R.color.valid));
 
             if(EventDatabase.instance.eventData.eventType == EventData.EventType.Counter) {
@@ -383,7 +383,7 @@ public class ScanActivity extends AppCompatActivity {
             mResponseLabel.setText(responseText);
             mTickImage.setVisibility(View.VISIBLE);
             mTickImage.setColorFilter(getResources().getColor(R.color.valid));
-            mTickImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_anim_grow));
+            mTickImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_grow));
             mBGTint.setVisibility(View.VISIBLE);
 
 
@@ -405,7 +405,7 @@ public class ScanActivity extends AppCompatActivity {
             mResponseLabel.setVisibility(View.VISIBLE);
             mResponseLabel.setText(R.string.no_internet);
             mCrossImage.setVisibility(View.VISIBLE);
-            mCrossImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_anim_grow));
+            mCrossImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_grow));
             mBGTint.setVisibility(View.VISIBLE);
             mBGTint.setColorFilter(getResources().getColor(R.color.invalid));
         }
@@ -414,7 +414,7 @@ public class ScanActivity extends AppCompatActivity {
             mResponseLabel.setVisibility(View.VISIBLE);
             mResponseLabel.setText(responseText);
             mCrossImage.setVisibility(View.VISIBLE);
-            mCrossImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_anim_grow));
+            mCrossImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_grow));
             mBGTint.setVisibility(View.VISIBLE);
             mBGTint.setColorFilter(getResources().getColor(R.color.invalid));
 
@@ -422,7 +422,7 @@ public class ScanActivity extends AppCompatActivity {
         }
 
         //decrease font size for long messages, usually errors
-        if (responseText.length() < 40)
+        if (responseText.length() < 50)
             mResponseLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, mResponseLabelDefFontSize);
         else
             mResponseLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
@@ -464,8 +464,8 @@ public class ScanActivity extends AppCompatActivity {
         if(EventDatabase.instance == null)
             new EventDatabase();
 
-        ServerRequests.UpdateMemberDB(getApplicationContext(),
-            new ServerRequests.OnDataReceivedCallback(){
+        Requests.UpdateMemberDB(getApplicationContext(),
+            new Requests.OnDataReceivedCallback(){
                 @Override
                 public void OnDataReceived()
                 {
@@ -491,7 +491,7 @@ public class ScanActivity extends AppCompatActivity {
             boolean showRStat = (EventDatabase.instance.stats.size() >= 1);
 
             if(showLStat) {
-                KeyValuePair lStat = EventDatabase.instance.stats.get(0);
+                StringPair lStat = EventDatabase.instance.stats.get(0);
                 mLeftStatValue.setText(lStat.value);
                 //mLeftStatValue.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorValid));
                 mLeftStatDesc.setText(lStat.name);
@@ -500,7 +500,7 @@ public class ScanActivity extends AppCompatActivity {
             mLeftStatDesc.setVisibility(showLStat ? View.VISIBLE : View.INVISIBLE);
 
             if(showRStat) {
-                KeyValuePair rStat = EventDatabase.instance.stats.get(1);
+                StringPair rStat = EventDatabase.instance.stats.get(1);
                 mRightStatValue.setText(rStat.value);
                 //mRightStatValue.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorInvalid));
                 mRightStatDesc.setText(rStat.name);

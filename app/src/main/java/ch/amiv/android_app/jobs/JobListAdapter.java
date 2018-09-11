@@ -97,15 +97,15 @@ public class JobListAdapter extends BaseRecyclerAdapter {
         switch (viewType)
         {
             case ViewType.HEADER: //header
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_list_item_header, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_main_list_item_header, parent, false);
                 holder = new ListHelper.HeaderHolder(view);
                 break;
             case ViewType.SPACE: //space
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_list_item_space, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_main_list_item_space, parent, false);
                 holder = new ListHelper.SpaceHolder(view);
                 break;
             case ViewType.JOB: //jobs
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.jobs_list_item_job, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.jobs_detail_list_item_job, parent, false);
                 holder = new JobInfoHolder(view);
                 break;
         }

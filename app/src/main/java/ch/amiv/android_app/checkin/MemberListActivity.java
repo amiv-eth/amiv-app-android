@@ -31,7 +31,7 @@ public class MemberListActivity extends AppCompatActivity {
     private Runnable refreshMemberDB = new Runnable() {    //Refresh stats every x seconds
         @Override
         public void run() {
-            ServerRequests.UpdateMemberDB(getApplicationContext(), new ServerRequests.OnDataReceivedCallback() {
+            Requests.UpdateMemberDB(getApplicationContext(), new Requests.OnDataReceivedCallback() {
                 @Override
                 public void OnDataReceived() {
                     UpdateList();
@@ -49,14 +49,14 @@ public class MemberListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        setContentView(R.layout.checkin_activity_member_list);
+        setContentView(R.layout.checkin_member_list);
 
         UpdateList();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.checkin_ac_member_list_menu, menu);
+        getMenuInflater().inflate(R.menu.checkin_member_list_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -105,7 +105,7 @@ public class MemberListActivity extends AppCompatActivity {
 
         // specify an adapter (see also next example)
         mRecyclerAdapter = new MemberListAdapter(EventDatabase.instance.members, EventDatabase.instance.stats, EventDatabase.instance.eventData.GetInfosAsKeyValuePairs());
-        mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(this, R.anim.layout_anim_falldown));
+        mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(this, R.anim.layout_falldown));
         mRecyclerView.setAdapter(mRecyclerAdapter);
 
         AnimateList(null);

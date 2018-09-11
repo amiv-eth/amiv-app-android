@@ -62,14 +62,14 @@ public class EventData {
         return true;
     }
 
-    public List<KeyValuePair> GetInfosAsKeyValuePairs ()
+    public List<StringPair> GetInfosAsKeyValuePairs ()
     {
-        List<KeyValuePair> list = new ArrayList<KeyValuePair>();
-        list.add(new KeyValuePair("Event", name));
-        list.add(new KeyValuePair("Event Type", eventType.toString()));
-        list.add(new KeyValuePair("Sign-ups", "" + signupCount));
-        list.add(new KeyValuePair("Description", description));
-        list.add(new KeyValuePair("Start Time", startTime));
+        List<StringPair> list = new ArrayList<StringPair>();
+        list.add(new StringPair("Event", name));
+        list.add(new StringPair("Event Type", eventType.toString()));
+        list.add(new StringPair("Sign-ups", "" + signupCount));
+        list.add(new StringPair("Description", description));
+        list.add(new StringPair("Start Time", startTime));
 
         return list;
     }

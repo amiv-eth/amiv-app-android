@@ -12,7 +12,7 @@ import ch.amiv.android_app.R;
  * This class handles all microapps accessibly via the drawer in the MainActivity.
  * To add your own:
  * 1. add to the apps array and a unique int to the MicroAppPresets
- * 2. Add a menu item to the core_ac_main_drawer.xml, there you can set the title (use a resource string) and its icon.
+ * 2. Add a menu item to the core_main_drawer.xmlhere you can set the title (use a resource string) and its icon.
  * For reference there is a commented out demo app
  */
 public class MicroApp {
@@ -28,7 +28,7 @@ public class MicroApp {
     }
 
     public int accessLevel;     //Use an UserInfo.AccessLevel
-    public int drawerMenuId;    //The id of the menu in core_ac_main_drawer.xml
+    public int drawerMenuId;    //The id of the menu in core_main_drawerl
     public Class<?> activityClass;  //The class of your activity in the form MyActivity.class,
 
     public MicroApp (int accessLevel_, int drawerMenuId_, Class<?> activityClass_){

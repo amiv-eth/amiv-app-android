@@ -31,7 +31,7 @@ import ch.amiv.android_app.core.Settings;
  * Used for getting/sending data from/to the server, if it is required in several activities.
  */
 
-public final class ServerRequests {
+public final class Requests {
     private static String ON_SUBMIT_PIN_URL_EXT = "/checkpin";
     private static String ON_SUBMIT_LEGI_URL_EXT = "/mutate";
     private static String GET_DATA_URL_EXT = "/checkin_update_data";

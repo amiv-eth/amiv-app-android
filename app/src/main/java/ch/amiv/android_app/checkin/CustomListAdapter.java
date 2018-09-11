@@ -15,11 +15,11 @@ import ch.amiv.android_app.R;
  * Created by Roger on 06-Feb-18.
  */
 
-public class CustomListAdapter extends ArrayAdapter<Member> {
+public class CustomListAdapter extends ArrayAdapter<MemberData> {
     private final Activity context;
-    private final List<Member> members;
+    private final List<MemberData> members;
 
-    public CustomListAdapter(Activity context, List<Member> _members){
+    public CustomListAdapter(Activity context, List<MemberData> _members){
 
         super(context, R.layout.checkin_list_item_member, _members);
 
@@ -36,7 +36,7 @@ public class CustomListAdapter extends ArrayAdapter<Member> {
         TextView checkinField = rowView.findViewById(R.id.checkinStatus);
         TextView membershipField = rowView.findViewById(R.id.infoField2);
 
-        Member m = members.get(position);
+        MemberData m = members.get(position);
         nameField.setText(m.firstname + " " + m.lastname);
         infoField.setText(m.GetLegiFormatted());
         checkinField.setText((m.checkedIn ? "In" : "Out"));

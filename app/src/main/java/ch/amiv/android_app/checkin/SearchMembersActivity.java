@@ -25,14 +25,14 @@ public class SearchMembersActivity extends AppCompatActivity {
     RecyclerView.Adapter mRecyclerAdapter;
     RecyclerView.LayoutManager mRecyclerLayoutAdapter;
 
-    public List<Member> searchResults = new ArrayList<Member>();    //This is the list of search results, will dynamically change size of course
+    public List<MemberData> searchResults = new ArrayList<MemberData>();    //This is the list of search results, will dynamically change size of course
     String prevQuery = "";
 
     private final Handler handler = new Handler();  //similar as in scanActivity, to keep refreshing the data
     private Runnable refreshMemberDB = new Runnable() {    //Refresh stats every x seconds
         @Override
         public void run() {
-            ServerRequests.UpdateMemberDB(getApplicationContext(), new ServerRequests.OnDataReceivedCallback() {
+            Requests.UpdateMemberDB(getApplicationContext(), new Requests.OnDataReceivedCallback() {
                 @Override
                 public void OnDataReceived() {
                     UpdateList();
@@ -49,7 +49,7 @@ public class SearchMembersActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.checkin_activity_search_members);
+        setContentView(R.layout.checkin_search_members);
         UpdateList();
     }
 
@@ -58,7 +58,7 @@ public class SearchMembersActivity extends AppCompatActivity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.checkin_ac_search_menu, menu);
+        getMenuInflater().inflate(R.menu.checkin_search_members_menu, menu);
         MenuItem menuItem = menu.findItem(R.id.menuSearch);
         final SearchView searchView = (SearchView) menuItem.getActionView();
 
@@ -109,7 +109,7 @@ public class SearchMembersActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mRecyclerLayoutAdapter);
 
         mRecyclerAdapter = new SearchMembersListAdapter(searchResults);
-        mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(this, R.anim.layout_anim_falldown));     //Here we give the searchResults array and use the SearchMemberListAdapter
+        mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(this, R.anim.layout_falldown));     //Here we give the searchResults array and use the SearchMemberListAdapter
         mRecyclerView.setAdapter(mRecyclerAdapter);
 
         AnimateList(null);

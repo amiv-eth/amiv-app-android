@@ -18,9 +18,9 @@ import ch.amiv.android_app.R;
 
 public class MemberListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<Integer> headerList = new ArrayList<>();
-    private final List<KeyValuePair> statList;
-    private final List<Member> memberList;
-    private final List<KeyValuePair> eventInfoList;
+    private final List<StringPair> statList;
+    private final List<MemberData> memberList;
+    private final List<StringPair> eventInfoList;
 
     /**
      * Defining our own view holder which maps the layout items to view variables which can then later be accessed, and text value set etc
@@ -70,7 +70,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public MemberListAdapter(List<Member> _members, List<KeyValuePair> _stats, List<KeyValuePair> _eventInfos) {
+    public MemberListAdapter(List<MemberData> _members, List<StringPair> _stats, List<StringPair> _eventInfos) {
         headerList.add(R.string.stat_title);
         headerList.add(R.string.people_title);
         headerList.add(R.string.event_info_title);
@@ -150,13 +150,13 @@ public class MemberListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 break;
             case 1: //stat
                 KeyValueHolder statHolder = (KeyValueHolder)holder;
-                KeyValuePair stat = statList.get(holder.getAdapterPosition() -1);
+                StringPair stat = statList.get(holder.getAdapterPosition() -1);
                 statHolder.nameField.setText(stat.name);
                 statHolder.valueField.setText(stat.value);
                 break;
             case 2: //member
                 MemberHolder memberHolder = (MemberHolder)holder;
-                Member m = memberList.get(holder.getAdapterPosition() - statList.size() - 2);
+                MemberData m = memberList.get(holder.getAdapterPosition() - statList.size() - 2);
                 memberHolder.nameField.setText(m.firstname + " " + m.lastname);
 
                 if(EventDatabase.instance.eventData.checkinType == EventData.CheckinType.Counter)
@@ -175,7 +175,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 break;
             case 3: //info
                 KeyValueHolder infoHolder = (KeyValueHolder)holder;
-                KeyValuePair info = eventInfoList.get(holder.getAdapterPosition() - statList.size() - memberList.size() - 3);
+                StringPair info = eventInfoList.get(holder.getAdapterPosition() - statList.size() - memberList.size() - 3);
                 infoHolder.nameField.setText(info.name);
                 infoHolder.valueField.setText(info.value);
                 break;

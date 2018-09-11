@@ -29,7 +29,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.checkin_activity_settings);
+        setContentView(R.layout.checkin_settings);
         Util.SetupToolbar(this,true);
         Util.SetWindowResizing(this,true);
 

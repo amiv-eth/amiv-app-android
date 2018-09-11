@@ -55,13 +55,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:alpha=".75"
         android:tint="@android:color/holo_red_dark"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/CameraLayout"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/cross_75alhpa" />
+        app:srcCompat="@drawable/ic_cross_xxl" />
 
     <ImageView
         android:id="@+id/TickImage"
@@ -73,13 +74,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:alpha=".75"
         android:tint="@android:color/holo_green_light"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/tick_75alpha" />
+        app:srcCompat="@drawable/ic_tick_xxl" />
 
     <ImageView
         android:id="@+id/textBGShadow"
@@ -194,7 +196,6 @@
         android:gravity="top|center"
         android:maxLines="100"
         android:scrollHorizontally="false"
-        android:text="No User found with nethz: rbarton@ethz.ch.student"
         android:textAlignment="center"
         android:textAppearance="@style/Header"
         android:textColor="@android:color/white"
@@ -258,11 +259,10 @@
         android:clickable="true"
         android:focusable="true"
         android:onClick="StartMemberListActivity"
-        android:tint="@android:color/white"
         app:backgroundTint="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_format_list_bulleted_black_24dp"/>
+        app:srcCompat="@drawable/ic_format_list_bulleted"/>
 
     <TextView
         android:id="@+id/LeftStatDescription"

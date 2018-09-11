@@ -34,5 +34,5 @@
         app:backgroundTint="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_refresh_32dp" />
+        app:srcCompat="@drawable/ic_refresh" />
 </android.support.constraint.ConstraintLayout>

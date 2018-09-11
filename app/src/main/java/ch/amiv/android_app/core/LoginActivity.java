@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -49,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //Set for the keyboard to resize the window so the snackbars appear just above the keyboard
         Util.SetWindowResizing(this, true);
-        setContentView(R.layout.core_activity_login);
+        setContentView(R.layout.core_login);
 
         //Show skip button if this is in the intro
         Button btnSkip = findViewById(R.id.buttonSkip);

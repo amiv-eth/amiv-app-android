@@ -5,15 +5,11 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Vibrator;
-import android.util.Log;
 import android.util.Pair;
 
 import java.util.Locale;
 
-import javax.xml.validation.Validator;
-
 import ch.amiv.android_app.R;
-import ch.amiv.android_app.checkin.KeyValuePair;
 
 /**
  * This class is used to save settings so they can be restored in another session later.

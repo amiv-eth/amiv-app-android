@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
-        setContentView(R.layout.core_activity_main);
+        setContentView(R.layout.core_main);
 
         /*
         //Use this to set a custom taskDescription in the app overview, ie when switching apps. Can set the icon, label and color of the bar
@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.core_ac_main_toolbar_menu, menu);
+        getMenuInflater().inflate(R.menu.core_main_toolbar_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

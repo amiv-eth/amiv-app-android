@@ -34,7 +34,7 @@ public class BarcodeIdActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.checkin_activity_barcode_id);
+        setContentView(R.layout.checkin_barcode_id);
 
         //Set up toolbar and back button
         Util.SetupToolbar(this, true);
@@ -85,7 +85,7 @@ public class BarcodeIdActivity extends AppCompatActivity {
             Field f = swipeRefreshLayout.getClass().getDeclaredField("mCircleView");
             f.setAccessible(true);
             ImageView img = (ImageView)f.get(swipeRefreshLayout);
-            img.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_amiv_logo_icon_scaled, null));
+            img.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_amiv_logo_icon_bordered, null));
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

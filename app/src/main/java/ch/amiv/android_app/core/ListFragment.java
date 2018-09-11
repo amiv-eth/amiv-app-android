@@ -120,7 +120,7 @@ public class ListFragment extends Fragment {
             recyclerAdapter = new JobListAdapter(MainActivity.instance);
 
         if(recyclerAdapter != null) {
-            recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(MainActivity.instance, R.anim.layout_anim_falldown));
+            recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(MainActivity.instance, R.anim.layout_falldown));
             recyclerView.setAdapter(recyclerAdapter);
             AnimateList(null);
 
@@ -175,7 +175,7 @@ public class ListFragment extends Fragment {
             Field f = swipeRefreshLayout.getClass().getDeclaredField("mCircleView");
             f.setAccessible(true);
             ImageView img = (ImageView)f.get(swipeRefreshLayout);
-            img.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_amiv_logo_icon_scaled, null));
+            img.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_amiv_logo_icon_bordered, null));
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -208,7 +208,7 @@ public class ListFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.core_frag_list, container, false);
+        View v = inflater.inflate(R.layout.core_main_frag_list, container, false);
         return v;
     }
 

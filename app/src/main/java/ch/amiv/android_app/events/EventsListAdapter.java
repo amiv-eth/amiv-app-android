@@ -95,15 +95,15 @@ public class EventsListAdapter extends BaseRecyclerAdapter {
         switch (viewType)
         {
             case ViewType.HEADER: //header
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_list_item_header, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_main_list_item_header, parent, false);
                 holder = new ListHelper.HeaderHolder(view);
                 break;
             case ViewType.SPACE: //space
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_list_item_space, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_main_list_item_space, parent, false);
                 holder = new ListHelper.SpaceHolder(view);
                 break;
             case ViewType.EVENT: //event
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.events_list_item_event, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.events_detail_list_item_event, parent, false);
                 holder = new EventInfoHolder(view);
                 break;
         }
@@ -175,7 +175,7 @@ public class EventsListAdapter extends BaseRecyclerAdapter {
                 if(e.accepted && e.confirmed){ //change status of event depending on signup state
                     eventInfoHolder.statusImage.setVisibility(View.VISIBLE);
                     eventInfoHolder.placesField.setVisibility(View.GONE);
-                    eventInfoHolder.statusImage.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_check, activity.getTheme()));
+                    eventInfoHolder.statusImage.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_tick, activity.getTheme()));
                     eventInfoHolder.statusImage.setColorFilter(activity.getResources().getColor(R.color.green, activity.getTheme()));
                 }
                 else if (e.accepted || e.confirmed || e.IsSignedUp()) {

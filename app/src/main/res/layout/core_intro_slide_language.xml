@@ -67,7 +67,7 @@
                 android:cropToPadding="false"
                 android:scaleX=".5"
                 android:scaleY=".5"
-                app:srcCompat="@mipmap/ch" />
+                app:srcCompat="@mipmap/flag_ch" />
 
             <TextView
                 android:id="@+id/textView4"
@@ -110,7 +110,7 @@
                 android:layout_weight="1"
                 android:scaleX=".5"
                 android:scaleY=".5"
-                app:srcCompat="@mipmap/gb" />
+                app:srcCompat="@mipmap/flag_uk_large" />
 
             <TextView
                 android:id="@+id/textView3"

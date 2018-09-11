@@ -7,7 +7,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -106,7 +105,7 @@ public class EventDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.events_activity_detail);
+        setContentView(R.layout.events_detail);
         GetIntentData();
         InitUI();
     }
@@ -222,7 +221,7 @@ public class EventDetailActivity extends AppCompatActivity {
             Field f = swipeRefreshLayout.getClass().getDeclaredField("mCircleView");
             f.setAccessible(true);
             ImageView img = (ImageView)f.get(swipeRefreshLayout);
-            img.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_amiv_logo_icon_scaled, null));
+            img.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_amiv_logo_icon_bordered, null));
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -337,7 +336,7 @@ public class EventDetailActivity extends AppCompatActivity {
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         for (int i = 0; i < infos.size(); i++) {
             //Create a view from the xml and then add it as a child of the listview
-            LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.core_list_item_keyval, linear, false);
+            LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.core_main_list_item_keyval, linear, false);
             ((TextView) layout.findViewById(R.id.keyField  )).setText(infos.get(i)[0]);
             ((TextView) layout.findViewById(R.id.valueField)).setText(infos.get(i)[1]);
 

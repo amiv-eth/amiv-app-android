@@ -17,7 +17,7 @@ import ch.amiv.android_app.R;
  */
 
 public class SearchMembersListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private final List<Member> memberList;
+    private final List<MemberData> memberList;
 
     public static class MemberHolder extends RecyclerView.ViewHolder {
         TextView nameField;
@@ -43,7 +43,7 @@ public class SearchMembersListAdapter extends RecyclerView.Adapter<RecyclerView.
         }
     }
 
-    public SearchMembersListAdapter(List<Member> _members) {
+    public SearchMembersListAdapter(List<MemberData> _members) {
         memberList = _members;
     }
 
@@ -92,7 +92,7 @@ public class SearchMembersListAdapter extends RecyclerView.Adapter<RecyclerView.
         {
             case 0: //member
                 MemberHolder memberHolder = (MemberHolder)holder;
-                Member m = memberList.get(holder.getAdapterPosition());
+                MemberData m = memberList.get(holder.getAdapterPosition());
                 memberHolder.nameField.setText(m.firstname + " " + m.lastname);
 
                 if(EventDatabase.instance.eventData.checkinType == EventData.CheckinType.Counter)

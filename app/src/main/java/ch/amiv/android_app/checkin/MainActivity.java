@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Util.SetWindowResizing(this, true);
-        setContentView(R.layout.checkin_activity_main);
+        setContentView(R.layout.checkin_main);
 
         InitialiseUI();
         CheckPermissions();
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.checkin_ac_main_toolbar_menu, menu);
+        getMenuInflater().inflate(R.menu.checkin_main_toolbar_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         mWaitingOnServer = true;
         mInvalidPinLabel.setText(R.string.wait);
 
-        if(!ServerRequests.CheckConnection(getApplicationContext())) {
+        if(!Requests.CheckConnection(getApplicationContext())) {
             ApplyServerResponse(true, 0, getResources().getString(R.string.no_internet));
             return;
         }
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Create a callback, this is what happens when we get the response
-        ServerRequests.OnCheckPinReceivedCallback callback = new ServerRequests.OnCheckPinReceivedCallback() {
+        Requests.OnCheckPinReceivedCallback callback = new Requests.OnCheckPinReceivedCallback() {
             @Override
             public void OnStringReceived(final boolean validResponse, final int statusCode, final String data) {
                 mPinField.post(new Runnable() {    //delay to other thread by using a ui element, as this is in a callback on another thread
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        ServerRequests.CheckPin(this, callback);
+        Requests.CheckPin(this, callback);
 
         //StartScanActivity();    //NOTE: Uncomment for debugging without valid pin
     }

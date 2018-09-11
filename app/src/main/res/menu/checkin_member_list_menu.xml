@@ -4,31 +4,31 @@
 
     <item
         android:id="@+id/menuSearch"
-        android:icon="@drawable/ic_search_32dp"
+        android:icon="@drawable/ic_search"
         android:title="@string/search"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menuSort_Membership"
-        android:icon="@drawable/ic_sort_32dp"
+        android:icon="@drawable/ic_sort"
         android:title="@string/sort_membership"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/menuSort_Name"
-        android:icon="@drawable/ic_sort_32dp"
+        android:icon="@drawable/ic_sort"
         android:title="@string/sort_name"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/menuSort_Status"
-        android:icon="@drawable/ic_sort_32dp"
+        android:icon="@drawable/ic_sort"
         android:title="@string/sort_status"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/menuSort_Legi"
-        android:icon="@drawable/ic_sort_32dp"
+        android:icon="@drawable/ic_sort"
         android:title="@string/sort_legi"
         app:showAsAction="never" />
 </menu>

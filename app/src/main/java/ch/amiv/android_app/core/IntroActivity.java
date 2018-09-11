@@ -64,7 +64,7 @@ public class IntroActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.core_activity_intro);
+        setContentView(R.layout.core_intro);
 
         viewPager = findViewById(R.id.viewPager);
         dotsLayout = findViewById(R.id.layoutDots);

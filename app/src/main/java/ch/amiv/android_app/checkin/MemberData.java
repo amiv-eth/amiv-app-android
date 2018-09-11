@@ -7,7 +7,7 @@ import org.json.JSONObject;
  * This class stores the data that an individual member has, matches what is giver by the server (see server side project's README_API)
  */
 
-public class Member {
+public class MemberData {
     public String serverId;
     public boolean checkedIn;
     public String email;
@@ -19,7 +19,7 @@ public class Member {
     public String nethz;
     public String checkinCount; //how often the person has been checked in
 
-    public Member (JSONObject _member)
+    public MemberData(JSONObject _member)
     {
         serverId    = _member.optString("_id");
         email       = _member.optString("email");
@@ -35,7 +35,7 @@ public class Member {
             checkinCount = "-";
     }
 
-    public Member (String _serverId, boolean _checkedIn, String _email, String _firstname, String _lastname, String _legi, String _membership, String _nethz, String _checkinCount)
+    public MemberData(String _serverId, boolean _checkedIn, String _email, String _firstname, String _lastname, String _legi, String _membership, String _nethz, String _checkinCount)
     {
         serverId    = _serverId;
         checkedIn   = _checkedIn;

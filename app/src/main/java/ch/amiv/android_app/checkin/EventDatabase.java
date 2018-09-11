@@ -19,10 +19,10 @@ import java.util.List;
 public class EventDatabase {
     public static EventDatabase instance;
 
-    final List<Member> members = new ArrayList<Member>();
+    final List<MemberData> members = new ArrayList<MemberData>();
     public EventData eventData = new EventData();
-    public List<KeyValuePair> stats = new ArrayList<KeyValuePair>();
-    public Comparator<Member> memberComparator;
+    public List<StringPair> stats = new ArrayList<StringPair>();
+    public Comparator<MemberData> memberComparator;
     public enum MemberComparator {None, Name, Membership, Status, Legi}
     private MemberComparator currentSorting = MemberComparator.None;
     private boolean invertSorting = false;
@@ -40,7 +40,7 @@ public class EventDatabase {
         members.clear();
         for (int i = 0; i < _members.length(); i++) {
             try {
-                Member m = new Member(_members.getJSONObject(i));
+                MemberData m = new MemberData(_members.getJSONObject(i));
                 members.add(m);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -57,7 +57,7 @@ public class EventDatabase {
             for (int i = 0; i < statSource.length(); i++) {
                 JSONObject j = statSource.getJSONObject(i);
 
-                stats.add(new KeyValuePair(j.getString("key"), j.get("value").toString()));
+                stats.add(new StringPair(j.getString("key"), j.get("value").toString()));
 
                 //also imply event type if it has not been parsed from the json
                 if ((!hasEventInfos || EventDatabase.instance.eventData.eventType == EventData.EventType.NotSet || EventDatabase.instance.eventData.eventType == EventData.EventType.Unknown)
@@ -73,7 +73,7 @@ public class EventDatabase {
         }
     }
 
-    public void SetMemberSortingType(Comparator<Member> comparator)
+    public void SetMemberSortingType(Comparator<MemberData> comparator)
     {
         memberComparator = comparator;
         SortMembers();
@@ -90,10 +90,10 @@ public class EventDatabase {
             invertSorting = false;
         currentSorting = sortingType;
 
-        Comparator<Member> comparator;
-        comparator = new Comparator<Member>() {
+        Comparator<MemberData> comparator;
+        comparator = new Comparator<MemberData>() {
             @Override
-            public int compare(Member a, Member b) {
+            public int compare(MemberData a, MemberData b) {
                 switch (sortingType)
                 {
                     case Name:
