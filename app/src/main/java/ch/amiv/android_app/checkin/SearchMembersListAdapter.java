@@ -102,12 +102,9 @@ public class SearchMembersListAdapter extends RecyclerView.Adapter<RecyclerView.
                 else
                     memberHolder.checkinField.setText("");
 
-                if(m.legi == null)
-                    memberHolder.infoField.setText("-");
-                else
-                    memberHolder.infoField.setText(m.legi);
+                memberHolder.infoField.setText(m.GetLegiFormatted());
 
-                if(EventDatabase.instance != null && EventDatabase.instance.eventData.eventType == EventData.EventType.GV && m.membership.length() > 1)
+                if(EventDatabase.instance.eventData.eventType == EventData.EventType.GV && m.membership.length() > 1)
                     memberHolder.membershipField.setText(m.membership.substring(0,1).toUpperCase() + m.membership.substring(1));
                 else
                     memberHolder.membershipField.setText("");

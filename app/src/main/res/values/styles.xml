@@ -5,7 +5,7 @@
     </style>
 
     <style name="AppThemeLight" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimary">@color/white</item><!-- Set to white due to app taskDescription, ie the bar in the app overview, when switching apps-->
         <item name="colorPrimaryDark">@color/secondary</item>
         <item name="colorAccent">@color/accent</item>
         <item name="windowActionBar">false</item>
@@ -16,29 +16,16 @@
         <item name="android:textViewStyle">@style/TextViewStyle</item>
         <item name="android:titleTextStyle">@style/TextViewStyle</item>
         <item name="android:textColorPrimary">@color/text_color_primary</item>
+        <item name="android:statusBarColor">@color/secondary</item>
     </style>
-
-    <style name="AppThemeDark" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/secondary</item>
-        <item name="colorPrimaryDark">@color/primary</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="android:colorBackground">@color/backgroundDark</item>
-        <item name="android:colorForeground">@android:color/background_light</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
-    </style>
-
-    <style name="AppThemeLight.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppThemeLight.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
         <item name="color">@android:color/white</item>
     </style>
 
-
-    <style name="CheckinTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!-- Theme using standard amiv colors, different to the default theme AppThemeLight -->
+    <style name="AmivTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/secondary</item>
         <item name="colorAccent">@color/accent</item>

@@ -80,6 +80,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         instance = this;
         setContentView(R.layout.core_activity_main);
 
+        /*
+        //Use this to set a custom taskDescription in the app overview, ie when switching apps. Can set the icon, label and color of the bar
+        Resources r = getResources();
+        ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(r.getString(R.string.app_name),
+                BitmapFactory.decodeResource(getResources(), R.drawable.ic_amiv_logo_icon_white),
+                r.getColor(R.color.white));
+        this.setTaskDescription(taskDescription);*/
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -311,6 +319,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             else
                 StartLoginActivity();
         }
+        else if (id == R.id.nav_settings)
+            StartSettingsActivity();
         //Note:microapp clicking is handled in MicroApp
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

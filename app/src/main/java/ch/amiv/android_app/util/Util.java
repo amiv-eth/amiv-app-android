@@ -24,4 +24,13 @@ public final class Util {
         if(inputMethodManager != null && activity.getCurrentFocus() != null)
             inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
+
+    /**
+     * Will convert raw text to formatted text, e.g. converting \n to a new line
+     * @param source
+     * @return
+     */
+    public static String ApplyStringFormatting(String source){
+        return source.replaceAll("\\\\n", "\n");
+    }
 }

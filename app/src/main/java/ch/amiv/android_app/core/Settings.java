@@ -29,13 +29,13 @@ public class Settings {
 
     //Keys are always two values, (Key for shared prefs, Default value)
     //For boolean values true=1, false=0 (or anything else)
-    public static final String[] apiUrlPrefKey      = {"ch.amiv.android_app.serverurl", "https://api-dev.amiv.ethz.ch"};
-    public static final String[] apiTokenKey        = {"ch.amiv.android_app.apitoken", ""};
-    public static final String[] introDoneKey       = {"ch.amiv.android_app.introdone", "0"};
+    public static final String[] apiUrlPrefKey      = {"ch.amiv.android_app.server_url", "https://api-dev.amiv.ethz.ch"};
+    public static final String[] apiTokenKey        = {"ch.amiv.android_app.api_token", ""};
+    public static final String[] introDoneKey       = {"ch.amiv.android_app.intro_done", "0"};
 
-    public static final String[] foodPrefKey        = {"ch.amiv.android_app.foodpref", ""};
-    public static final String[] specialFoodPrefKey = {"ch.amiv.android_app.specialfoodpref", ""};
-    public static final String[] sbbPrefKey         = {"ch.amiv.android_app.sbbabo", ""};
+    public static final String[] foodPrefKey        = {"ch.amiv.android_app.food_pref", ""};
+    public static final String[] specialFoodPrefKey = {"ch.amiv.android_app.special_food_pref", ""};
+    public static final String[] sbbPrefKey         = {"ch.amiv.android_app.sbb_abo", ""};
 
     //region ---SharedPrefs---
     /**

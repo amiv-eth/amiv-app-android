@@ -15,6 +15,7 @@ import java.util.Locale;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.core.Request;
+import ch.amiv.android_app.util.Util;
 
 import static ch.amiv.android_app.util.Util.BuildFileUrl;
 
@@ -82,8 +83,8 @@ public class EventInfo implements Serializable{
         _etag           = json.optString("_etag");
         title_en        = json.optString("title_en");
         title_de        = json.optString("title_de");
-        description_en  = json.optString("description_en");
-        description_de  = json.optString("description_de");
+        description_en  = Util.ApplyStringFormatting(json.optString("description_en"));
+        description_de  = Util.ApplyStringFormatting(json.optString("description_de"));
         catchphrase_en  = json.optString("catchphrase_en");
         catchphrase_de  = json.optString("catchphrase_de");
         location        = json.optString("location");
