@@ -14,6 +14,7 @@ import android.view.Window;
 import android.view.animation.AnimationUtils;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.core.Settings;
 
 /**
  * This activity is for displaying the list of signed in members, similar to what is seen in the checkin website in the other amiv checkin project.
@@ -39,8 +40,8 @@ public class MemberListActivity extends AppCompatActivity {
                         actionBar.setTitle(EventDatabase.instance.eventData.name);
                 }
             });
-            if(SettingsActivity.GetAutoRefresh(getApplicationContext()))
-                handler.postDelayed(this, SettingsActivity.GetRefreshFrequency(getApplicationContext()));
+            if(Settings.GetBoolPref(Settings.checkin_autoUpdate, getApplicationContext()))
+                handler.postDelayed(this, SettingsActivity.GetRefreshRateMillis(getApplicationContext()));
         }
     };
 

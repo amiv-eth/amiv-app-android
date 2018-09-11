@@ -6,19 +6,18 @@ package ch.amiv.android_app.checkin;
  */
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +26,7 @@ import android.widget.TextView;
 import ch.amiv.android_app.R;
 
 import ch.amiv.android_app.core.Settings;
+import ch.amiv.android_app.util.Util;
 
 public class MainActivity extends AppCompatActivity {
     public static String CurrentPin;
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Util.SetWindowResizing(this, true);
         setContentView(R.layout.checkin_activity_main);
 
         InitialiseUI();
@@ -52,10 +53,40 @@ public class MainActivity extends AppCompatActivity {
         Settings.CancelVibrate();
     }
 
+    //region ---Toolbar
+
+    /**
+     * Inflate the menu in the toolbar; this adds items to the action bar if it is present.
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.checkin_ac_main_toolbar_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * Detecting when the toolbar button is pressed
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.nav_settings) {
+            StartSettingsActivity();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+    //endregion
+
+
     private void InitialiseUI()
     {
+        Util.SetupToolbar(this, true);
+
         mPinField = findViewById(R.id.PinField);
-        mInvalidPinLabel = findViewById(R.id.InvalidPinLabel);
+        mInvalidPinLabel = findViewById(R.id.pinStatusLabel);
+        mInvalidPinLabel.setText("");
         mOpenRecent = findViewById(R.id.openRecent);
 
         mPinField.setOnKeyListener(new View.OnKeyListener() {
@@ -71,12 +102,13 @@ public class MainActivity extends AppCompatActivity {
         String lastPin = Settings.GetPref(Settings.recentEventPin, getApplicationContext());
         mOpenRecent.setEnabled(!lastPin.isEmpty());
 
+        /*Think this animation causes flashing screen bug, when the activity starts
         View logo = findViewById(R.id.logoImage);
         if(logo != null) {
             Animation animation = AnimationUtils.loadAnimation(this, R.anim.item_anim_pop);
             animation.setDuration(150);
             logo.startAnimation(animation);
-        }
+        }*/
     }
 
     private void CheckPermissions()
@@ -115,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         if(mWaitingOnServer || (!openRecent && mPinField.getText().toString().isEmpty()))  //prevents submitting a second pin while still waiting on the response for the first pin
             return;
         mWaitingOnServer = true;
+        mInvalidPinLabel.setText(R.string.wait);
 
         if(!ServerRequests.CheckConnection(getApplicationContext())) {
             ApplyServerResponse(true, 0, getResources().getString(R.string.no_internet));
@@ -163,19 +196,18 @@ public class MainActivity extends AppCompatActivity {
         Log.e("postrequest", "Response from server for pin submission: " + statusCode + " with text: " + responseText + " on event pin: " + MainActivity.CurrentPin);
 
         if(statusCode == 200) { //success
+            mInvalidPinLabel.setText(R.string.success);
             Settings.SetPref(Settings.recentEventPin, CurrentPin, getApplicationContext()); //store as last used pin
             mOpenRecent.setEnabled(true);
             StartScanActivity();
         }
         else if(statusCode == 401)//invalid pin
         {
-            mInvalidPinLabel.setVisibility(View.VISIBLE);
             mInvalidPinLabel.setText(responseText);
             mPinField.setText("");
         }
         else if (statusCode == 0) //no internet connection
         {
-            mInvalidPinLabel.setVisibility(View.VISIBLE);
             mInvalidPinLabel.setText(R.string.no_internet);
         }
         else                    //Other error
@@ -186,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void InvalidUrlResponse()
     {
-        mInvalidPinLabel.setVisibility(View.VISIBLE);
         mInvalidPinLabel.setText(R.string.invalid_url);
     }
 
@@ -195,14 +226,13 @@ public class MainActivity extends AppCompatActivity {
     {
         mWaitingOnServer = false;
         mPinField.setText("");  //clear pin field
-        mInvalidPinLabel.setVisibility(View.INVISIBLE);
         EventDatabase.instance = null;
 
         Intent intent = new Intent(this, ScanActivity.class);
         startActivity(intent);
     }
 
-    public void StartSettingsActivity(View view)
+    public void StartSettingsActivity()
     {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
@@ -213,7 +243,20 @@ public class MainActivity extends AppCompatActivity {
      */
     public void GoToWebsite(View view)
     {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(SettingsActivity.GetServerURL(this)));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Settings.GetPref(Settings.checkin_url, getApplicationContext())));
         startActivity(browserIntent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Util.SetWindowResizing(this, false);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Util.SetWindowResizing(this, true);
+        mInvalidPinLabel.setText("");
     }
 }

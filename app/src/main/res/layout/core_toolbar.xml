@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".core.MainActivity">
 
     <android.support.v7.widget.Toolbar
@@ -11,31 +11,26 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_height"
         android:background="@color/primary"
-        android:theme="@style/AppThemeLight">
+        android:theme="@style/AppThemeLight"
+        >
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-            <ImageView
-                android:id="@+id/toolbar_logo"
-                android:layout_width="128dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginEnd="16dp"
-                android:antialias="true"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_amiv_logo_white"
-                android:tint="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.Toolbar>
+
+    <ImageView
+        android:id="@+id/toolbar_logo"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_height"
+        android:layout_gravity="top"
+        android:antialias="true"
+        android:foregroundGravity="top"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_amiv_logo_white"
+        android:tint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.design.widget.CoordinatorLayout>

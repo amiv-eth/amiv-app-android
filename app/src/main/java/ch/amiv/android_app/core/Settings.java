@@ -6,12 +6,14 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Vibrator;
 import android.util.Log;
+import android.util.Pair;
 
 import java.util.Locale;
 
 import javax.xml.validation.Validator;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.checkin.KeyValuePair;
 
 /**
  * This class is used to save settings so they can be restored in another session later.
@@ -29,16 +31,21 @@ public class Settings {
 
     //Keys are always two values, (Key for shared prefs, Default value)
     //For boolean values true=1, false=0 (or anything else)
-    public static final String[] apiUrlPrefKey      = {"ch.amiv.android_app.server_url", "https://api-dev.amiv.ethz.ch"};
-    public static final String[] apiTokenKey        = {"ch.amiv.android_app.api_token", ""};
-    public static final String[] introDoneKey       = {"ch.amiv.android_app.intro_done", "0"};
+    public static final String[] apiUrlPrefKey      = {"core.server_url", "https://api-dev.amiv.ethz.ch"};
+    public static final String[] apiTokenKey        = {"core.api_token", ""};
+    public static final String[] introDoneKey       = {"core.intro_done", "0"};
 
-    public static final String[] foodPrefKey        = {"ch.amiv.android_app.food_pref", ""};
-    public static final String[] specialFoodPrefKey = {"ch.amiv.android_app.special_food_pref", ""};
-    public static final String[] sbbPrefKey         = {"ch.amiv.android_app.sbb_abo", ""};
+    public static final String[] foodPrefKey        = {"core.food_pref", ""};
+    public static final String[] specialFoodPrefKey = {"core.special_food_pref", ""};
+    public static final String[] sbbPrefKey         = {"core.sbb_abo", ""};
 
-    //---checkin
-    public static final String[] recentEventPin     = {"ch.amiv.android_app.recent_event_pin", ""};
+    //region---Check-in----
+    public static final String[] recentEventPin     = {"checkin.recent_event_pin", ""};
+    public static final String[] checkin_url        = {"checkin.serverurl", "https://checkin.amiv.ethz.ch"};
+    //public static final String[] checkin_url      = {"checkin.serverurl", "https://checkin-dev.amiv.ethz.ch"};//DEBUG
+    public static final String[] checkin_autoUpdate = {"checkin.autorefresh", "1"};
+    public static final Pair<String, Float> checkin_refreshRate = new Pair<>("checkin.refreshfrequency", 20f);
+    //endregion
 
     //region ---SharedPrefs---
     /**
@@ -78,6 +85,18 @@ public class Settings {
     {
         CheckInitSharedPrefs(context);
         return sharedPrefs.getBoolean(key[0], key[1].equals("1"));
+    }
+
+    // Sidenote: Float prefs need to use a pair instead of a string[], so we have a float for the default value
+    public static void SetFloatPref (Pair<String, Float> key, float value, Context context){
+        CheckInitSharedPrefs(context);
+        sharedPrefs.edit().putFloat(key.first, value).apply();
+    }
+
+    public static float GetFloatPref(Pair<String, Float> key, Context context)
+    {
+        CheckInitSharedPrefs(context);
+        return sharedPrefs.getFloat(key.first, key.second);
     }
 
     //Add token functions as they are commonly used, for ease of understanding in other code

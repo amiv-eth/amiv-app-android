@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.BuildConfig;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -21,6 +22,8 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import ch.amiv.android_app.core.Settings;
 
 /**
  * Created by Roger on 13-Feb-18.
@@ -57,9 +60,9 @@ public final class ServerRequests {
         if(!CheckConnection(context))
             return;
 
-        Log.e("postrequest", "Params sent: pin=" + MainActivity.CurrentPin + ", URL used: " + SettingsActivity.GetServerURL(context) + ON_SUBMIT_PIN_URL_EXT);
+        Log.e("postrequest", "Params sent: pin=" + MainActivity.CurrentPin + ", URL used: " + Settings.GetPref(Settings.checkin_url, context) + ON_SUBMIT_PIN_URL_EXT);
 
-        StringRequest postRequest = new StringRequest(Request.Method.POST, SettingsActivity.GetServerURL(context) + ON_SUBMIT_PIN_URL_EXT
+        StringRequest postRequest = new StringRequest(Request.Method.POST, Settings.GetPref(Settings.checkin_url, context) + ON_SUBMIT_PIN_URL_EXT
                 , new Response.Listener<String>() { @Override public void onResponse(String response){} }
                 , new Response.ErrorListener() { @Override public void onErrorResponse(VolleyError error){} })
         {
@@ -99,8 +102,11 @@ public final class ServerRequests {
 
     public static void CheckLegi(final Context context, final OnJsonReceivedCallback callback, final String legi, final boolean isCheckingIn)
     {
+        if(BuildConfig.DEBUG)
+            Log.e("postrequest", "Params sent: pin=" + MainActivity.CurrentPin + ", info=" + legi + ", checkmode=" + (isCheckingIn ? "in" : "out") +
+                ", URL used: " + Settings.GetPref(Settings.checkin_url, context));
         //Note: server will send a Json if the response is valid, ie the person has been checked in, else a string. This is to get the member type. Yet we still need to do a stringRequest
-        StringRequest req = new StringRequest(Request.Method.POST, SettingsActivity.GetServerURL(context) + ON_SUBMIT_LEGI_URL_EXT
+        StringRequest req = new StringRequest(Request.Method.POST, Settings.GetPref(Settings.checkin_url, context) + ON_SUBMIT_LEGI_URL_EXT
                 , new Response.Listener<String>() { @Override public void onResponse(String response) {}}       //initialise with empty response listeners as we will handle the response in the parseNetworkResponse and parseNetworkError functions
                 , new Response.ErrorListener() {@Override public void onErrorResponse(VolleyError error) {}})
         {
@@ -155,9 +161,9 @@ public final class ServerRequests {
         if(!CheckConnection(context))
             return;
 
-        Log.e("postrequest", "Params sent: pin=" + MainActivity.CurrentPin + ", URL used: " + SettingsActivity.GetServerURL(context) + GET_DATA_URL_EXT);
+        Log.e("postrequest", "Params sent: pin=" + MainActivity.CurrentPin + ", URL used: " + Settings.GetPref(Settings.checkin_url, context) + GET_DATA_URL_EXT);
 
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, SettingsActivity.GetServerURL(context) + GET_DATA_URL_EXT,
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, Settings.GetPref(Settings.checkin_url, context) + GET_DATA_URL_EXT,
                 (JSONObject) null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {

@@ -17,7 +17,7 @@ import ch.amiv.android_app.R;
  */
 
 public class MemberListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private final List<String> headerList = new ArrayList<String>();
+    private final List<Integer> headerList = new ArrayList<>();
     private final List<KeyValuePair> statList;
     private final List<Member> memberList;
     private final List<KeyValuePair> eventInfoList;
@@ -71,9 +71,9 @@ public class MemberListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public MemberListAdapter(List<Member> _members, List<KeyValuePair> _stats, List<KeyValuePair> _eventInfos) {
-        headerList.add("Stats");
-        headerList.add("People");
-        headerList.add("Event Info");
+        headerList.add(R.string.stat_title);
+        headerList.add(R.string.people_title);
+        headerList.add(R.string.event_info_title);
         memberList = _members;
         statList = _stats;
         eventInfoList = _eventInfos;

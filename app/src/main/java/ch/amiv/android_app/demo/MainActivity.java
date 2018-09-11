@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.util.Util;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -13,9 +14,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.demo_activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Util.SetupToolbar(this, true);
 
     /*UNCOMMENT WHEN READING
 
