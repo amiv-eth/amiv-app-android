@@ -2,7 +2,16 @@ package ch.amiv.android_app.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Vibrator;
 import android.util.Log;
+
+import java.util.Locale;
+
+import javax.xml.validation.Validator;
+
+import ch.amiv.android_app.R;
 
 /**
  * This class is used to save settings so they can be restored in another session later.
@@ -10,34 +19,25 @@ import android.util.Log;
  * Access the settings with the according get function from the static instance.
  */
 public class Settings {
-    public static Settings instance;
 
-    public static final String API_URL = "http://192.168.1.105:5000/";
-    //public static final String API_URL = "https://api-dev.amiv.ethz.ch/";
+    //public static final String API_URL = "http://192.168.1.105:5000/";
+    public static final String API_URL = "https://api-dev.amiv.ethz.ch/";
 
-    //Vars for saving/reading the url from shared prefs, to allow saving between sessions. For each variable, have a key to access it and a default value
+    //---PREF KEYS---- Vars for saving/reading the url from shared prefs, to allow saving between sessions. For each variable, have a key to access it and a default value
     private static SharedPreferences sharedPrefs;
-    private static final String SHARED_PREFS_KEY = "ch.amiv.android_app";
-    private static final String apiUrlPrefKey = "ch.amiv.android_app.serverurl";
-    private static final String defaultApiUrl = "https://api-dev.amiv.ethz.ch";
-    private static final String themeKey = "ch.amiv.android_app.theme";
-    private static final boolean defaultTheme = false;  //false for light
-    private static final String apiTokenKey = "ch.amiv.android_app.apitoken";
+    public static final String SHARED_PREFS_KEY = "ch.amiv.android_app";
 
+    //Keys are always two values, (Key for shared prefs, Default value)
+    //For boolean values true=1, false=0 (or anything else)
+    public static final String[] apiUrlPrefKey      = {"ch.amiv.android_app.server_url", "https://api-dev.amiv.ethz.ch"};
+    public static final String[] apiTokenKey        = {"ch.amiv.android_app.api_token", ""};
+    public static final String[] introDoneKey       = {"ch.amiv.android_app.intro_done", "0"};
 
-    /*
-     * This constructor will set the instance created as the statically accessible instance, which can be accessed anywhere
-     * This means we can just create a settings instance to initialise this.
-     */
-    public Settings(Context context) {
-        if(instance != null) {
-            Log.d("settings", "A Settings instance already exists. Will use existing instance.");
-            return;
-        }
-        instance = this;
-        CheckInitSharedPrefs(context);
-    }
+    public static final String[] foodPrefKey        = {"ch.amiv.android_app.food_pref", ""};
+    public static final String[] specialFoodPrefKey = {"ch.amiv.android_app.special_food_pref", ""};
+    public static final String[] sbbPrefKey         = {"ch.amiv.android_app.sbb_abo", ""};
 
+    //region ---SharedPrefs---
     /**
      * Will check that the shared prefs instance is set so we can edit/retrieve values
      */
@@ -46,68 +46,132 @@ public class Settings {
             sharedPrefs = context.getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
     }
 
-
-    //==========Get/Set Settings===============
     /**
      * Will store the value in sharedpreferences to be restored in another session
+     * @param key A string[2] in the format (prefs key, defValue), use the Settings public vars
      */
-    public static void SetApiURL(String value, Context context) {
+    public static void SetPref(String[] key, String value, Context context){
         CheckInitSharedPrefs(context);
-        sharedPrefs.edit().putString(apiUrlPrefKey, value).apply();
+        sharedPrefs.edit().putString(key[0], value).apply();
     }
 
     /**
-     * Returns the saved url, so the url is saved between sessions
+     * Get the value stored in shared prefs with the given key
+     * @param key A string[2] in the format (prefs key, defValue), use the Settings public vars
      */
-    public static String GetApiURL(Context context)
+    public static String GetPref(String[] key, Context context)
     {
         CheckInitSharedPrefs(context);
-        return sharedPrefs.getString(apiUrlPrefKey, defaultApiUrl);
+        return sharedPrefs.getString(key[0], key[1]);
     }
 
-    //Access Token
-    public static void SetToken(String value, Context context) {
+    //bool 'overloads'
+    public static void SetBoolPref (String[] key, boolean value, Context context){
         CheckInitSharedPrefs(context);
-        sharedPrefs.edit().putString(apiTokenKey, value).apply();
+        sharedPrefs.edit().putBoolean(key[0], value).apply();
     }
 
-    public static String GetToken(Context context) {
+    public static boolean GetBoolPref(String[] key, Context context)
+    {
         CheckInitSharedPrefs(context);
-        return sharedPrefs.getString(apiTokenKey, "");
+        return sharedPrefs.getBoolean(key[0], key[1].equals("1"));
     }
 
+    //Add token functions as they are commonly used, for ease of understanding in other code
+    public static void SetToken(String value, Context context){
+        SetPref(apiTokenKey, value, context);
+    }
+
+    public static String GetToken(Context context){
+        return GetPref(apiTokenKey, context);
+    }
+
+    /**
+     * Intended more for debug, will delete all saved data, which is stored in the shared prefs
+     */
+    public static void ClearSharedPrefs(Context context){
+        CheckInitSharedPrefs(context);
+        sharedPrefs.edit().clear().commit();
+    }
+
+    /**
+     * Note:only for string prefs
+     * @return True if the pref is at the default value
+     */
+    public static boolean IsPrefDefault(String[] key, Context context){
+        return GetPref(key, context).equals(key[1]);
+    }
+
+    //endregion
+
+    //region ---Auth---
     /**
      * Note: will only check if a token exists. This token may have expired but not have been refreshed/deleted.
      * @return True if the user is logged into the api and has an access token.
      */
-    public static boolean IsLoggedIn(Context context){
-        CheckInitSharedPrefs(context);
-        String t = sharedPrefs.getString(apiTokenKey, "");
+    public static boolean HasToken(Context context){
+        String t = GetPref(apiTokenKey, context);
         return !t.isEmpty();
     }
 
+    /**
+     * Will return whether the user is only logged in with an email, if they do not have an api login, false if current user has not be initialised
+     */
+    public static boolean IsEmailOnlyLogin(Context context){
+        return !Settings.HasToken(context) && UserInfo.current != null && !UserInfo.current.email.isEmpty();
+    }
 
-    // Theme
-    public static void SetIsDarkTheme(boolean value, Context context) {
+    /**
+     * Note: token may have expired but not have been refreshed/deleted.
+     * @return True if there is a token or an email login
+     */
+    public static boolean IsLoggedIn(Context context){
+        return HasToken(context) || IsEmailOnlyLogin(context);
+    }
+    //endregion
+
+    //region ---Language---
+    /**
+     * Will change the language, NOTE: Highly advised to restart the app/activity for changes to take effect.
+     * New strings that are loaded will be in the correct language, but UI that is already created/still in memory will NOT change.
+     * Returns true if the language has been changed
+     */
+    public static void SetLanguage(String value, Context context) {
         CheckInitSharedPrefs(context);
-        sharedPrefs.edit().putBoolean(themeKey, value).apply();
+
+        sharedPrefs.edit().putString(context.getResources().getString(R.string.pref_lang_key), value).commit();//need to use commit(blocks current thread) instead of apply(multithreaded)
+
+        //Change locale/language
+        Resources res = context.getResources();
+        Configuration conf = res.getConfiguration();
+        conf.locale = new Locale(value);
+        res.updateConfiguration(conf, res.getDisplayMetrics());
     }
 
-    public static boolean GetIsDarkTheme(Context context) {
+    public static String GetLanguage(Context context) {
         CheckInitSharedPrefs(context);
-        return sharedPrefs.getBoolean(themeKey, defaultTheme);
+        Resources res = context.getResources();
+        return sharedPrefs.getString(res.getString(R.string.pref_lang_key), "");
+    }
+    //endregion
+
+    //region---Haptic Feedback---
+    private static Vibrator vibrator;
+    public static final class VibrateTime {
+        public static final int SHORT = 50;
+        public static final int NORMAL = 100;
+        public static final int LONG = 250;
+    }
+    public static void Vibrate(int millisecs, Context context){
+        if(vibrator == null)
+            vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (vibrator != null)
+            vibrator.vibrate(millisecs);
     }
 
-
-
-    //SAMPLE get set functions for a new variable to be stored in settings
-    /*public static void SetMyValue(String value) {
-        sharedPrefs.edit().putString(MY_VALUE_PREF_KEY, value).apply();
+    public static void CancelVibrate (){
+        if(vibrator != null)
+            vibrator.cancel();
     }
-
-    public static String GetMyValue(Context context)
-    {
-        CheckInitSharedPrefs(context);  //will ensure that shared prefs exists so we can edit
-        return sharedPrefs.getString(MY_VALUE_PREF_KEY, DEFAULT_VALUE);
-    }*/
+    //endregion
 }

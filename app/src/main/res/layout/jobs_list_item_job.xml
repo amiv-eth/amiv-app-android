@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--This layout file describes a single item used in the member list view, the Custom list adapter tell the list view how to fill/map the data onto the ui defined here-->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/list_item_event_constraint"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:visibility="visible">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/dividerLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/companyLogo"
+            android:layout_width="72dp"
+            android:layout_height="64dp"
+            android:gravity="right|center"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingTop="4dp"
+            android:visibility="visible"
+            app:srcCompat="@mipmap/amiv_logo" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="0dp"
+                android:paddingTop="4dp">
+
+                <TextView
+                    android:id="@+id/titleField"
+                    style="@style/Subheader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:gravity="left"
+                    android:maxLines="1"
+                    android:paddingEnd="32dp"
+                    android:text="Job Title"
+                    android:textAppearance="@style/Subheader"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/newTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:gravity="top|start"
+                    android:text="@string/new_caps"
+                    android:textAppearance="@style/Subheader"
+                    android:textColor="@color/primary"
+                    android:textSize="12sp"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="@+id/titleField"
+                    app:layout_constraintEnd_toEndOf="@+id/titleField"
+                    app:layout_constraintTop_toTopOf="@+id/titleField" />
+            </android.support.constraint.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/infoField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingBottom="8dp"
+                android:paddingLeft="0dp"
+                android:text="Company"
+                android:textAppearance="@style/Body"
+                android:textColor="@color/darkGrey" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/dividerLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"
+        android:background="@color/accentDark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</android.support.constraint.ConstraintLayout>

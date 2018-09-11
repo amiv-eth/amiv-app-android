@@ -38,7 +38,7 @@ public class CustomListAdapter extends ArrayAdapter<Member> {
 
         Member m = members.get(position);
         nameField.setText(m.firstname + " " + m.lastname);
-        infoField.setText(m.legi);
+        infoField.setText(m.GetLegiFormatted());
         checkinField.setText((m.checkedIn ? "In" : "Out"));
 
         if(EventDatabase.instance != null && EventDatabase.instance.eventData.eventType == EventData.EventType.GV && m.membership.length() > 1)

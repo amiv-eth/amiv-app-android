@@ -1,4 +1,4 @@
-package ch.amiv.android_app.core;
+package ch.amiv.android_app.events;
 
 import android.content.res.Resources;
 import android.util.Log;
@@ -6,6 +6,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,13 +14,18 @@ import java.util.Date;
 import java.util.Locale;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.core.Request;
+import ch.amiv.android_app.util.Util;
+
+import static ch.amiv.android_app.util.Util.BuildFileUrl;
 
 /**
  * This is all the data about one event AND the current users signup data about that event
  */
-public class EventInfo {
+public class EventInfo implements Serializable{
 //region -   ====Variables====
     public String _id;
+    public String _etag;
     private String title_de;
     private String title_en;
     private String catchphrase_de;
@@ -35,8 +41,8 @@ public class EventInfo {
     public int signup_count;
     public int spots;
 
-    public String allow_email_signup;
-    public String show_website;
+    public boolean allow_email_signup;
+    public boolean show_website;
 
     //Media
     public String poster_url;
@@ -64,13 +70,21 @@ public class EventInfo {
     public CheckinState checked_in = CheckinState.none;
 //endregion
 
-    public EventInfo(JSONObject json)
+    public EventInfo(JSONObject json) {
+        UpdateEvent(json);
+    }
+
+    /**
+     * Overwrite the current data
+     */
+    public void UpdateEvent(JSONObject json)
     {
         _id             = json.optString("_id");
+        _etag           = json.optString("_etag");
         title_en        = json.optString("title_en");
         title_de        = json.optString("title_de");
-        description_en  = json.optString("description_en");
-        description_de  = json.optString("description_de");
+        description_en  = Util.ApplyStringFormatting(json.optString("description_en"));
+        description_de  = Util.ApplyStringFormatting(json.optString("description_de"));
         catchphrase_en  = json.optString("catchphrase_en");
         catchphrase_de  = json.optString("catchphrase_de");
         location        = json.optString("location");
@@ -82,8 +96,8 @@ public class EventInfo {
         signup_count        = json.optInt("signup_count");
         spots               = json.optInt("spots");
 
-        allow_email_signup  = json.optString("allow_email_signup");
-        show_website        = json.optString("show_website");
+        allow_email_signup  = json.optBoolean("allow_email_signup", false);
+        show_website        = json.optBoolean("show_website", false);
 
         //Add dates
         String _start = json.optString("time_start");
@@ -96,7 +110,7 @@ public class EventInfo {
         String _updated = json.optString("_updated");
 
         //convert dates
-        SimpleDateFormat format = Requests.dateFormat;
+        SimpleDateFormat format = Request.dateFormat;
         try {
             if(!_start.isEmpty())           time_start = format.parse(_start);
             if(!_end.isEmpty())             time_end = format.parse(_end);
@@ -158,11 +172,10 @@ public class EventInfo {
 
     /**
      * Choose the key value pairs to be displayed in the event info section when viewing the event in detail
-     * @return
      */
     public ArrayList<String[]> GetInfos(Resources r){
         if(infos != null && infos.size() > 0)
-            return infos;
+            infos.clear();
 
         DateFormat dateFormat = new SimpleDateFormat("dd - MMM - yyyy HH:mm", r.getConfiguration().locale);
         if(time_start != null) infos.add(new String[]{ r.getString(R.string.start_time), dateFormat.format(time_start)});
@@ -171,6 +184,11 @@ public class EventInfo {
         if(!location.isEmpty()) infos.add(new String[]{ r.getString(R.string.location), location});
         if(time_register_start != null) infos.add(new String[]{ r.getString(R.string.register_start), dateFormat.format(time_register_start)});
         if(time_register_end != null) infos.add(new String[]{ r.getString(R.string.register_end), dateFormat.format(time_register_end)});
+
+        /*//DEBUG
+        if(time_advertising_start != null) infos.add(new String[]{ ("Ad Start"), dateFormat.format(time_advertising_start)});
+        if(time_advertising_end != null) infos.add(new String[]{ ("Ad End"), dateFormat.format(time_advertising_end)});*/
+
         infos.add(new String[]{ r.getString(R.string.available_places), (spots <= 0 ? "-" : "" + Math.max(0, spots - signup_count))});
         if(spots - signup_count < 0)
             infos.add(new String[]{ r.getString(R.string.waiting_list_size), "" + (signup_count - spots)});
@@ -201,6 +219,10 @@ public class EventInfo {
             return catchphrase_de;
         else
             return catchphrase_en;
+    }
+
+    public String GetPosterUrl() {
+        return BuildFileUrl(poster_url);
     }
 
     public boolean IsSignedUp ()

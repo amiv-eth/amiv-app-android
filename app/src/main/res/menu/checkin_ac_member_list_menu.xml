@@ -5,30 +5,30 @@
     <item
         android:id="@+id/menuSearch"
         android:icon="@drawable/ic_search_32dp"
-        android:title="Search"
-        app:showAsAction="always" />
+        android:title="@string/search"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menuSort_Membership"
         android:icon="@drawable/ic_sort_32dp"
-        android:title="By Membership"
+        android:title="@string/sort_membership"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/menuSort_Name"
         android:icon="@drawable/ic_sort_32dp"
-        android:title="By Name"
+        android:title="@string/sort_name"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/menuSort_Status"
         android:icon="@drawable/ic_sort_32dp"
-        android:title="By Status"
+        android:title="@string/sort_status"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/menuSort_Legi"
         android:icon="@drawable/ic_sort_32dp"
-        android:title="By Legi"
+        android:title="@string/sort_legi"
         app:showAsAction="never" />
 </menu>

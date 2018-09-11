@@ -25,14 +25,14 @@ import android.widget.TextView;
 
 import ch.amiv.android_app.R;
 
+import ch.amiv.android_app.core.Settings;
+
 public class MainActivity extends AppCompatActivity {
     public static String CurrentPin;
     private boolean mWaitingOnServer = false;
 
     private EditText mPinField;
     private TextView mInvalidPinLabel;
-
-    public static Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +47,13 @@ public class MainActivity extends AppCompatActivity {
     public void onPause()
     {
         super.onPause();
-        if(vibrator != null)
-            vibrator.cancel();
+        Settings.CancelVibrate();
     }
 
     private void InitialiseUI()
     {
         mPinField = findViewById(R.id.PinField);
         mInvalidPinLabel = findViewById(R.id.InvalidPinLabel);
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         mPinField.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View view, int keyCode, KeyEvent keyevent) {
@@ -67,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        View logo = findViewById(R.id.LogoImage);
+        View logo = findViewById(R.id.logoImage);
         if(logo != null) {
             Animation animation = AnimationUtils.loadAnimation(this, R.anim.item_anim_pop);
             animation.setDuration(150);
@@ -88,13 +86,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Submit a pin for an event to the server and act on response accondingly, ie open scanActivity if valid, or request pin entry again
-     * @param view
+     * Submit a pin for an event to the server and act on response accordingly, ie open scanActivity if valid, or request pin entry again
      */
     public void SubmitPin(View view)
     {
-        if(vibrator != null)
-            vibrator.vibrate(50);
+        Settings.Vibrate(Settings.VibrateTime.SHORT, getApplicationContext());
         View button = findViewById(R.id.SubmitPin);
         if(button != null)
             button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_anim_pop));

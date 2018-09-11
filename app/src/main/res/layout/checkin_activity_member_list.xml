@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ch.amiv.checkin.MemberListActivity"
+    tools:context=".checkin.MemberListActivity"
     tools:layout_editor_absoluteY="81dp">
 
     <android.support.v7.widget.RecyclerView
@@ -31,7 +31,7 @@
         android:focusable="true"
         android:onClick="RefreshListData"
         android:tint="@android:color/white"
-        app:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_refresh_32dp" />

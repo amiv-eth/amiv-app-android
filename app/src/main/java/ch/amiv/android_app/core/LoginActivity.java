@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -29,7 +28,12 @@ import java.util.Map;
 
 import ch.amiv.android_app.R;
 
+/**
+ * This handles logging into the api, getting a token with the provided username and password
+ */
 public class LoginActivity extends AppCompatActivity {
+
+    boolean isIntroLogin;
 
     EditText userField;
     EditText passwordField;
@@ -40,15 +44,34 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        isIntroLogin = !Settings.GetBoolPref(Settings.introDoneKey, getApplicationContext());
+
         //Set for the keyboard to resize the window so the snackbars appear just above the keyboard
         prevLayoutParams = getWindow().getAttributes().softInputMode;
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         setContentView(R.layout.core_activity_login);
 
+        //Show skip button if this is in the intro
+        Button btnSkip = findViewById(R.id.buttonSkip);
+        if (isIntroLogin) {
+            btnSkip.setVisibility(View.VISIBLE);
+            btnSkip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ReturnToCallingActivity(false, false);
+                }
+            });
+        }
+        else {
+            btnSkip.setVisibility(View.GONE);
+        }
+
         //Add the toolbar and back navigation
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null)//XXX doesn't always work, ensure that the back arrow is visible
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Link UI elements to xml
         userField = findViewById(R.id.usernameField);
@@ -76,12 +99,20 @@ public class LoginActivity extends AppCompatActivity {
         final String password = passwordField.getText().toString();
 
         if(username.isEmpty()) {
-            Snackbar.make(submitButton, R.string.snack_fill_all_fields, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(submitButton, R.string.snack_fill_fields, Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(password.isEmpty()){
+            UserInfo.SetEmailOnlyLogin(getApplicationContext(), username, false);
+            SetSubmitButtonState(false, true);
+            Settings.Vibrate(Settings.VibrateTime.NORMAL, getApplicationContext());
+            ReturnToCallingActivity(true, false);
             return;
         }
 
         //Does a POST request to sessions to create a session and get a token. Does *not* use the OAuth process, see api docs
-        StringRequest request = new StringRequest(Request.Method.POST, Settings.API_URL + "sessions", null, null)
+        StringRequest request = new StringRequest(com.android.volley.Request.Method.POST, Settings.API_URL + "sessions", null, null)
         {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) {
@@ -94,19 +125,20 @@ public class LoginActivity extends AppCompatActivity {
                         if(json.has("token")) {
                             Settings.SetToken(json.getString("token"), getApplicationContext());
                             SetSubmitButtonState(false, true);
-                            ReturnToCallingActivity(true);
+                            Settings.Vibrate(Settings.VibrateTime.NORMAL, getApplicationContext());
+                            ReturnToCallingActivity(true, false);
                         }
                         else{
                             Snackbar.make(userField, R.string.snack_error_retry, Snackbar.LENGTH_SHORT).show();
                             SetSubmitButtonState(true, false);
                         }
 
-                        //Store the detials in the current user, do this on the main thread to prevent multi thread errors, as several requests could be editing the userinfo at the same time otherwise
+                        //Store the details in the current user, do this on the main thread to prevent multi thread errors, as several requests could be editing the userinfo at the same time otherwise
                         if(json.has("user")) {
                             submitButton.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    UserInfo.UpdateCurrent(json, true);
+                                    UserInfo.UpdateCurrent(getApplicationContext(), json, true, false);
                                 }
                             });
                         }
@@ -147,7 +179,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-        boolean wasSent = Requests.SendRequest(request, getApplicationContext());
+        boolean wasSent = Request.SendRequest(request, getApplicationContext());
         if(wasSent)
             SetSubmitButtonState(false, false);
         else
@@ -176,31 +208,30 @@ public class LoginActivity extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                ReturnToCallingActivity(false);
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            ReturnToCallingActivity(false, true);
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
     public void onBackPressed() {
-        ReturnToCallingActivity(false);
+        ReturnToCallingActivity(false, true);
     }
 
     /**
      * Will return to the calling activity and pass the login success parameter
      * @param success is the user now logged in
      */
-    private void ReturnToCallingActivity(final boolean success) {
+    private void ReturnToCallingActivity(final boolean success, final boolean canceled) {
         submitButton.post(new Runnable() {
             @Override
             public void run() {
                 getWindow().setSoftInputMode(prevLayoutParams); //reset the keyboard and window layout to how it was before
-                Intent data = new Intent();
-                data.putExtra("login_success", success);
-                setResult(RESULT_OK, data);
+                Intent intent = new Intent();
+                intent.putExtra("login_success", success);
+                setResult(canceled ? RESULT_CANCELED : RESULT_OK, intent);
                 finish();   //return to the calling activity
             }
         });

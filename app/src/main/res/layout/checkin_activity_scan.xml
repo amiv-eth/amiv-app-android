@@ -5,7 +5,7 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ch.amiv.checkin.ScanActivity"
+    tools:context=".checkin.ScanActivity"
     tools:layout_editor_absoluteY="81dp">
 
 
@@ -176,7 +176,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginTop="10dp"
         android:onClick="SubmitLegiNrFromTextField"
-        android:text="Submit"
+        android:text="@string/submit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/LegiInputField"
         app:layout_constraintTop_toBottomOf="@+id/CheckInLabel" />
@@ -190,7 +190,7 @@
         android:layout_marginTop="24dp"
         android:maxLines="100"
         android:scrollHorizontally="false"
-        android:text="Valid"
+        android:text="@string/valid"
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="28sp"
@@ -204,7 +204,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="35dp"
-        android:text="Please Wait..."
+        android:text="@string/wait"
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="18sp"
@@ -255,7 +255,7 @@
         android:focusable="true"
         android:onClick="StartMemberListActivity"
         android:tint="@android:color/white"
-        app:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_format_list_bulleted_black_24dp" />

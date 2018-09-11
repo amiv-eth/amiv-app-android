@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_include">
+
+        <ch.amiv.android_app.util.CustomNetworkImageView
+            android:id="@+id/companyLogo"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/company_logo_height_detail"
+            android:alpha="1"
+            android:elevation="0dp"
+            android:maxHeight="@dimen/company_logo_height_detail"
+            android:paddingTop="4dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_amiv_logo" />
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollIndicators="right"
+            android:scrollbars="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical">
+
+                <View
+                    android:id="@+id/logoMask"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/company_logo_height_detail"
+                    android:adjustViewBounds="true"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="ScrollToTop"
+                    android:visibility="visible"
+                    custom:layout_constraintTop_toBottomOf="@id/toolbar_include" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:attr/colorBackground"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:alpha="0.25"
+                        android:background="@color/backgroundDark" />
+
+                    <TextView
+                        android:id="@+id/companyTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:text="Company"
+                        android:textAppearance="@style/Header"
+                        android:textSize="30sp" />
+
+                    <TextView
+                        android:id="@+id/jobTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:text="Job Title"
+                        android:textAppearance="@style/Subheader"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/dateCreated"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:text="Posted: Today"
+                        android:textAppearance="@style/Body"
+                        android:textColor="@color/darkGrey"
+                        android:textStyle="italic" />
+
+                    <TextView
+                        android:id="@+id/dateEnd"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:text="Available Until: Tomorrow"
+                        android:textAppearance="@style/Body"
+                        android:textColor="@color/darkGrey"
+                        android:textStyle="italic" />
+
+                    <TextView
+                        android:id="@+id/jobDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:autoLink="all"
+                        android:linksClickable="true"
+                        android:paddingBottom="12dp"
+                        android:paddingTop="8dp"
+                        android:text="Description"
+                        android:textAppearance="@style/Body"
+                        android:textIsSelectable="true" />
+
+                    <Button
+                        android:id="@+id/openPdf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elevation="0dp"
+                        android:enabled="true"
+                        android:fontFamily="@font/din_pro_light"
+                        android:onClick="OpenJobPdf"
+                        android:paddingBottom="16dp"
+                        android:text="Open PDF"
+                        android:textAppearance="@style/TextViewStyle" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+        </ScrollView>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <include
+        android:id="@+id/toolbar_include"
+        layout="@layout/core_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</android.support.constraint.ConstraintLayout>

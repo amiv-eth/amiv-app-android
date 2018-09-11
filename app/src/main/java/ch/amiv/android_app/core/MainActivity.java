@@ -7,47 +7,44 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Vector;
+
 import ch.amiv.android_app.R;
-import ch.amiv.android_app.checkin.BarcodeIdActivity;
+import ch.amiv.android_app.events.EventDetailActivity;
+import ch.amiv.android_app.events.Events;
+import ch.amiv.android_app.jobs.JobDetailActivity;
+import ch.amiv.android_app.util.PersistentStorage;
 
+/**
+ * This is the first screen. features: drawer, pageview with bottom navigation bar and within each page a list view.
+ */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    public static MainActivity instance;
 
-    private NavigationView drawerNavigation;
+
+//region -  ====Variables====
+    private NavigationView drawerNav;
     private TextView drawer_title;
     private TextView drawer_subtitle;
 
     private BottomNavigationView bottomNavigation;
 
     private ViewPager viewPager;
-    private PagerAdapter pagerAdapter;
-
-    public Requests.OnDataReceivedCallback onEventsListUpdatedCallback = new Requests.OnDataReceivedCallback() {
-        @Override
-        public void OnDataReceived() {
-            Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback);
-            pagerAdapter.RefreshCurrentList(true);
-        }
-    };
-
-    private Requests.OnDataReceivedCallback onSignupsUpdatedCallback = new Requests.OnDataReceivedCallback() {
-        @Override
-        public void OnDataReceived() {
-            pagerAdapter.RefreshCurrentList(false);
-        }
-    };
+    public PagerAdapter pagerAdapter;
 
     /**
      * Handle what should happen when the bottom nav buttons are pressed, will change the page of the viewpager
@@ -58,25 +55,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.bottom_nav_home:
-                    viewPager.setCurrentItem(0);
+                case R.id.bottom_nav_events:
+                    viewPager.setCurrentItem(ListFragment.PageType.EVENTS);
+                    return true;
+                /*case R.id.bottom_nav_notifications:
+                    viewPager.setCurrentItem(ListFragment.PageType.NOTIFICATIONS);
+                    return true;*/
+                case R.id.bottom_nav_jobs:
+                    viewPager.setCurrentItem(ListFragment.PageType.JOBS);
                     return true;
                 /*case R.id.bottom_nav_blitz:
-                    viewPager.setCurrentItem(1);
+                    viewPager.setCurrentItem(3);
                     return true;*/
-                case R.id.bottom_nav_events:
-                    viewPager.setCurrentItem(1);
-                    return true;
             }
             return false;
         }
     };
+//endregion
 
 //region Initialisation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instance = this;
         setContentView(R.layout.core_activity_main);
+
+        /*
+        //Use this to set a custom taskDescription in the app overview, ie when switching apps. Can set the icon, label and color of the bar
+        Resources r = getResources();
+        ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(r.getString(R.string.app_name),
+                BitmapFactory.decodeResource(getResources(), R.drawable.ic_amiv_logo_icon_white),
+                r.getColor(R.color.white));
+        this.setTaskDescription(taskDescription);*/
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -86,26 +96,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        drawerNavigation = findViewById(R.id.nav_view);
-        drawerNavigation.setNavigationItemSelectedListener(this);
-        drawer_title = drawerNavigation.getHeaderView(0).findViewById(R.id.drawer_user_title);
-        drawer_subtitle = drawerNavigation.getHeaderView(0).findViewById(R.id.drawer_user_subtitle);
+        drawerNav = findViewById(R.id.nav_view);
+        drawerNav.setNavigationItemSelectedListener(this);
+        drawer_title = drawerNav.getHeaderView(0).findViewById(R.id.drawer_user_title);
+        drawer_subtitle = drawerNav.getHeaderView(0).findViewById(R.id.drawer_user_subtitle);
 
         bottomNavigation = findViewById(R.id.bottomNav);
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        PersistentStorage.LoadEvents(getApplicationContext());
+        PersistentStorage.LoadJobs(getApplicationContext());
         InitialisePageView();
 
-        new Settings(getApplicationContext()); //creates the settings instance, so we can store/retrieve shared preferences
         //fetch the user info if we are logged in, there exists a token from the previous session, should be cached.
-        if(Settings.IsLoggedIn(getApplicationContext()) && (UserInfo.current == null || UserInfo.current.nethz.isEmpty()))
-        {
-            Requests.FetchUserData(getApplicationContext(), drawerNavigation, new Requests.OnDataReceivedCallback() {
+        if(!PersistentStorage.LoadUserInfo(getApplicationContext()) || UserInfo.current._id.isEmpty() && !Settings.IsEmailOnlyLogin(getApplicationContext())) {
+            Request.FetchUserData(getApplicationContext(), drawerNav, new Request.OnDataReceivedCallback() {
                 @Override
                 public void OnDataReceived() {
                     SetLoginUIDirty();
-                    //Fetch the event list and then the signup information for the current user
-                    Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
                 }
             });
         }
@@ -121,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setPageTransformer(true, new DepthPageTransformer()); //used for animating
+        viewPager.setOffscreenPageLimit(ListFragment.PageType.COUNT);//prevent pages being deleted when we swipe to far
 
         //set for the bottom nav to be updated when we swipe to change the page
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -130,12 +139,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onPageSelected(int position) {
                 //need to convert index to resource id
-                if(position == 0)
-                    position = R.id.bottom_nav_home;
+                if(position == ListFragment.PageType.EVENTS)
+                    position = R.id.bottom_nav_events;
                 /*else if (position == 1)
                     position = R.id.bottom_nav_blitz;*/
-                else if (position == 1)
-                    position = R.id.bottom_nav_events;
+                /*else if (position == ListFragment.PageType.NOTIFICATIONS)
+                    position = R.id.bottom_nav_notifications;*/
+                else if (position == ListFragment.PageType.JOBS)
+                    position = R.id.bottom_nav_jobs;
 
                 bottomNavigation.setSelectedItemId(position);
             }
@@ -152,16 +163,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     public void LogoutUser()
     {
-        //delete session at the server and then clear the token
-        Requests.DeleteCurrentSession(getApplicationContext());
+        UserInfo.LogoutUser(getApplicationContext());
 
-        UserInfo.current = null;
-        Events.ClearSignups();
-        pagerAdapter.RefreshCurrentList(true);
+        pagerAdapter.RefreshPage(ListFragment.PageType.EVENTS, true);
         SetLoginUIDirty();
-        System.gc();//run garbage collector explicitly to clean up user data
 
-        Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
+        Request.FetchEventList(getApplicationContext(), pages.get(ListFragment.PageType.EVENTS).onEventsListUpdatedCallback, null, "");
     }
 
     /**
@@ -170,23 +177,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void SetLoginUIDirty ()
     {
         if(Settings.IsLoggedIn(getApplicationContext())) {
-            drawerNavigation.getMenu().findItem(R.id.nav_login)
+            drawerNav.getMenu().findItem(R.id.nav_login)
                 .setTitle(R.string.logout_title)
                 .setChecked(false);
             if(UserInfo.current != null)
             {
-                drawer_title.setText(UserInfo.current.firstname + " " + UserInfo.current.lastname);
-                drawer_subtitle.setText(UserInfo.current.email);
+                if(Settings.IsEmailOnlyLogin(getApplicationContext())) {
+                    drawer_title.setText(UserInfo.current.email);
+                    drawer_subtitle.setText(R.string.email_only_login);
+                }
+                else {
+                    drawer_title.setText(UserInfo.current.firstname + " " + UserInfo.current.lastname);
+                    drawer_subtitle.setText(UserInfo.current.email);
+                }
             }
+            ///else XXX
+            ///  fetchuserinfo
         }
         else
         {
-            drawerNavigation.getMenu().findItem(R.id.nav_login)
+            drawerNav.getMenu().findItem(R.id.nav_login)
                 .setTitle(R.string.login_title)
                 .setChecked(false);
             drawer_title.setText(R.string.not_logged_in);
             drawer_subtitle.setText("");
         }
+
+        MicroApp.RefreshDrawer(this);
     }
 //endregion
 
@@ -205,50 +222,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivityForResult(intent, 0);
     }
 
-    public void StartEventDetailActivity(int eventIndex)
+    public void StartEventDetailActivity(int eventGroup, int eventIndex)
     {
         Intent intent = new Intent(this, EventDetailActivity.class);
+        intent.putExtra("eventGroup", eventGroup);
         intent.putExtra("eventIndex", eventIndex);
         startActivityForResult(intent, 0);
     }
 
-    private void StartCheckinActivity() {
-        Intent intent = new Intent(this, ch.amiv.android_app.checkin.MainActivity.class);
-        startActivity(intent);
-    }
-
-    private void StartBarcodeIdActivity() {
-        Intent intent = new Intent(this, BarcodeIdActivity.class);
-        startActivity(intent);
+    public void StartJobDetailActivity(int jobGroup, int jobIndex)
+    {
+        Intent intent = new Intent(this, JobDetailActivity.class);
+        intent.putExtra("jobGroup", jobGroup);
+        intent.putExtra("jobIndex", jobIndex);
+        startActivityForResult(intent, 0);
     }
 
     /**
      * Here we can interpret the result of the login/event detail activity, if the login was successful or not, then update accordingly
-     * @param requestCode
-     * @param resultCode
-     * @param data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 0) {
-            if (resultCode == RESULT_OK) {
-                // If we are returning from the login activity and have had a successfully login, refresh the user info and login UI
-                boolean refreshLogin = data.getBooleanExtra("login_success", false);
-                if(refreshLogin && Settings.IsLoggedIn(getApplicationContext()))
-                {
-                    Requests.FetchUserData(getApplicationContext(), drawerNavigation, new Requests.OnDataReceivedCallback() {
-                        @Override
-                        public void OnDataReceived() {
-                            SetLoginUIDirty();
-                            //Update events and signups with the new userinfo
-                            if(Events.eventInfos.size() > 0)
-                                Requests.FetchEventSignups(getApplicationContext(), onSignupsUpdatedCallback);
-                            else
-                                Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
-                        }
-                    });
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            // If we are returning from the login activity and have had a successfully login, refresh the user info and login UI
+            boolean refreshLogin = data.getBooleanExtra("login_success", false);
+            if(refreshLogin && Settings.IsLoggedIn(getApplicationContext()))
+            {
+                SetLoginUIDirty();
+                Request.FetchUserData(getApplicationContext(), drawerNav, new Request.OnDataReceivedCallback() {
+                    @Override
+                    public void OnDataReceived() {
+                        SetLoginUIDirty();
+                        //Update events and signups with the new userinfo
+                        if(Events.eventInfos.size() > 0)
+                            Request.FetchEventSignups(getApplicationContext(), pages.get(ListFragment.PageType.EVENTS).onEventsListUpdatedCallback, null, "");
+                        else
+                            Request.FetchEventList(getApplicationContext(), pages.get(ListFragment.PageType.EVENTS).onEventsListUpdatedCallback, null, "");
+                    }
+                });
 
-                }
             }
         }
     }
@@ -261,6 +273,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Use this to add an option item (three dots on top right of actionBar)
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -270,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //noinspection SimplifiableIfStatement
         /*if (id == R.id.action_favorite) {
-            Requests.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
+            Request.FetchEventList(getApplicationContext(), onEventsListUpdatedCallback, null);
             return true;
         }*/
 
@@ -284,9 +299,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        }/* else {
+            super.onBackPressed();    //main activity is the root activity, so dont call super else we leave the app
+        }*/
     }
     //region ========START OF DRAWER=========
 
@@ -297,60 +312,92 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_login) {
-            if (Settings.IsLoggedIn(getApplicationContext()))
+            if (Settings.IsLoggedIn(getApplicationContext())) {
                 LogoutUser();
+                return false;
+            }
             else
                 StartLoginActivity();
         }
-        else if (id == R.id.nav_checkin)
-            StartCheckinActivity();
-        else if (id == R.id.nav_barcode_id)
-            StartBarcodeIdActivity();
         else if (id == R.id.nav_settings)
             StartSettingsActivity();
+        //Note:microapp clicking is handled in MicroApp
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
     }
 //endregion =====END OF DRAWER==================
 
 
 //region =====START OF PAGEVIEW==============
 
+    protected Vector<ListFragment> pages = new Vector<>(ListFragment.PageType.COUNT);
     /**
      * This will handle changing between the pages
      */
-    public class PagerAdapter extends FragmentPagerAdapter {
-        ListFragment currentFragment;
+    public class PagerAdapter extends FragmentStatePagerAdapter {
+        int currentPosition;
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
+            for(int i = 0; i< ListFragment.PageType.COUNT; i++)
+                pages.add(ListFragment.NewInstance(i));
+
+            notifyDataSetChanged();
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return pages.size();
         }
 
         @Override
         public Fragment getItem(int position) {
-            return ListFragment.NewInstance(position);
+            return pages.get(position);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            ListFragment fragment = (ListFragment) object;
+            int position = pages.indexOf(fragment);
+
+            if (position >= 0) {
+                return position;
+            } else {
+                return POSITION_NONE;
+            }
         }
 
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            if (currentFragment != object) {
-                currentFragment = ((ListFragment) object);
-            }
+            currentPosition = position;
 
             super.setPrimaryItem(container, position, object);
         }
+/*
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
 
-        public void RefreshCurrentList(boolean animate)
-        {
-            if(currentFragment != null)
-                currentFragment.RefreshList(animate);
+        }*/
+
+        public void RefreshPage(int position, boolean animate){
+            if(pages.get(position) != null)
+                pages.get(position).RefreshList(animate);
+            else
+                Log.e("pageview", "RefreshPage(), Page does not exist will not refresh: " + position);
+        }
+
+        /**
+         * Used to reconnect the link to the fragment in onresume
+         */
+        public void ReconnectFragment(ListFragment fragment, int position){
+            try {
+                pages.set(position, fragment);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -389,4 +436,3 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     //endregion =====END OF PAGEVIEW================
 }
-

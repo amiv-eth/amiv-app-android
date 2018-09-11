@@ -17,13 +17,13 @@ import ch.amiv.android_app.R;
 
 /**
  * This activity is for displaying the list of signed in members, similar to what is seen in the checkin website in the other amiv checkin project.
- * Mostly handles updating the data by fetching from the server and then updating the listview. Note the list view is customised, ie the individual item, this is what the CustomListAdapter class and list_item_memberber.xml are for
+ * Mostly handles updating the data by fetching from the server and then updating the listview. Note the list view is customised, ie the individual item, this is what the CustomListAdapter class and list_item_member.xml are for
  */
 
 public class MemberListActivity extends AppCompatActivity {
 
-    RecyclerView mRecylerView;
-    RecyclerView.Adapter mRecylcerAdaper;
+    RecyclerView mRecyclerView;
+    RecyclerView.Adapter mRecyclerAdapter;
     RecyclerView.LayoutManager mRecyclerLayoutAdapter;
 
     private final Handler handler = new Handler();  //similar as in scanActivity, to keep refreshing the data
@@ -71,19 +71,19 @@ public class MemberListActivity extends AppCompatActivity {
         }
         else if(id == R.id.menuSort_Membership) {
             EventDatabase.instance.SetMemberSortingType(EventDatabase.MemberComparator.Membership);
-            mRecylcerAdaper.notifyDataSetChanged();
+            mRecyclerAdapter.notifyDataSetChanged();
         }
         else if(id == R.id.menuSort_Status) {
             EventDatabase.instance.SetMemberSortingType(EventDatabase.MemberComparator.Status);
-            mRecylcerAdaper.notifyDataSetChanged();
+            mRecyclerAdapter.notifyDataSetChanged();
         }
         else if(id == R.id.menuSort_Name) {
             EventDatabase.instance.SetMemberSortingType(EventDatabase.MemberComparator.Name);
-            mRecylcerAdaper.notifyDataSetChanged();
+            mRecyclerAdapter.notifyDataSetChanged();
         }
         else if(id == R.id.menuSort_Legi) {
             EventDatabase.instance.SetMemberSortingType(EventDatabase.MemberComparator.Legi);
-            mRecylcerAdaper.notifyDataSetChanged();
+            mRecyclerAdapter.notifyDataSetChanged();
         }
 
         return super.onOptionsItemSelected(item);
@@ -92,20 +92,20 @@ public class MemberListActivity extends AppCompatActivity {
     private void InitialiseListView()
     {
         //=====Recycler View====
-        mRecylerView = findViewById(R.id.recyclerView);
+        mRecyclerView = findViewById(R.id.recyclerView);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-        mRecylerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
         mRecyclerLayoutAdapter = new LinearLayoutManager(this);
-        mRecylerView.setLayoutManager(mRecyclerLayoutAdapter);
+        mRecyclerView.setLayoutManager(mRecyclerLayoutAdapter);
 
         // specify an adapter (see also next example)
-        mRecylcerAdaper = new MemberListAdapter(EventDatabase.instance.members, EventDatabase.instance.stats, EventDatabase.instance.eventData.GetInfosAsKeyValuePairs());
-        mRecylerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(this, R.anim.layout_anim_falldown));
-        mRecylerView.setAdapter(mRecylcerAdaper);
+        mRecyclerAdapter = new MemberListAdapter(EventDatabase.instance.members, EventDatabase.instance.stats, EventDatabase.instance.eventData.GetInfosAsKeyValuePairs());
+        mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(this, R.anim.layout_anim_falldown));
+        mRecyclerView.setAdapter(mRecyclerAdapter);
 
         AnimateList(null);
     }
@@ -130,18 +130,18 @@ public class MemberListActivity extends AppCompatActivity {
     {
         this.runOnUiThread(new Runnable() {
             public void run() {
-                mRecylerView.invalidate();
-                mRecylerView.scheduleLayoutAnimation();
+                mRecyclerView.invalidate();
+                mRecyclerView.scheduleLayoutAnimation();
             }
         });
     }
 
     private void UpdateList()
     {
-        if(mRecylerView == null)
+        if(mRecyclerView == null)
             InitialiseListView();
 
-        mRecylcerAdaper.notifyDataSetChanged();
+        mRecyclerAdapter.notifyDataSetChanged();
     }
 
     public void RefreshListData(View view)

@@ -14,6 +14,7 @@ public class Member {
     public String firstname;
     public String lastname;
     public String legi;
+    private String formattedLegi;
     public String membership;   //as in membership type: ordinary extraordinary honorary
     public String nethz;
     public String checkinCount; //how often the person has been checked in
@@ -45,5 +46,29 @@ public class Member {
         membership  = _membership;
         nethz       = _nethz;
         checkinCount= _checkinCount;
+    }
+
+    private static final char legiFormatSeperator = '-';
+    private static final char legiStandardLength = 8;
+    /**
+     * @return Legi formatted for reading
+     */
+    public String GetLegiFormatted (){
+        if(!formattedLegi.isEmpty())    //cache formatted legi for faster access, e.g. when searching through list
+            return formattedLegi;
+
+        if(legi == null || legi.isEmpty())
+            formattedLegi = "-";
+        else if(legi.length() != legiStandardLength)
+            formattedLegi = legi;
+        else {
+            StringBuilder s = new StringBuilder();
+            s.append(legi);
+            s.insert(5, legiFormatSeperator);
+            s.insert(2, legiFormatSeperator);
+
+            formattedLegi = s.toString();
+        }
+        return formattedLegi;
     }
 }

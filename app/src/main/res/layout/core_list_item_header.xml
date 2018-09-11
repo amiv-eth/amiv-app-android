@@ -3,23 +3,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:background="@color/accentLight"
+    android:orientation="vertical"
+    android:paddingTop="8dp">
 
     <TextView
         android:id="@+id/titleField"
+        style="@style/Header"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:paddingLeft="12dp"
-        android:paddingTop="8dp"
-        android:text=""
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:text="Header"
+        android:textAppearance="@style/Header"
+        android:textSize="24sp" />
 
     <View
-    android:id="@+id/dividerLine"
-    android:layout_width="match_parent"
-    android:layout_height="2dp"
-    android:background="@color/colorAccentDark" />
+        android:id="@+id/dividerLine"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/accentDark" />
 </LinearLayout>
 

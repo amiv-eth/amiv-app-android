@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ch.amiv.checkin.SearchMembersActivity">
+    tools:context=".checkin.SearchMembersActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -13,7 +13,8 @@
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        tools:listitem="@layout/checkin_list_item_member">
 
     </android.support.v7.widget.RecyclerView>
 </android.support.constraint.ConstraintLayout>

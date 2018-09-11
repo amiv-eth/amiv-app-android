@@ -71,7 +71,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     /**
-     * @param context
      * @return Returns whether auto fetching data, to update list of members from the server, is allowed
      */
     public static boolean GetAutoRefresh (Context context)
@@ -83,7 +82,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     /**
-     * @param context
      * @return Returns the saved refresh frequency for getting data from the server. The value set in the settings activity
      */
     public static int GetRefreshFrequency (Context context) //returns in millisec, but is stored in sec

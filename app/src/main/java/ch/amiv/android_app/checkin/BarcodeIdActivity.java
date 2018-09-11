@@ -1,5 +1,6 @@
 package ch.amiv.android_app.checkin;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
@@ -8,6 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
 import com.google.zxing.BarcodeFormat;
@@ -17,7 +22,6 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.lang.reflect.Field;
-import java.nio.file.attribute.UserDefinedFileAttributeView;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.core.UserInfo;
@@ -48,23 +52,43 @@ public class BarcodeIdActivity extends AppCompatActivity {
             }
         });
 
-        //Setup swipe down to refresh
+        InitSwipeRefreshUI();
+    }
+
+    //Setup swipe down to refresh, adds the amiv logo and rotate animation
+    private void InitSwipeRefreshUI()
+    {
+
         swipeRefreshLayout = findViewById(R.id.swipeRefresh);
-        swipeRefreshLayout.setRefreshing(true);
+        //swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {    //This sets what function is called when we swipe down to refresh
             @Override
             public void onRefresh() {
                 GenerateBarcode();
+
+                try {
+                    Field f = swipeRefreshLayout.getClass().getDeclaredField("mCircleView");
+                    f.setAccessible(true);
+                    ImageView img = (ImageView)f.get(swipeRefreshLayout);
+
+                    RotateAnimation rotate = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                    rotate.setRepeatMode(Animation.INFINITE);
+                    rotate.setDuration(1000);
+                    rotate.setInterpolator(new LinearInterpolator());
+                    img.startAnimation(rotate);
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
-        //Change the image on the swipe to refresh icon. Unfortunately have not found a way to make the icon rotate, may have to create overriden class
         try {
             Field f = swipeRefreshLayout.getClass().getDeclaredField("mCircleView");
             f.setAccessible(true);
             ImageView img = (ImageView)f.get(swipeRefreshLayout);
-            img.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_amiv_logo_icon_scaled, null));
-            swipeRefreshLayout.setColorSchemeResources(R.color.refresh_progress_1, R.color.refresh_progress_2, R.color.refresh_progress_3);
+            img.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_amiv_logo_icon_scaled, null));
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

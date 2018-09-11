@@ -1,21 +1,31 @@
 <resources>
     <!-- Titles -->
-    <string name="title">AMIV</string>
-    <string name="app_name">AMIV</string>
-    <string name="app_name_checkin">AMIV Check-in</string>
-    <string name="title_home">Home</string>
-    <string name="title_blitz">blitz</string>
+    <string name="title" translatable="false">amiv</string>
+    <string name="app_name" translatable="false">amiv</string>
+    <string name="app_name_checkin" translatable="false">amiv Check-in</string>
+    <string name="title_events">Events</string>
+    <string name="title_blitz" translatable="false">blitz</string>
+    <string name="title_jobs">Job Offers</string>
     <string name="title_notifications">Notifications</string>
     <string name="settings_title">Settings</string>
-    <string name="apps_title">Apps</string>
-    <string name="check_in_title">Check-in</string>
+    <string name="apps_title" translatable="false">Apps</string>
+    <string name="check_in_title" translatable="false">Check-in</string>
     <string name="barcode_id_title">Barcode ID</string>
     <string name="info_title">Info</string>
-    <string name="new_events_title">New Events</string>
+
+    <string name="all_events_title">New Events</string>
+    <string name="closed_events_title">Closed Events</string>
+    <string name="past_events_title">Past Events</string>
+    <string name="hidden_events_title">Hidden Events</string>
+
+
+    <string name="all_jobs_title">New Jobs</string>
+    <string name="past_jobs_title">Past Jobs</string>
+    <string name="hidden_jobs_title">Hidden Jobs</string>
 
     <!-- Language -->
     <string name="pref_lang_title">Language - Sprache</string>
-    <string name="pref_lang_key">lang</string>
+    <string name="pref_lang_key" translatable="false">lang</string>
     <string-array name="pref_lang_list_values">
         <item>English</item>
         <item>Deutsch</item>
@@ -25,10 +35,26 @@
         <item>de</item>
     </string-array>
 
+    <!-- Intro -->
+    <string name="select_language_universal">Select Your Language\nWähle Deine Sprache</string>
+    <string name="intro_header_app_uses">Use the amiv app to:</string>
+    <string name="intro_info_events">Sign up to Events</string>
+    <string name="intro_info_jobs">View Job Offers</string>
+    <string name="intro_info_microapps">Use amiv Microapps</string>
+    <string name="intro_info_barcode_id">Barcode ID</string>
+    <string name="intro_info_helper_apps">More amiv Helper apps</string>
+    <string name="rfid" translatable="false">RFID</string>
+    <string name="rfid_no">RFID No.</string>
+    <string name="intro_rfid_hint">A 6-Digit number on the back of your Legi</string>
+    <string name="intro_profile_title">Please Update Your Info</string>
+    <string name="intro_event_prefs_title">Set Your Event Preferences</string>
+
     <!-- Login -->
     <string name="login_title">Login</string>
     <string name="login_prompt">Please enter your login details</string>
+    <string name="login_prompt_email">To log in with just your email, leave password empty</string>
     <string name="not_logged_in">Not Logged In</string>
+    <string name="not_authorised">Not Authorised</string>
     <string name="invalid_login">Invalid Login Details</string>
     <string name="logout_title">Log out</string>
 
@@ -43,9 +69,12 @@
     <string name="waiting_list_size">Waiting List Size</string>
     <string name="available_places">Available Places</string>
     <string name="price_free">Free</string>
+    <string name="new_caps">NEW\u0020</string>
 
     <!-- Event Registering -->
     <string name="register_title">Register</string>
+    <string name="register_soon">Register Soon</string>
+    <string name="registration_closed">Registration Closed</string>
     <string name="register_end">Register End</string>
     <string name="register_start">Register Start</string>
     <string name="already_registered">Already Registered</string>
@@ -55,7 +84,11 @@
 
     <string name="no_internet">No Internet</string>
     <string name="requires_internet">Requires Internet</string>
-    <string name="snack_fill_all_fields">Please fill in all fields</string>
+    <string name="snack_fill_fields">Please fill in fields</string>
+
+    <!-- Jobs -->
+    <string name="no_pdf_found">No PDF found</string>
+    <string name="open_pdf">Open PDF</string>
 
     <!-- Errors -->
     <string name="error_image_load">Error loading image</string>
@@ -68,18 +101,20 @@
         <item>Everything</item>
         <item>Vegetarian</item>
         <item>Nothing</item>
+        <item>Other</item>
     </string-array>
     <string-array name="pref_food_list_entries">
         <item>all</item>
         <item>veg</item>
         <item>nothing</item>
+        <item>other</item>
     </string-array>
 
     <string name="pref_sbb_title">Public Transport</string>
-    <string name="pref_sbb_key">sbb_list</string>
+    <string name="pref_sbb_key" translatable="false">sbb_list</string>
     <string-array name="pref_sbb_list_values">
         <item>GA</item>
-        <item>Gleis7</item>
+        <item>Gleis 7</item>
         <item>Half Tax</item>
         <item>Nothing</item>
     </string-array>
@@ -92,7 +127,7 @@
 
     <string name="pref_notifications_title">Receive Notifications</string>
     <string name="pref_notifications_desc">Get updates about events</string>
-    <string name="pref_notifications_key">notif_enabled</string>
+    <string name="pref_notifications_key" translatable="false">notif_enabled</string>
 
 
     <!-- CHECKIN Package -->
@@ -103,10 +138,20 @@
     <string name="no_barcode_detected">No Barcode Detected</string>
     <string name="invalid_pin">Invalid PIN</string>
     <string name="invalid_url">Invalid URL</string>
-    <string name="checkin_server_url">https://checkin.amiv.ethz.ch</string>
+    <string name="checkin_server_url" translatable="false">https://checkin.amiv.ethz.ch</string>
 
+    <string name="open_website">Open Website</string>
+    <string name="seconds">Seconds</string>
+    <string name="refresh_frequency_title">Refresh Frequency</string>
+    <string name="auto_refresh_title">Auto Refresh</string>
+    <string name="save">Save</string>
+    <string name="valid">Valid</string>
+    <string name="search">Search</string>
 
-
+    <string name="sort_membership">By Membership</string>
+    <string name="sort_name">By Name</string>
+    <string name="sort_status">By Status</string>
+    <string name="sort_legi">By Legi</string>
 
 
     <!-- Settings, some are still from template -->
@@ -148,7 +193,18 @@
         <item>-1</item>
     </string-array>
 
+    <!-- Unsorted/Translated Strings-->
     <string name="pref_title_system_sync_settings">System sync settings</string>
-
+    <string name="date_created">Added</string>
+    <string name="date_available_until">Available until</string>
+    <string name="job_pdf_description">More details on your job offer</string>
+    <string name="see_notification">See Notification&#8230;</string>
+    <string name="email_only_login">Email only login</string>
+    <string name="requires_login">Requires Login</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="lets_go">Let\'s Go</string>
+    <string name="other">Other</string>
+    <string name="tap_to_set">Tap to set</string>
 
 </resources>

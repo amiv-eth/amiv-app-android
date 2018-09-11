@@ -21,7 +21,7 @@
         android:layout_gravity="left"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:tint="@color/colorPrimary"
+        android:tint="@color/primary"
         app:srcCompat="@drawable/ic_amiv_logo" />
 
     <TextView
