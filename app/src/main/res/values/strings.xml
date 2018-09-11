@@ -135,6 +135,7 @@
     <string name="check_out">Check-Out</string>
     <string name="submit">Submit</string>
     <string name="enter_event_pin">Enter Event PIN</string>
+    <string name="last_event">Last Event</string>
     <string name="no_barcode_detected">No Barcode Detected</string>
     <string name="invalid_pin">Invalid PIN</string>
     <string name="invalid_url">Invalid URL</string>

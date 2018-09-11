@@ -122,6 +122,7 @@
     <string name="check_in">Check-In</string>
     <string name="check_out">Check-Out</string>
     <string name="submit">Senden</string>
+    <string name="last_event">Letzter Event</string>
     <string name="enter_event_pin">Event PIN Eingeben</string>
     <string name="no_barcode_detected">Kein Barcode Gefunden</string>
     <string name="invalid_pin">Falscher PIN</string>

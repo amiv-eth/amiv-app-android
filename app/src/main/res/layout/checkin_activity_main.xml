@@ -15,7 +15,8 @@
         android:gravity="center"
         android:hint="PIN"
         android:inputType="numberPassword"
-        android:textAlignment="center"
+        android:textAppearance="@style/Body"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -27,10 +28,24 @@
         android:id="@+id/SubmitPin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
         android:layout_marginTop="12dp"
         android:onClick="SubmitPin"
         android:text="@string/submit"
+        android:textAppearance="@style/Subheader"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/PinField" />
+
+    <Button
+        android:id="@+id/openRecent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:enabled="false"
+        android:onClick="SubmitRecentPin"
+        android:text="@string/last_event"
+        android:textAppearance="@style/Subheader"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/PinField" />
 
@@ -63,7 +78,7 @@
         android:gravity="center"
         android:onClick="StartSettingsActivity"
         android:text="@string/settings_title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textAppearance="@style/Subheader"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -77,7 +92,7 @@
         android:gravity="center"
         android:onClick="GoToWebsite"
         android:text="@string/open_website"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textAppearance="@style/Subheader"
         app:layout_constraintBottom_toTopOf="@+id/SettingsButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -91,6 +106,7 @@
         android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="@string/invalid_url"
+        android:textAppearance="@style/Body"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
