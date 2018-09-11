@@ -10,25 +10,28 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
@@ -41,7 +44,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import ch.amiv.android_app.R;
-
 import ch.amiv.android_app.core.Settings;
 
 public class ScanActivity extends AppCompatActivity {
@@ -58,8 +60,8 @@ public class ScanActivity extends AppCompatActivity {
         @Override
         public void run() {
             RefreshMemberDB();
-            if(SettingsActivity.GetAutoRefresh(getApplicationContext()))
-                handler.postDelayed(this, SettingsActivity.GetRefreshFrequency(getApplicationContext()));  //ensure to call this same runnable again so it repeats, if this is allowed
+            if(Settings.GetBoolPref(Settings.checkin_autoUpdate, getApplicationContext()))
+                handler.postDelayed(this, SettingsActivity.GetRefreshRateMillis(getApplicationContext()));  //ensure to call this same runnable again so it repeats, if this is allowed
         }
     };
 
@@ -71,6 +73,7 @@ public class ScanActivity extends AppCompatActivity {
     private EditText mLegiInputField;
     private TextView mWaitLabel;
     private TextView mResponseLabel;
+    private float mResponseLabelDefFontSize;
     private ImageView mTickImage;
     private ImageView mCrossImage;
     private TextView mCheckinCountLabel;
@@ -124,6 +127,7 @@ public class ScanActivity extends AppCompatActivity {
         mCheckInSwitchLabel_Out = findViewById(R.id.CheckOutLabel);
         mWaitLabel = findViewById(R.id.PleaseWaitLabel);
         mResponseLabel = findViewById(R.id.ResponseLabel);
+        mResponseLabelDefFontSize = mResponseLabel.getTextSize();   //Note is in pixels, *not* sp
         mTickImage = findViewById(R.id.TickImage);
         mCrossImage = findViewById(R.id.CrossImage);
         mCheckinCountLabel = findViewById(R.id.CheckInCountLabel);
@@ -152,6 +156,16 @@ public class ScanActivity extends AppCompatActivity {
                     mAllowNextBarcode = true;
                     ResetResponseUI();
                 }
+            }
+        });
+
+        //This sets the action when pressing enter whilst editing the mLegiInputField so we immediately submit but dont close the keyboard
+        mLegiInputField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_GO)    //Note:this needs to match the imeOptions in the layout file for the password field
+                    SubmitLegiNrFromTextField(null);   //If we pressed the enter button then submit the details
+                return true;    //return true to keep the keyboard open, in case the user has to re-enter details
             }
         });
     }
@@ -308,7 +322,6 @@ public class ScanActivity extends AppCompatActivity {
             }
         };
 
-        Log.e("postrequest", "Params sent: pin=" + MainActivity.CurrentPin + ", info=" + leginr + ", checkmode=" + (mIsCheckingIn ? "in" : "out") + ", URL used: " + SettingsActivity.GetServerURL(getApplicationContext()));
         ServerRequests.CheckLegi(this, callback, leginr, mIsCheckingIn);
     }
 
@@ -325,7 +338,7 @@ public class ScanActivity extends AppCompatActivity {
 
         if(statusCode == 200) { //success
             mResponseLabel.setVisibility(View.VISIBLE);
-            mResponseLabel.setText(message);
+            mResponseLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, mResponseLabelDefFontSize);
             mTickImage.setVisibility(View.VISIBLE);
             mBGTint.setVisibility(View.VISIBLE);
             mTickImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.item_anim_grow));
@@ -408,6 +421,12 @@ public class ScanActivity extends AppCompatActivity {
             Settings.Vibrate(Settings.VibrateTime.LONG, getApplicationContext());
         }
 
+        //decrease font size for long messages, usually errors
+        if (responseText.length() < 40)
+            mResponseLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, mResponseLabelDefFontSize);
+        else
+            mResponseLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
+
         RefreshMemberDB();
     }
 
@@ -418,6 +437,7 @@ public class ScanActivity extends AppCompatActivity {
     {
         mResponseLabel.setText("");
         mResponseLabel.setVisibility(View.INVISIBLE);
+        mResponseLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, mResponseLabelDefFontSize);
         mTickImage.setVisibility(View.INVISIBLE);
         mCrossImage.setVisibility(View.INVISIBLE);
         mCheckinCountLabel.setVisibility(View.INVISIBLE);
@@ -519,10 +539,11 @@ public class ScanActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {   //Used to press back twice to exit scanning screen, prevent accidental logouts
-        if (timeBackPressed + BACKBUTTON_REPEAT_TIME > System.currentTimeMillis())
+        if (timeBackPressed + BACKBUTTON_REPEAT_TIME > System.currentTimeMillis()) {
             super.onBackPressed();
+        }
         else
-            Toast.makeText(getBaseContext(), "Press Again To Logout", Toast.LENGTH_SHORT).show();
+            Snackbar.make(mCameraView, R.string.press_again_logout, BACKBUTTON_REPEAT_TIME).show();
 
         timeBackPressed = System.currentTimeMillis();
     }

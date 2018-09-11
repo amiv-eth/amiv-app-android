@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.core.Request;
 import ch.amiv.android_app.util.CustomNetworkImageView;
+import ch.amiv.android_app.util.Util;
 
 /**
  * The activity/screen used for showing a selected job in detail.
@@ -85,9 +86,7 @@ public class JobDetailActivity extends AppCompatActivity {
      */
     private void InitUI (){
         //Set up toolbar and back button
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Util.SetupToolbar(this, true);
 
         //Check that we have been given a job that exists else return to the calling activity
         if(!hasJob()) {

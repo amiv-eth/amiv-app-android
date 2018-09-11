@@ -28,6 +28,7 @@ import ch.amiv.android_app.events.EventDetailActivity;
 import ch.amiv.android_app.events.Events;
 import ch.amiv.android_app.jobs.JobDetailActivity;
 import ch.amiv.android_app.util.PersistentStorage;
+import ch.amiv.android_app.util.Util;
 
 /**
  * This is the first screen. features: drawer, pageview with bottom navigation bar and within each page a list view.
@@ -88,8 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 r.getColor(R.color.white));
         this.setTaskDescription(taskDescription);*/
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Toolbar toolbar = Util.SetupToolbar(this, false);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.core.Settings;
 
 public class SearchMembersActivity extends AppCompatActivity {
 
@@ -40,8 +41,8 @@ public class SearchMembersActivity extends AppCompatActivity {
                         actionBar.setTitle(EventDatabase.instance.eventData.name);
                 }
             });
-            if(SettingsActivity.GetAutoRefresh(getApplicationContext()))
-                handler.postDelayed(this, SettingsActivity.GetRefreshFrequency(getApplicationContext()));
+            if(Settings.GetBoolPref(Settings.checkin_autoUpdate, getApplicationContext()))
+                handler.postDelayed(this, SettingsActivity.GetRefreshRateMillis(getApplicationContext()));
         }
     };
 

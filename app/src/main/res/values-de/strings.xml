@@ -128,14 +128,18 @@
     <string name="invalid_pin">Falscher PIN</string>
     <string name="invalid_url">Falscher URL</string>
     <string name="open_website">Webseite Öffnen</string>
+    <string name="press_again_logout">Nochmal für Logout</string>
 
     <string name="seconds">Sekunden</string>
-    <string name="refresh_frequency_title">Aktualisierungshäufigkeit</string>
-    <string name="auto_refresh_title">Auto Aktuaisierung</string>
+    <string name="refresh_rate_title">Aktualisierungshäufigkeit (s)</string>
+    <string name="auto_refresh_title">Auto Aktualisierung</string>
     <string name="save">Speichern</string>
     <string name="valid">Valid</string>
     <string name="search">Suchen</string>
 
+    <string name="stat_title">Statistiken</string>
+    <string name="people_title">Personen</string>
+    <string name="event_info_title">Event Infos</string>
     <string name="sort_membership">Nach Mitgliedschaft</string>
     <string name="sort_name">Nach Name</string>
     <string name="sort_status">Nach Status</string>

@@ -1,16 +1,13 @@
 package ch.amiv.android_app.checkin;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -25,6 +22,7 @@ import java.lang.reflect.Field;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.core.UserInfo;
+import ch.amiv.android_app.util.Util;
 
 public class BarcodeIdActivity extends AppCompatActivity {
 
@@ -39,9 +37,8 @@ public class BarcodeIdActivity extends AppCompatActivity {
         setContentView(R.layout.checkin_activity_barcode_id);
 
         //Set up toolbar and back button
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Util.SetupToolbar(this, true);
+
 
         //Generate barcode after the UI has been setup
         barcodeImageView = findViewById(R.id.barcodeImage);

@@ -43,11 +43,9 @@
         <activity
             android:name=".core.LoginActivity"
             android:configChanges="keyboardHidden|orientation|layoutDirection|screenSize|locale"
-            android:label="">
+            android:label=""
+            android:parentActivityName=".core.MainActivity">
             <!--android:windowSoftInputMode="stateVisible"  use this to make the keyboard show when the activity is started-->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ch.amiv.android_app.core.MainActivity" />
         </activity>
 
         <activity
@@ -60,27 +58,20 @@
             android:configChanges="layoutDirection|locale"
             android:label=""
             android:parentActivityName=".core.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ch.amiv.android_app.core.MainActivity" />
         </activity>
 
         <activity
             android:name=".events.EventDetailActivity"
             android:configChanges="orientation|layoutDirection|locale"
-            android:theme="@style/AppThemeLight">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ch.amiv.android_app.core.MainActivity" />
+            android:theme="@style/AppThemeLight"
+            android:parentActivityName=".core.MainActivity">
         </activity>
 
         <activity
             android:name=".jobs.JobDetailActivity"
             android:configChanges="orientation|layoutDirection|locale"
-            android:theme="@style/AppThemeLight">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ch.amiv.android_app.core.MainActivity" />
+            android:theme="@style/AppThemeLight"
+            android:parentActivityName=".core.MainActivity">
         </activity>
 
         <activity
@@ -94,32 +85,29 @@
             android:name=".checkin.MainActivity"
             android:label="@string/app_name_checkin"
             android:screenOrientation="portrait"
-            android:theme="@style/AmivTheme" />
+            android:configChanges="keyboardHidden|orientation|layoutDirection|screenSize|locale"
+            android:parentActivityName=".core.MainActivity"/>
 
         <activity
             android:name=".checkin.ScanActivity"
             android:label="@string/app_name_checkin"
             android:screenOrientation="portrait"
-            android:theme="@style/AmivTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".checkin.MainActivity" />
+            android:theme="@style/AmivTheme"
+            android:parentActivityName=".checkin.MainActivity">
         </activity>
 
         <activity
             android:name=".checkin.SettingsActivity"
             android:label="@string/app_name_checkin"
             android:screenOrientation="portrait"
-            android:theme="@style/AmivTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".checkin.MainActivity" />
+            android:parentActivityName=".checkin.MainActivity">
         </activity>
 
         <activity
             android:name=".checkin.MemberListActivity"
             android:label="@string/app_name_checkin"
-            android:theme="@style/AmivTheme">
+            android:theme="@style/AmivTheme"
+            android:parentActivityName=".checkin.ScanActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -127,18 +115,13 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/checkin_searchable" />
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".checkin.ScanActivity" />
         </activity>
 
         <activity
             android:name=".checkin.SearchMembersActivity"
             android:label="@string/app_name_checkin"
-            android:theme="@style/AmivTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".checkin.MemberListActivity" />
+            android:theme="@style/AmivTheme"
+            android:parentActivityName=".checkin.MemberListActivity">
         </activity>
 
         <!-- Demo -->

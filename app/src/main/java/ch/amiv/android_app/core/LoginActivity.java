@@ -1,5 +1,6 @@
 package ch.amiv.android_app.core;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.util.Util;
 
 /**
  * This handles logging into the api, getting a token with the provided username and password
@@ -39,8 +41,6 @@ public class LoginActivity extends AppCompatActivity {
     EditText passwordField;
     Button submitButton;
 
-    int prevLayoutParams;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         isIntroLogin = !Settings.GetBoolPref(Settings.introDoneKey, getApplicationContext());
 
         //Set for the keyboard to resize the window so the snackbars appear just above the keyboard
-        prevLayoutParams = getWindow().getAttributes().softInputMode;
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        Util.SetWindowResizing(this, true);
         setContentView(R.layout.core_activity_login);
 
         //Show skip button if this is in the intro
@@ -67,11 +66,7 @@ public class LoginActivity extends AppCompatActivity {
             btnSkip.setVisibility(View.GONE);
         }
 
-        //Add the toolbar and back navigation
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null)//XXX doesn't always work, ensure that the back arrow is visible
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Util.SetupToolbar(this, true);
 
         //Link UI elements to xml
         userField = findViewById(R.id.usernameField);
@@ -225,10 +220,11 @@ public class LoginActivity extends AppCompatActivity {
      * @param success is the user now logged in
      */
     private void ReturnToCallingActivity(final boolean success, final boolean canceled) {
+        final Activity activity = this;
         submitButton.post(new Runnable() {
             @Override
             public void run() {
-                getWindow().setSoftInputMode(prevLayoutParams); //reset the keyboard and window layout to how it was before
+                Util.SetWindowResizing(activity, false); //reset the keyboard and window layout to how it was before
                 Intent intent = new Intent();
                 intent.putExtra("login_success", success);
                 setResult(canceled ? RESULT_CANCELED : RESULT_OK, intent);
