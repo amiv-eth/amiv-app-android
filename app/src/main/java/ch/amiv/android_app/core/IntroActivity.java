@@ -17,8 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import ch.amiv.android_app.R;
-import ch.amiv.android_app.ui.NonSwipeableViewPager;
-import ch.amiv.android_app.ui.EnumViewGenerator;
+import ch.amiv.android_app.util.ui.NonSwipeableViewPager;
+import ch.amiv.android_app.util.ui.EnumViewGenerator;
 import ch.amiv.android_app.util.Util;
 
 public class IntroActivity extends AppCompatActivity {

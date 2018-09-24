@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.core.Request;
-import ch.amiv.android_app.util.CustomNetworkImageView;
+import ch.amiv.android_app.util.ui.CustomNetworkImageView;
 import ch.amiv.android_app.util.Util;
 
 /**

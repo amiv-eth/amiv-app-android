@@ -1,4 +1,4 @@
-package ch.amiv.android_app.util;
+package ch.amiv.android_app.util.ui;
 
 import android.content.Context;
 import android.graphics.Bitmap;

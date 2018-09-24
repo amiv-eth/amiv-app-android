@@ -1,4 +1,4 @@
-package ch.amiv.android_app.ui;
+package ch.amiv.android_app.util.ui;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
