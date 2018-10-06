@@ -5,6 +5,10 @@ If you have an idea for an app feature, this can easily be added as a 'micro-app
   
 *Current Maintainer for Questions: rbarton@ethz.ch*
 
+**[amiv App - iOS](https://gitlab.ethz.ch/amiv/amiv-app-ios)**  
+**[amiv API](https://github.com/amiv-eth/amivapi)**, **[Docs](http://api.amiv.ethz.ch/docs)**  
+**[Check-in Micro-App Readme](https://gitlab.ethz.ch/amiv/amiv-app-android/blob/master/Readme%20Check-in.md)**
+
 ## To Start Developing
 1. Install Android Studio, if android studio asks you to install extra stuff once opened, install it.
     Gradle, the build system, will have to build first before you can edit properly.
