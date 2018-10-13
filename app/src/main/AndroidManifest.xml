@@ -131,5 +131,7 @@
             android:parentActivityName=".core.MainActivity"
             android:screenOrientation="portrait" />
 
+        <receiver  android:name=".core.AlarmReceiver"/>
+
     </application>
 </manifest>
