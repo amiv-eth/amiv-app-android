@@ -7,7 +7,7 @@
     android:background="@color/primary">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/title_enum_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -34,7 +34,7 @@
         android:background="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
+        app:layout_constraintTop_toBottomOf="@+id/title_enum_view" />
 
     <ScrollView
         android:layout_width="match_parent"

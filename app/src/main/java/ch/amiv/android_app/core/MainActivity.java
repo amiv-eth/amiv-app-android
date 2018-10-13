@@ -271,16 +271,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void StartEventDetailActivity(int eventGroup, int eventIndex)
     {
         Intent intent = new Intent(this, EventDetailActivity.class);
-        intent.putExtra("eventGroup", eventGroup);
-        intent.putExtra("eventIndex", eventIndex);
+        intent.putExtra(EventDetailActivity.LauncherExtras.EVENT_GROUP, eventGroup);
+        intent.putExtra(EventDetailActivity.LauncherExtras.EVENT_INDEX, eventIndex);
         startActivityForResult(intent, 0);
     }
 
     public void StartJobDetailActivity(int jobGroup, int jobIndex)
     {
         Intent intent = new Intent(this, JobDetailActivity.class);
-        intent.putExtra("jobGroup", jobGroup);
-        intent.putExtra("jobIndex", jobIndex);
+        intent.putExtra(JobDetailActivity.LauncherExtras.JOB_GROUP, jobGroup);
+        intent.putExtra(JobDetailActivity.LauncherExtras.JOB_INDEX, jobIndex);
         startActivityForResult(intent, 0);
     }
 

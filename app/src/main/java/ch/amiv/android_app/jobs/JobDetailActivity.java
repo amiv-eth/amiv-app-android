@@ -32,6 +32,12 @@ import ch.amiv.android_app.util.Util;
  * This mainly displays stored info about the job, eg description and also fetches more such as images. Also handles registering for and job and the possible outcomes
  */
 public class JobDetailActivity extends AppCompatActivity {
+    public static final class LauncherExtras {
+        public static final String JOB_GROUP = "jobGroup";
+        public static final String JOB_INDEX = "jobIndex";
+        public static final String JOB_ID = "eventId";
+        public static final String LOAD_JOBS = "loadJobs";
+    }
 
     private int jobGroup = 0;
     private int jobIndex = 0;
@@ -73,9 +79,9 @@ public class JobDetailActivity extends AppCompatActivity {
     private void GetIntentData (){
         if(jobGroup == 0 && jobIndex == 0) {
             Intent intent = getIntent();
-            if(intent.hasExtra("jobGroup") && intent.hasExtra("jobIndex")) {
-                jobGroup = intent.getIntExtra("jobGroup", 0);
-                jobIndex = intent.getIntExtra("jobIndex", 0);
+            if(intent.hasExtra(JobDetailActivity.LauncherExtras.JOB_GROUP) && intent.hasExtra(LauncherExtras.JOB_INDEX)) {
+                jobGroup = intent.getIntExtra(JobDetailActivity.LauncherExtras.JOB_GROUP, 0);
+                jobIndex = intent.getIntExtra(LauncherExtras.JOB_INDEX, 0);
             }
         }
     }

@@ -1,21 +1,24 @@
-"$schema":"http://json-schema.org/draft-04/schema#"
-"additionalProperties":false
-"title":"Additional Fields"
-"type":"object"
-"properties":{
-  "SBB_Abo":
-  {
-    "type":"string"
-    "enum":["None", "GA", "Halbtax", "Gleis 7"]
-  }
-  "Food":
-  {
-  "type":"string"
-  "enum":["Omnivor", "Vegi", "Vegan", "Other"]
-  }
-  "Special Food Requirements":
-  {
-    "type":"string"
-  }
+{
+    "$schema":"http://json-schema.org/draft-04/schema#",
+    "additionalProperties":false,
+    "title":"Additional Fields",
+    "type":"object",
+    "properties":
+    {
+        "SBB_Abo":
+        {
+            "type":"string",
+            "enum":["None","GA","Halbtax","Gleis 7"]
+        },
+        "Food":
+        {
+            "type":"string",
+            "enum":["Omnivor","Vegi","Vegan","Other"]
+        },
+        "Special Food Requirements":
+        {
+            "type":"string"
+        }
+    },
+    "required":["SBB_Abo","Food"]
 }
-"required":["SBB_Abo", "Food"]

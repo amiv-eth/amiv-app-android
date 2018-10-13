@@ -35,7 +35,6 @@ public class EventInfo implements Serializable{
     public String location;
     public String price;
     public String priority;
-    public String additional_fields;
 
     public String selection_strategy;
     public int signup_count;
@@ -60,6 +59,8 @@ public class EventInfo implements Serializable{
     public Date time_created;
     public Date time_updated;
 
+
+
     private ArrayList<String[]> infos = new ArrayList<>();
 
     //===Signup related===
@@ -68,6 +69,8 @@ public class EventInfo implements Serializable{
     public boolean confirmed;
     public enum CheckinState {none, in, out}
     public CheckinState checked_in = CheckinState.none;
+
+    public AdditField[] additional_fields;
 //endregion
 
     public EventInfo(JSONObject json) {
@@ -90,7 +93,9 @@ public class EventInfo implements Serializable{
         location        = json.optString("location");
         price           = json.optString("price");
         priority        = json.optString("priority");
-        additional_fields = json.optString("additional_fields");
+        try {
+            additional_fields = AdditField.ParseFromJson(new JSONObject(json.getString("additional_fields")));
+        } catch (JSONException e) { additional_fields = new AdditField[0]; }
 
         selection_strategy  = json.optString("selection_strategy");
         signup_count        = json.optInt("signup_count");
