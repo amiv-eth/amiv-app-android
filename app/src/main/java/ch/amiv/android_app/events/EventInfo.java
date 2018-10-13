@@ -94,7 +94,7 @@ public class EventInfo implements Serializable{
         price           = json.optString("price");
         priority        = json.optString("priority");
         try {
-            additional_fields = AdditField.ParseFromJson(json.getJSONObject("additional_fields"));
+            additional_fields = AdditField.ParseFromJson(new JSONObject(json.getString("additional_fields")));
         } catch (JSONException e) { additional_fields = new AdditField[0]; }
 
         selection_strategy  = json.optString("selection_strategy");

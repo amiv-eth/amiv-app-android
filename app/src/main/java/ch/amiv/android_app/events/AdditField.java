@@ -41,13 +41,13 @@ public class AdditField {
      * @return A parsed array of AdditFields. Empty array if we failed to parse
      */
     public static AdditField[] ParseFromJson(JSONObject additional_fields){
-        ArrayList<AdditField> fields;
+        List<AdditField> fields;
         JSONObject properties;
         List<String> requiredFields = null;
 
         //Get the properties json
         try {
-            properties = additional_fields.getJSONObject("properties");
+            properties = new JSONObject(additional_fields.getString("properties"));
             fields = new ArrayList<>(properties.length());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -56,7 +56,7 @@ public class AdditField {
 
         //parse which fields are required
         try {
-            JSONArray requiredFieldsJson = additional_fields.getJSONArray("required");
+            JSONArray requiredFieldsJson = new JSONArray(additional_fields.getString("required"));
             requiredFields = Arrays.asList(ParseStringArray(requiredFieldsJson));
         } catch (JSONException e) { }
 
@@ -73,7 +73,7 @@ public class AdditField {
 
                 //Get possible values from enum
                 if(o.has("enum"))
-                    f.possibleValues = ParseStringArray(o.getJSONArray("enum"));
+                    f.possibleValues = ParseStringArray(new JSONArray(o.getString("enum")));
 
                 //Check if this field is in the required list
                 if(requiredFields != null && requiredFields.contains(f.name))
@@ -86,7 +86,8 @@ public class AdditField {
             }
         }
 
-        return (AdditField[]) fields.toArray();
+        Object[] objects = fields.toArray();
+        return Arrays.copyOf(objects, objects.length, AdditField[].class);
     }
 
     /**
