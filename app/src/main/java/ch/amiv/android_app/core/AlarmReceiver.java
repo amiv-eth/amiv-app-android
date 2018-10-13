@@ -1,24 +1,18 @@
 package ch.amiv.android_app.core;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
-
-import ch.amiv.android_app.R;
-import ch.amiv.android_app.events.EventDetailActivity;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
     int notification_id=0;
-    String last_check_time;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Notifications.notify(context,"Alarm","Receiver called",R.drawable.ic_amiv_logo_icon);
+        //Notifications.notify(context,"Alarm","Receiver called",R.drawable.ic_amiv_logo_icon);
         Request.FetchEventListChanges(context, new Request.OnDataReceivedCallback() {
             @Override
             public void OnDataReceived() {
@@ -29,7 +23,8 @@ public class AlarmReceiver extends BroadcastReceiver {
             public void OnDataReceived() {
 
             }
-        }, Settings.GetPref(Settings.last_change_check_dateKey,context),false);
+        }, "2018-05-06T10:00:00Z",false); // TODO change date here to use last checked date
+                                                // use Settings.GetPref(Settings.last_change_check_dateKey,context)
 
         // TODO test if notification needed
 

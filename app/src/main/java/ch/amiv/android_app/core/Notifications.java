@@ -5,8 +5,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.icu.text.DateFormat;
-import android.icu.text.SimpleDateFormat;
 import android.support.v4.app.NotificationCompat;
 
 import org.json.JSONArray;
@@ -14,49 +12,42 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.events.EventDetailActivity;
+import ch.amiv.android_app.events.Events;
 
 public final class Notifications {
-    static AlarmManager alarm;
-    static Intent intent;
-    static PendingIntent pendingIntent;
+    public static AlarmManager alarm;
+    public static Intent intent;
+    public static PendingIntent pendingIntent;
 
     /**
      *
      * @param context
-     * @return sets daily alarm to 18:00
+     * @return sets daily alarm to XX:XX
      */
     static void set_Alarm (Context context){
-        Calendar calendar = Calendar.getInstance();
 
-        calendar.set(Calendar.HOUR_OF_DAY, 2);
-        calendar.set(Calendar.MINUTE, 50);
+        // set alarm time in calendar
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 8);
+        calendar.set(Calendar.MINUTE, 23);
         calendar.set(Calendar.SECOND, 0);
 
+        // pending intent to activate activity when notification is clicked
         intent = new Intent(context, AlarmReceiver.class);
 
         pendingIntent = PendingIntent.getBroadcast(
-               context, 0, intent,
-              PendingIntent.FLAG_UPDATE_CURRENT); // updates intent if it already exists
+                context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT); // updates intent if it already exists
 
+        // set alarm manager
         alarm = (AlarmManager) context
                 .getSystemService(context.ALARM_SERVICE);
 
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, pendingIntent);
-
-    }
-
-    static boolean is_alarm_set (){
-
-        AlarmManager.AlarmClockInfo ala = alarm.getNextAlarmClock();
-        if(ala!= null)
-        return true;
-
-        return false;
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
     }
 
     /**
@@ -64,20 +55,21 @@ public final class Notifications {
      * @param context
      * @param title title of notification
      * @param text text of notification
-     * @param icon icon
-     * @return generates notification on screen
+     * @param icon icon of notification
+     * @return immediately generates notification on screen
      */
-    // not working with Android 8.0
     public static void notify (Context context, String title, String text, int icon){
 
         NotificationManager notificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
         NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(
-                context,"1").setSmallIcon(icon)                             // channel id for compatibility with newer android versions
+                context,"1")
+                .setSmallIcon(icon)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setAutoCancel(true);
+
         notificationManager.notify(0, mNotifyBuilder.build());
 
     }
@@ -88,7 +80,8 @@ public final class Notifications {
      * @param title title of notification
      * @param text text of notification
      * @param icon icon
-     * @param pendingIntent generates notification on screen which starts the pending activity onClick
+     * @param pendingIntent pending intent to activate if notification is clicked
+     * @return generates notification on screen which starts the pending activity onClick
      */
     public static void notify_pending (Context context, String title, String text, int icon, PendingIntent pendingIntent){
 
@@ -96,10 +89,14 @@ public final class Notifications {
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
         NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(
-                context,"1").setSmallIcon(icon)                             // channel id for compatibility with newer android versions
+                context,"1")
+                .setSmallIcon(icon)
                 .setContentTitle(title)
                 .setContentText(text)
-                .setAutoCancel(true).setContentIntent(pendingIntent);
+                .setColor(context.getResources().getColor(R.color.primary)).setColorized(true)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent);
+
         notificationManager.notify(0, mNotifyBuilder.build());
 
     }
@@ -107,57 +104,91 @@ public final class Notifications {
     /**
      *
      * @param context
+     * @param json JSON with all new events
+     * @return event notificiation with appropriate onClick event
      */
-
-    // TODO
     public static void event_notifier (Context context, JSONObject json){
-        if(json == null) {
-            NotificationManager notificationManager = (NotificationManager) context
-                    .getSystemService(Context.NOTIFICATION_SERVICE);
-
-            Intent notificationIntent = new Intent(context, EventDetailActivity.class);
-            notificationIntent.putExtra("eventGroup", 1);
-            notificationIntent.putExtra("eventIndex", 0);
-            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
-                    notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            Notifications.notify_pending(context, "New Event", "take a look", R.drawable.ic_amiv_logo_icon, pendingIntent);
-        }
         // TODO catch when projections are used
-        // TODO catch if no new events
-        else{
             try{
+
                JSONArray items =  json.getJSONArray("_items");
+
                if(items.length()!=0) {
-                   JSONObject event = items.getJSONObject(0);
-                   String event_id = (String) event.get("title_en");
-                   NotificationManager notificationManager = (NotificationManager) context
-                           .getSystemService(Context.NOTIFICATION_SERVICE);
 
-                   Intent notificationIntent = new Intent(context, EventDetailActivity.class);
-                   notificationIntent.putExtra("eventGroup", 1);
-                   notificationIntent.putExtra("eventIndex", 0);
-                   notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                   // for one new event -> notify and onClick show details
+                   if(items.length()==1) {
 
-                   PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
-                           notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                       // get event from JSONObject and add it to events list
+                       JSONObject event = items.getJSONObject(0);
+                       Events.AddEvent(event);
 
-                   Notifications.notify_pending(context, "New Event", event_id, R.drawable.ic_amiv_logo_icon, pendingIntent);
+                       // refetch event list to add new event
+                       String event_id = (String) event.get("_id");
+                       Request.FetchEventList(context, null, null, event_id);
+
+                       // generate pending intent to get EventDetails onClick
+                       NotificationManager notificationManager = (NotificationManager) context
+                               .getSystemService(Context.NOTIFICATION_SERVICE);
+
+                       Intent notificationIntent = new Intent(context, EventDetailActivity.class);
+                       notificationIntent.putExtra(EventDetailActivity.LauncherExtras.EVENT_ID, event_id);
+                       notificationIntent.putExtra(EventDetailActivity.LauncherExtras.LOAD_EVENTS, true);
+                       notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                       PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+                               notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                       // generate notification
+                       String title = (String) event.get("title_de");
+                       Notifications.notify_pending(context, "New Event added", title, R.drawable.ic_amiv_logo_icon, pendingIntent);
+                   }
+                   // multiple new events -> show all titles and onClick show events main page
+                   else{
+                       // get event id's from new events
+                       String [] event_id = new String[items.length()];
+                        for(int i = 0; i<items.length();i++){
+                            JSONObject event = items.getJSONObject(i);
+                            Events.AddEvent(event); // TODO efficiency !
+                            event_id[i]= (String) event.get("_id");
+                        }
+
+                        // add new events to list
+                       // TODO how -> new function?
+                       Request.FetchEventList(context, null, null,event_id[0]); // TODO not null !
+
+                       // onClick start main activity
+                       NotificationManager notificationManager = (NotificationManager) context
+                               .getSystemService(Context.NOTIFICATION_SERVICE);
+
+                       Intent notificationIntent = new Intent(context, MainActivity.class);
+                       notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                       PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+                               notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                       // build string to display all event titles
+                       StringBuilder titles_list = new StringBuilder();
+                       titles_list.append ((String)items.getJSONObject(0).get("title_de"));
+                       for(int j = 1; j<items.length();j++){
+                           titles_list.append(", ");
+                           titles_list.append((String)items.getJSONObject(j).get("title_de"));
+                       }
+                       Notifications.notify_pending(context, "Many new Events added", titles_list.toString(), R.drawable.ic_amiv_logo_icon, pendingIntent);
+
+                   }
 
                }
+
+               // sets last change check to current time
                String dat = Request.dateFormat.format(Calendar.getInstance().getTime());
                Settings.SetPref(Settings.last_change_check_dateKey,dat,context);
-               //notify(context,"Change time",Settings.GetPref(Settings.last_change_check_dateKey,context),R.drawable.ic_amiv_logo_icon);
 
             }catch(JSONException ex){
-                //RunCallback(errorCallback);
-                //e.printStackTrace();
+                // TODO
             }
 
 
-        }
+
 
 
 

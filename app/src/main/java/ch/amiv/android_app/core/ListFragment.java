@@ -55,6 +55,7 @@ public class ListFragment extends Fragment {
         public void OnDataReceived() {
             Request.FetchEventSignups(MainActivity.instance, onSignupsUpdatedCallback, null, "");
             RefreshList(true);
+
         }
     };
 

@@ -1,10 +1,8 @@
 package ch.amiv.android_app.core;
 
-import android.app.AlarmManager;
-import android.app.Notification;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,7 +12,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -37,7 +34,6 @@ import ch.amiv.android_app.jobs.JobDetailActivity;
 import ch.amiv.android_app.util.PersistentStorage;
 import ch.amiv.android_app.util.Util;
 
-import static ch.amiv.android_app.core.Notifications.pendingIntent;
 
 /**
  * This is the first screen. features: drawer, pageview with bottom navigation bar and within each page a list view.
@@ -91,15 +87,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         instance = this;
         setContentView(R.layout.core_main);
 
-            // Create the NotificationChannel, but only on API 26+
+            // Create the NotificationChannel to run notifications on API 26+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 CharSequence name = "1";
                 String description = "Notifications";
                 int importance = NotificationManager.IMPORTANCE_DEFAULT;
                 NotificationChannel channel = new NotificationChannel("1", name, importance);
                 channel.setDescription(description);
-                // Register the channel with the system; you can't change the importance
-                // or other notification behaviors after this
+                // Register the channel in the system
                 NotificationManager notificationManager = getSystemService(NotificationManager.class);
                 notificationManager.createNotificationChannel(channel);
             }
@@ -132,26 +127,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         PersistentStorage.LoadJobs(getApplicationContext());
         InitialisePageView();
 
-        // send test notification at start
-        //Notifications.notify(this,"new Event up", "register now", R.drawable.ic_amiv_logo_icon);
-
+        // TODO check if notifications are enabled in the settings
         Notifications.set_Alarm(this);
-
-
-        //Notifications.event_notifier(this,null);
-
-        /*Request.FetchEventListChanges(this, new Request.OnDataReceivedCallback() {
-            @Override
-            public void OnDataReceived() {
-
-            }
-        }, new Request.OnDataReceivedCallback() {
-            @Override
-            public void OnDataReceived() {
-
-            }
-        }, "2018-09-06T10:00:00Z");*/
-
 
 
         //fetch the user info if we are logged in, there exists a token from the previous session, should be cached.
