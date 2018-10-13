@@ -81,14 +81,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         instance = this;
         setContentView(R.layout.core_main);
 
-        /*
-        //Use this to set a custom taskDescription in the app overview, ie when switching apps. Can set the icon, label and color of the bar
-        Resources r = getResources();
-        ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(r.getString(R.string.app_name),
-                BitmapFactory.decodeResource(getResources(), R.drawable.ic_amiv_logo_icon_white),
-                r.getColor(R.color.white));
-        this.setTaskDescription(taskDescription);*/
-
         Toolbar toolbar = Util.SetupToolbar(this, false);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -225,16 +217,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void StartEventDetailActivity(int eventGroup, int eventIndex)
     {
         Intent intent = new Intent(this, EventDetailActivity.class);
-        intent.putExtra("eventGroup", eventGroup);
-        intent.putExtra("eventIndex", eventIndex);
+        intent.putExtra(EventDetailActivity.LauncherExtras.EVENT_GROUP, eventGroup);
+        intent.putExtra(EventDetailActivity.LauncherExtras.EVENT_INDEX, eventIndex);
         startActivityForResult(intent, 0);
     }
 
     public void StartJobDetailActivity(int jobGroup, int jobIndex)
     {
         Intent intent = new Intent(this, JobDetailActivity.class);
-        intent.putExtra("jobGroup", jobGroup);
-        intent.putExtra("jobIndex", jobIndex);
+        intent.putExtra(JobDetailActivity.LauncherExtras.JOB_GROUP, jobGroup);
+        intent.putExtra(JobDetailActivity.LauncherExtras.JOB_INDEX, jobIndex);
         startActivityForResult(intent, 0);
     }
 

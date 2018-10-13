@@ -2,6 +2,7 @@ package ch.amiv.android_app.events;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -19,17 +20,18 @@ import ch.amiv.android_app.util.PersistentStorage;
 
 /**
  * This is the central place for storing information about the events, events + signups.
+ * Attention! eventInfo and sortedEventInfos indexes may change, the events will allways be sorted according to the adDateComparator.
  */
 public final class Events {
     public static List<EventInfo> eventInfos = new ArrayList<EventInfo>(); //This is a list of ALL events as received from the api, we will not use this directly
-    public static List<List<EventInfo>> sortedEvents = new ArrayList<>(EventGroup.SIZE);   //A list of lists which has been sorted according to the EventGroup configuration
+    public static List<List<EventInfo>> sortedEventInfos = new ArrayList<>(EventGroup.SIZE);   //A list of lists which has been sorted according to the EventGroup configuration
     public static boolean[] invertEventGroupSorting = new boolean[] {false, false, false, true};    //used to invert date sorting for the event groups
 
-    //Use this class to use the correct indexes for the event group for the sortedEvents list
+    //Use this class to use the correct indexes for the event group for the sortedEventInfos list
     public static final class EventGroup {
         public static final int SIZE            = 4;
         public static final int HIDDEN_EVENTS   = 0;
-        public static final int ALL_EVENTS      = 1;
+        public static final int CURRENT_EVENTS = 1;
         public static final int CLOSED_EVENTS   = 2;
         public static final int PAST_EVENTS     = 3;
     }
@@ -37,7 +39,15 @@ public final class Events {
     //Defines for how many days after the ad start date the new tag is visible for
     public static final int DAYS_NEW_TAG_ACTIVE = 3;
 
+    private static Comparator<EventInfo> adDateComparator = new Comparator<EventInfo>() {
+        @Override
+        public int compare(EventInfo a, EventInfo b) {
+            return b.time_advertising_start.compareTo(a.time_advertising_start);
+        }
+    };
+
     /**
+     * This is the key function of this class. It converts a json for several events to java EventInfos
      * Update the event infos with the data received from the api. This is just for updating information about the event NOT the signup
      * @param json json array of the events.
      */
@@ -69,40 +79,64 @@ public final class Events {
     {
         if(isInitialising){
             for (int k = 0; k < EventGroup.SIZE; k++)
-                sortedEvents.add(new ArrayList<EventInfo>());
+                sortedEventInfos.add(new ArrayList<EventInfo>());
         }
         else {
-            for (int k = 0; k < sortedEvents.size(); k++)
-                sortedEvents.get(k).clear();
+            for (int k = 0; k < sortedEventInfos.size(); k++)
+                sortedEventInfos.get(k).clear();
         }
 
         //Sort list and update sorted list
         if(!eventInfos.isEmpty()){
             //sort so first elem has an advertising start date furthest in the future
-            Comparator<EventInfo> comparator;
-            comparator = new Comparator<EventInfo>() {
-                @Override
-                public int compare(EventInfo a, EventInfo b) {
-                    return b.time_advertising_start.compareTo(a.time_advertising_start);
-                }
-            };
 
-            Collections.sort(eventInfos, comparator);
+
+            Collections.sort(eventInfos, adDateComparator);
 
             Date today = Calendar.getInstance().getTime();
 
             //fill in the sorted list according to the dates of the events
             for (int i = 0; i < eventInfos.size(); i++){
-                if(eventInfos.get(i).time_advertising_start.after(today))
-                    sortedEvents.get(EventGroup.HIDDEN_EVENTS).add(eventInfos.get(i));
-                else if(eventInfos.get(i).time_register_end.after(today))
-                    sortedEvents.get(EventGroup.ALL_EVENTS).add(eventInfos.get(i));
-                else if(eventInfos.get(i).time_end.after(today))
-                    sortedEvents.get(EventGroup.CLOSED_EVENTS).add(eventInfos.get(i));
-                else
-                    sortedEvents.get(EventGroup.PAST_EVENTS).add(eventInfos.get(i));
+                AddEventToSorted(eventInfos.get(i), false);
             }
         }
+    }
+
+    /**
+     * Will add the event to the sorted array. Use AddEvent to add an event, this is just used to update the sortedEventInfos list accordingly
+     * @param sortAfterInsert Will resort the group after insertion, by date
+     */
+    private static void AddEventToSorted(EventInfo eventInfo, boolean sortAfterInsert){
+        Date today = Calendar.getInstance().getTime();
+        int group = EventGroup.HIDDEN_EVENTS;
+
+        if(eventInfo.time_advertising_start.after(today))   //Determine which group the event is in, by date
+            group = EventGroup.HIDDEN_EVENTS;
+        else if(eventInfo.time_register_end.after(today))
+            group = EventGroup.CURRENT_EVENTS;
+        else if(eventInfo.time_end.after(today))
+            group = EventGroup.CLOSED_EVENTS;
+        else
+            group = EventGroup.PAST_EVENTS;
+
+        sortedEventInfos.get(group).add(eventInfo);
+
+        if(sortAfterInsert) {
+            Collections.sort(eventInfos, adDateComparator);
+            Collections.sort(sortedEventInfos.get(group), adDateComparator);
+        }
+    }
+
+    /**
+     * Will add a new event to the eventInfos and sortedEventInfos
+     * @return The UNsorted event index if the event does not exist, else -1 if it was found
+     */
+    public static int AddEvent(JSONObject json){
+        EventInfo e = new EventInfo(json);
+        eventInfos.add(e);
+        AddEventToSorted(e, true);
+
+        return eventInfos.size() -1;
     }
 
     /**
@@ -110,13 +144,26 @@ public final class Events {
      * @return true if the event was found and updated
      */
     public static boolean UpdateSingleEvent(JSONObject json, @NonNull String eventId){
-        for (int i = 0; i < eventInfos.size(); i++){
-            if(eventInfos.get(i)._id.equalsIgnoreCase(eventId)) {
-                eventInfos.get(i).UpdateEvent(json);
-                return true;
-            }
+        EventInfo event = GetById(eventId);
+
+        if(event == null) return false;
+
+        event.UpdateEvent(json);
+        return true;
+    }
+
+    /**
+     * Note: Try to use the sorted/eventInfos lists to access by index. Only use this if you are having issues due to the indexes changing from the lists.
+     * @return The event with the corresponding _id. Returns null if the id was not found.
+     */
+    public static EventInfo GetById(String id){
+        if(id == null || id.isEmpty()) return null;
+        for (EventInfo e : eventInfos) {
+            if(e._id.equalsIgnoreCase(id))
+                return e;
         }
-        return false;
+
+        return null;
     }
 
     /**
@@ -130,9 +177,9 @@ public final class Events {
             try {
                 JSONObject signup = json.getJSONObject(i);
                 if(signup.has("event")) {
-                    String event = signup.getString("event");
+                    String eventId = signup.getString("event");
                     for (int j = 0; j < eventInfos.size(); j++) {
-                        if (!hasUpdatedEvent[j] && event.equals(eventInfos.get(j)._id)) {
+                        if (!hasUpdatedEvent[j] && eventId.equals(eventInfos.get(j)._id)) {
                             Events.eventInfos.get(j).AddSignup(signup);
                             hasUpdatedEvent[j] = true;
                             continue signupLoop;
