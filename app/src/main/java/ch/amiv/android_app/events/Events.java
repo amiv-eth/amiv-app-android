@@ -2,7 +2,6 @@ package ch.amiv.android_app.events;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -128,10 +127,22 @@ public final class Events {
     }
 
     /**
-     * Will add a new event to the eventInfos and sortedEventInfos
-     * @return The UNsorted event index if the event does not exist, else -1 if it was found
+     * Will add a new event to the eventInfos and sortedEventInfos, and update if the event already exists
+     * @return The index of the event in eventInfos. If the event already exists it will return that index. -1 if the json is invalid, ie no _id found
      */
     public static int AddEvent(JSONObject json){
+        try {
+            String id = json.getString("_id");
+            int index = GetEventIndexById(id);
+            if(index >= 0) {
+                eventInfos.get(index).UpdateEvent(json);
+                return index;
+            }   
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return -1;
+        }
+
         EventInfo e = new EventInfo(json);
         eventInfos.add(e);
         AddEventToSorted(e, true);
@@ -144,7 +155,7 @@ public final class Events {
      * @return true if the event was found and updated
      */
     public static boolean UpdateSingleEvent(JSONObject json, @NonNull String eventId){
-        EventInfo event = GetById(eventId);
+        EventInfo event = GetEventById(eventId);
 
         if(event == null) return false;
 
@@ -156,14 +167,28 @@ public final class Events {
      * Note: Try to use the sorted/eventInfos lists to access by index. Only use this if you are having issues due to the indexes changing from the lists.
      * @return The event with the corresponding _id. Returns null if the id was not found.
      */
-    public static EventInfo GetById(String id){
-        if(id == null || id.isEmpty()) return null;
-        for (EventInfo e : eventInfos) {
-            if(e._id.equalsIgnoreCase(id))
-                return e;
-        }
+    public static EventInfo GetEventById(String id){
+        int index = GetEventIndexById(id);
+        if(index >= 0)
+            return eventInfos.get(index);
 
         return null;
+    }
+
+    /**
+     *
+     * @param id The event id
+     * @return The index in eventInfos (unsorted list)
+     */
+    public static int GetEventIndexById(String id){
+        if(id == null || id.isEmpty()) return -1;
+
+        for (int i = 0; i < eventInfos.size(); ++i) {
+            if(eventInfos.get(i)._id.equalsIgnoreCase(id))
+                return i;
+        }
+
+        return -1;
     }
 
     /**

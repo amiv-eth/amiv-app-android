@@ -179,7 +179,7 @@ public class EventDetailActivity extends AppCompatActivity {
         }
         else if(intent.hasExtra(LauncherExtras.EVENT_ID))
         {
-            event = Events.GetById(intent.getStringExtra(LauncherExtras.EVENT_ID));
+            event = Events.GetEventById(intent.getStringExtra(LauncherExtras.EVENT_ID));
 
             if(event == null)
                 Log.e("events", "No event found from eventId=" + intent.getStringExtra(LauncherExtras.EVENT_ID) + " in intent, have you used intent.putStringExtra. Returning to calling activity...");
