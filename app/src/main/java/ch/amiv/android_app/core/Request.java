@@ -92,7 +92,7 @@ public final class Request {
             return;
         }
 
-        String url = Settings.API_URL + "events?" + "projection={\"_id\":1}" + "&where={\"_created\":{\"$gt\":" + + "}, \"show_website\": true}";
+        String url = Settings.API_URL + "events?" + "projection={\"_id\":1}" + "&where={\"_created\":{\"$gt\":\"" +last_update_time + "\"}, \"show_website\": true}";
         Log.e("request", "url: " + url);
 
         StringRequest request = new StringRequest(com.android.volley.Request.Method.GET, url,null, null)
@@ -140,7 +140,7 @@ public final class Request {
                 RunCallback(errorCallback);
                 return super.parseNetworkError(volleyError);
             }
-
+/*
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 if(Settings.HasToken(context)) {
@@ -154,7 +154,7 @@ public final class Request {
                 }
 
                 return super.getHeaders();
-            }
+            }*/
         };
 
         //send the request and check if it failed

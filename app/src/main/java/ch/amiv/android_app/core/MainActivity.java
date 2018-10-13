@@ -1,5 +1,9 @@
 package ch.amiv.android_app.core;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,6 +12,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -30,11 +35,14 @@ import ch.amiv.android_app.jobs.JobDetailActivity;
 import ch.amiv.android_app.util.PersistentStorage;
 import ch.amiv.android_app.util.Util;
 
+import static ch.amiv.android_app.core.Notifications.pendingIntent;
+
 /**
  * This is the first screen. features: drawer, pageview with bottom navigation bar and within each page a list view.
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static MainActivity instance;
+
 
 
 //region -  ====Variables====
@@ -107,6 +115,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         PersistentStorage.LoadEvents(getApplicationContext());
         PersistentStorage.LoadJobs(getApplicationContext());
         InitialisePageView();
+
+        // send test notification at start
+        //Notifications.notify(this,"new Event up", "register now", R.drawable.ic_amiv_logo_icon);
+
+        Notifications.set_Alarm(this);
+
+
+        //Notifications.event_notifier(this,null);
+
+        Request.FetchEventListChanges(this, new Request.OnDataReceivedCallback() {
+            @Override
+            public void OnDataReceived() {
+
+            }
+        }, new Request.OnDataReceivedCallback() {
+            @Override
+            public void OnDataReceived() {
+
+            }
+        }, "2018-09-06T10:00:00Z");
+
+
 
         //fetch the user info if we are logged in, there exists a token from the previous session, should be cached.
         if(!PersistentStorage.LoadUserInfo(getApplicationContext()) || UserInfo.current._id.isEmpty() && !Settings.IsEmailOnlyLogin(getApplicationContext())) {
