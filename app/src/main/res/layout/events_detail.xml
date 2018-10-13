@@ -115,7 +115,7 @@
                             android:background="@color/backgroundDark" />
 
                         <TextView
-                            android:id="@+id/registerHeader"
+                            android:id="@+id/info_header"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="16dp"
@@ -128,6 +128,25 @@
                             android:id="@+id/register_details_list"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingBottom="8dp">
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/register_header"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:text="@string/register_title"
+                            android:textAppearance="@style/Header"
+                            android:textSize="30sp" />
+
+                        <LinearLayout
+                            android:id="@+id/register_form_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:paddingBottom="8dp">
 

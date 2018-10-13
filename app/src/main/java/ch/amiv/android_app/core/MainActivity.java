@@ -31,7 +31,6 @@ import ch.amiv.android_app.R;
 import ch.amiv.android_app.events.EventDetailActivity;
 import ch.amiv.android_app.events.Events;
 import ch.amiv.android_app.jobs.JobDetailActivity;
-import ch.amiv.android_app.util.PersistentStorage;
 import ch.amiv.android_app.util.Util;
 
 
@@ -123,16 +122,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bottomNavigation = findViewById(R.id.bottomNav);
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        PersistentStorage.LoadEvents(getApplicationContext());
-        PersistentStorage.LoadJobs(getApplicationContext());
+        Settings.LoadEvents(getApplicationContext());
+        Settings.LoadJobs(getApplicationContext());
         InitialisePageView();
-
-        // TODO check if notifications are enabled in the settings
-        Notifications.set_Alarm(this);
 
 
         //fetch the user info if we are logged in, there exists a token from the previous session, should be cached.
-        if(!PersistentStorage.LoadUserInfo(getApplicationContext()) || UserInfo.current._id.isEmpty() && !Settings.IsEmailOnlyLogin(getApplicationContext())) {
+        if(!Settings.LoadUserInfo(getApplicationContext()) || UserInfo.current._id.isEmpty() && !Settings.IsEmailOnlyLogin(getApplicationContext())) {
             Request.FetchUserData(getApplicationContext(), drawerNav, new Request.OnDataReceivedCallback() {
                 @Override
                 public void OnDataReceived() {

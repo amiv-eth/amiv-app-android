@@ -1,6 +1,6 @@
 package ch.amiv.android_app.events;
 
-import android.graphics.drawable.AdaptiveIconDrawable;
+import android.content.Context;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import ch.amiv.android_app.R;
 
 /**
  * A data class for storing a single additional Field for an event. See the SampleEventAdditFields file.
@@ -28,13 +30,42 @@ public class AdditField {
         public static final int STRING  = 6;
     }
 
-    public int type;    //Use the FieldType constants, the currentValue should then be of that type
-    public String name;
-    public boolean required;
+    public int type = FieldType.STRING;    //Use the FieldType constants, the currentValue should then be of that type
+    private String name = "";
+    private int resName = 0;
+    public String title(Context context){   //For multi-lingual support on default additFields, use this function instead
+        if(resName > 0)
+            return context.getResources().getString(resName);
+        else
+            return name;
+    }
 
-    public String[] possibleValues;
-    public String currentValue;
+    public boolean required = false;
 
+    public String[] possibleValues = new String[0];
+    public String currentValue = "";
+
+    public AdditField (){ }
+
+    public AdditField (int type_, String name_, boolean required_, String[] possibleValues_){
+        type = type_;
+        name = name_;
+        required = required_;
+        possibleValues = possibleValues_;
+    }
+
+    public AdditField (int type_, int resName_, boolean required_, String[] possibleValues_){
+        type = type_;
+        resName = resName_;
+        required = required_;
+        possibleValues = possibleValues_;
+    }
+
+    public static class Defaults {
+        public static AdditField sbbAbo = new AdditField(FieldType.STRING, R.string.pref_sbb_title, false, new String[]{"GA", "Gleis 7", "Halbtax", "None"});
+        public static AdditField food = new AdditField(FieldType.STRING, R.string.pref_food_title, false, new String[]{"Omnivore","Vegi","Vegan","Other"});
+        public static AdditField specialFoodReq = new AdditField(FieldType.STRING, R.string.pref_special_food_title, false, new String[0]);
+    }
     /**
      *
      * @param additional_fields The 'additional_fields' JsonObject from the event json

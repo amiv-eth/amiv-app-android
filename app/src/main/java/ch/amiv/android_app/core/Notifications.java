@@ -120,7 +120,7 @@ public final class Notifications {
 
                        // get event from JSONObject and add it to events list
                        JSONObject event = items.getJSONObject(0);
-                       Events.AddEvent(event);
+                       Events.AddEvent(event, context);
 
                        // refetch event list to add new event
                        String event_id = (String) event.get("_id");
@@ -148,7 +148,7 @@ public final class Notifications {
                        String [] event_id = new String[items.length()];
                         for(int i = 0; i<items.length();i++){
                             JSONObject event = items.getJSONObject(i);
-                            Events.AddEvent(event); // TODO efficiency !
+                            Events.AddEvent(event, context); // TODO efficiency !
                             event_id[i]= (String) event.get("_id");
                         }
 

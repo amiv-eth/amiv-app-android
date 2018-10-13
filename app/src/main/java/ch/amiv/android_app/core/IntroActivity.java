@@ -2,6 +2,7 @@ package ch.amiv.android_app.core;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -17,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.events.AdditField;
 import ch.amiv.android_app.util.ui.NonSwipeableViewPager;
 import ch.amiv.android_app.util.ui.EnumViewGenerator;
 import ch.amiv.android_app.util.Util;
@@ -286,6 +288,10 @@ public class IntroActivity extends AppCompatActivity {
 
     private void StartMainAcivity() {
         Settings.SetBoolPref(Settings.introDoneKey, true, this);
+
+        // TODO check if notifications are enabled in the settings
+        Notifications.set_Alarm(this);
+
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
@@ -367,7 +373,7 @@ public class IntroActivity extends AppCompatActivity {
             }
         };
 
-        EnumViewGenerator.InitialiseEnumList(this, R.string.pref_food_title, onClick, getResources().getStringArray(R.array.pref_food_list_values), true);
+        EnumViewGenerator.InitialiseEnumList(this, onClick, AdditField.Defaults.food, true);
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -398,7 +404,7 @@ public class IntroActivity extends AppCompatActivity {
             }
         };
 
-        EnumViewGenerator.InitialiseEnumList(this, R.string.pref_sbb_title, onClick, getResources().getStringArray(R.array.pref_sbb_list_values), false);
+        EnumViewGenerator.InitialiseEnumList(this, onClick, AdditField.Defaults.sbbAbo, false);
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override

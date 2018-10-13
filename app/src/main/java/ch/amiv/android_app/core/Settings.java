@@ -7,9 +7,20 @@ import android.content.res.Resources;
 import android.os.Vibrator;
 import android.util.Pair;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Locale;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.events.EventInfo;
+import ch.amiv.android_app.events.Events;
+import ch.amiv.android_app.jobs.JobInfo;
+import ch.amiv.android_app.jobs.Jobs;
 
 /**
  * This class is used to save settings so they can be restored in another session later.
@@ -35,6 +46,11 @@ public class Settings {
     public static final String[] specialFoodPrefKey = {"core.special_food_pref", ""};
     public static final String[] sbbPrefKey         = {"core.sbb_abo", ""};
 
+    //Storing of larger data
+    public static final String[] userInfoKey        = {"core.user_info", ""};
+    public static final String[] eventInfoKey       = {"events.event_infos", ""};
+    public static final String[] jobInfoKey         = {"jobs.job_infos", ""};
+
     //region---Check-in----
     public static final String[] recentEventPin     = {"checkin.recent_event_pin", ""};
     public static final String[] checkin_url        = {"checkin.serverurl", "https://checkin.amiv.ethz.ch"};
@@ -53,6 +69,11 @@ public class Settings {
     private static void CheckInitSharedPrefs (Context context) {
         if(sharedPrefs == null)    //if the shared prefs is not initialised and we call getString() -> crash
             sharedPrefs = context.getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+    }
+
+    public static boolean HasKey(String[] key, Context context){
+        CheckInitSharedPrefs(context);
+        return sharedPrefs.contains(key[0]);
     }
 
     /**
@@ -87,6 +108,11 @@ public class Settings {
     }
 
     // Sidenote: Float prefs need to use a pair instead of a string[], so we have a float for the default value
+    public static boolean HasKey(Pair<String, Float> key, Context context){
+        CheckInitSharedPrefs(context);
+        return sharedPrefs.contains(key.first);
+    }
+
     public static void SetFloatPref (Pair<String, Float> key, float value, Context context){
         CheckInitSharedPrefs(context);
         sharedPrefs.edit().putFloat(key.first, value).apply();
@@ -139,7 +165,7 @@ public class Settings {
      * Will return whether the user is only logged in with an email, if they do not have an api login, false if current user has not be initialised
      */
     public static boolean IsEmailOnlyLogin(Context context){
-        return !Settings.HasToken(context) && UserInfo.current != null && !UserInfo.current.email.isEmpty();
+        return !HasToken(context) && UserInfo.current != null && !UserInfo.current.email.isEmpty();
     }
 
     /**
@@ -195,4 +221,118 @@ public class Settings {
             vibrator.cancel();
     }
     //endregion
+
+    //============Storing User,Event,Job Infos===============
+    //region user,events,jobs
+    private static final Type eventListType = new TypeToken<List<EventInfo>>() {}.getType();
+    private static final Type jobListType = new TypeToken<List<JobInfo>>() {}.getType();
+
+    private static boolean hasLoadedUser = false;
+    private static boolean hasLoadedEvents = false;
+    private static boolean hasLoadedJobs = false;
+
+    public static void SaveUserInfo(Context context)
+    {
+        Gson gson = new Gson();
+        String json = gson.toJson(UserInfo.current);
+        SetPref(userInfoKey, json, context);
+    }
+
+    public static boolean LoadUserInfo (Context context)
+    {
+        if(hasLoadedUser || !HasKey(userInfoKey, context)) return false;
+
+        String json = GetPref(userInfoKey, context);
+        if(json.isEmpty())
+            return false;
+
+        try {
+            UserInfo.UpdateCurrent(context, new JSONObject(json), false, true);
+        }
+        catch (Exception e){    //This may happen if the userinfo class changes
+            e.printStackTrace();
+            return false;
+        }
+
+        hasLoadedUser = true;
+        return true;
+    }
+
+    /**
+     * Clears the stored userinfo, done in async
+     */
+    public static void ClearUser(Context context) {
+        SetPref(userInfoKey, "", context);
+    }
+
+    //region -   Events
+    public static void SaveEvents(Context context)
+    {
+        Gson gson = new Gson();
+        String json = gson.toJson(Events.eventInfos, eventListType);
+        SetPref(eventInfoKey, json, context);
+    }
+
+    public static boolean LoadEvents (Context context)
+    {
+        if(hasLoadedEvents || !HasKey(eventInfoKey, context)) return false;
+
+        String json = GetPref(eventInfoKey, context);
+        if(json.isEmpty())
+            return false;
+
+        try {
+            Gson gson = new Gson();
+            Events.eventInfos = gson.fromJson(json, eventListType);
+            Events.GenerateSortedLists(true);
+        }
+        catch (Exception e){    //This may happen if the userinfo class changes
+            e.printStackTrace();
+            return false;
+        }
+
+        hasLoadedEvents = true;
+        return true;
+    }
+
+    public static void ClearEvents(Context context) {
+        SetPref(eventInfoKey, "", context);
+    }
+//endregion
+
+    //region -   Jobs
+    public static void SaveJobs(Context context)
+    {
+        Gson gson = new Gson();
+        String json = gson.toJson(Jobs.jobInfos, jobListType);
+        SetPref(jobInfoKey, json, context);
+    }
+
+    public static boolean LoadJobs (Context context)
+    {
+        if(hasLoadedJobs || !HasKey(jobInfoKey, context)) return false;
+
+        String json = GetPref(jobInfoKey, context);
+        if(json.isEmpty())
+            return false;
+
+        try {
+            Gson gson = new Gson();
+            Jobs.jobInfos = gson.fromJson(json, jobListType);
+            Jobs.GenerateSortedLists(true);
+        }
+        catch (Exception e){    //This may happen if the userinfo class changes
+            e.printStackTrace();
+            return false;
+        }
+
+        hasLoadedJobs = true;
+        return true;
+    }
+
+    public static void ClearJobs(Context context) {
+        SetPref(jobInfoKey, "", context);
+    }
+//endregion
+    ///endregion
 }

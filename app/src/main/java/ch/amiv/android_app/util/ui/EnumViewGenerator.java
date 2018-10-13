@@ -10,25 +10,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import ch.amiv.android_app.R;
+import ch.amiv.android_app.events.AdditField;
 
 public class EnumViewGenerator {
     public interface OnButtonIndexClicked {
         void OnClick(int enumIndex);
     }
 
-    public static void InitialiseEnumList(final Activity activity, int header, final OnButtonIndexClicked onClick, String[] titles, boolean addOtherField){
+    public static void InitialiseEnumList(final Activity activity, final OnButtonIndexClicked onClick, AdditField field, boolean addOtherField){
         TextView titleView = activity.findViewById(R.id.title_enum_view);
-        titleView.setText(header);
+        titleView.setText(field.title(activity.getApplicationContext()));
 
         ViewGroup parent = activity.findViewById(R.id.listParent);
         parent.removeAllViews();
 
         //Add list of options as buttons as children of the list parent (Linear layout)
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        for (int i = 0; i < titles.length + (addOtherField ? -1:0); i++) {
+        for (int i = 0; i < field.possibleValues.length + (addOtherField ? -1:0); i++) {
             Button btn = (Button) inflater.inflate(R.layout.core_intro_pref_button, null);
             parent.addView(btn);
-            btn.setText(titles[i]);
+            btn.setText(field.possibleValues[i]);
 
             final int index = i;
             btn.setOnClickListener(new View.OnClickListener() {
@@ -42,7 +43,7 @@ public class EnumViewGenerator {
         //add other text field, show the save button other is tapped
         if(addOtherField){
             EditText text = LayoutInflater.from(parent.getContext()).inflate(R.layout.core_intro_pref_other_field, parent).findViewById(R.id.otherField);
-            text.setHint(titles[titles.length-1]);
+            text.setHint(field.possibleValues[field.possibleValues.length-1]);
 
             final Button btnNext = activity.findViewById(R.id.buttonNext);
             //Show save button when editing text
