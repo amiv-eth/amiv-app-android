@@ -2,9 +2,11 @@ package ch.amiv.android_app.core;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -89,6 +91,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         instance = this;
         setContentView(R.layout.core_main);
 
+            // Create the NotificationChannel, but only on API 26+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                CharSequence name = "1";
+                String description = "Notifications";
+                int importance = NotificationManager.IMPORTANCE_DEFAULT;
+                NotificationChannel channel = new NotificationChannel("1", name, importance);
+                channel.setDescription(description);
+                // Register the channel with the system; you can't change the importance
+                // or other notification behaviors after this
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel);
+            }
+
+
         /*
         //Use this to set a custom taskDescription in the app overview, ie when switching apps. Can set the icon, label and color of the bar
         Resources r = getResources();
@@ -124,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //Notifications.event_notifier(this,null);
 
-        Request.FetchEventListChanges(this, new Request.OnDataReceivedCallback() {
+        /*Request.FetchEventListChanges(this, new Request.OnDataReceivedCallback() {
             @Override
             public void OnDataReceived() {
 
@@ -134,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void OnDataReceived() {
 
             }
-        }, "2018-09-06T10:00:00Z");
+        }, "2018-09-06T10:00:00Z");*/
 
 
 

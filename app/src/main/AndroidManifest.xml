@@ -131,7 +131,17 @@
             android:parentActivityName=".core.MainActivity"
             android:screenOrientation="portrait" />
 
+
+
         <receiver  android:name=".core.AlarmReceiver"/>
+
+        <receiver android:name=".core.AlarmBootReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+            </intent-filter>
+        </receiver>
+
 
     </application>
 </manifest>

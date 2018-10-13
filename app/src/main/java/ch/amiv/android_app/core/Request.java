@@ -85,14 +85,20 @@ public final class Request {
      * @param errorCallback Use this to know when an error occurred to stop loading animations etc
      * @param last_update_time last changes check time
      */
-    public static void FetchEventListChanges(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback, @NonNull final String last_update_time)
+    public static void FetchEventListChanges(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback, @NonNull final String last_update_time, boolean projection)
     {
         if(!CheckConnection(context)) {
             RunCallback(errorCallback);
             return;
         }
 
-        String url = Settings.API_URL + "events?" + "projection={\"_id\":1}" + "&where={\"_created\":{\"$gt\":\"" +last_update_time + "\"}, \"show_website\": true}";
+        String url;
+        if (projection) {
+            url = Settings.API_URL + "events?" + "projection={\"_id\":1}" + "&where={\"_created\":{\"$gt\":\"" + last_update_time + "\"}, \"show_website\": true}";
+        }
+        else{
+            url = Settings.API_URL + "events?" + "where={\"_created\":{\"$gt\":\"" + last_update_time + "\"}, \"show_website\": true}";
+        }
         Log.e("request", "url: " + url);
 
         StringRequest request = new StringRequest(com.android.volley.Request.Method.GET, url,null, null)
@@ -140,7 +146,7 @@ public final class Request {
                 RunCallback(errorCallback);
                 return super.parseNetworkError(volleyError);
             }
-/*
+
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 if(Settings.HasToken(context)) {
@@ -154,7 +160,7 @@ public final class Request {
                 }
 
                 return super.getHeaders();
-            }*/
+            }
         };
 
         //send the request and check if it failed

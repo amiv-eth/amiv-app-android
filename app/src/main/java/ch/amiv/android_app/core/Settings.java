@@ -43,6 +43,9 @@ public class Settings {
     public static final Pair<String, Float> checkin_refreshRate = new Pair<>("checkin.refreshfrequency", 20f);
     //endregion
 
+    //last changes check
+    public static final String[] last_change_check_dateKey = {"core.notifications_date", "1979-02-19T10:00:00Z"};
+
     //region ---SharedPrefs---
     /**
      * Will check that the shared prefs instance is set so we can edit/retrieve values

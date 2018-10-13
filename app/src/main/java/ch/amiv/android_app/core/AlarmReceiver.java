@@ -18,6 +18,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        Notifications.notify(context,"Alarm","Receiver called",R.drawable.ic_amiv_logo_icon);
         Request.FetchEventListChanges(context, new Request.OnDataReceivedCallback() {
             @Override
             public void OnDataReceived() {
@@ -28,7 +29,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             public void OnDataReceived() {
 
             }
-        }, "2018-09-06T10:00:00Z");
+        }, Settings.GetPref(Settings.last_change_check_dateKey,context),false);
 
         // TODO test if notification needed
 
