@@ -17,7 +17,7 @@ public class EnumViewGenerator {
     }
 
     public static void InitialiseEnumList(final Activity activity, int header, final OnButtonIndexClicked onClick, String[] titles, boolean addOtherField){
-        TextView titleView = activity.findViewById(R.id.title);
+        TextView titleView = activity.findViewById(R.id.title_enum_view);
         titleView.setText(header);
 
         ViewGroup parent = activity.findViewById(R.id.listParent);
