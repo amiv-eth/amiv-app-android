@@ -54,7 +54,7 @@ public class SettingsActivity extends AppCompatActivity {
         Settings.SetBoolPref(Settings.checkin_autoUpdate, mAutoRefreshCheck.isChecked(), getApplicationContext());
         Settings.SetFloatPref(Settings.checkin_refreshRate, MathUtils.clamp(Float.parseFloat(mRefreshFreqField.getText().toString()), 3f, Float.POSITIVE_INFINITY), getApplicationContext());
 
-        ReturnToMainActivity();
+        finish();
     }
 
     /**
@@ -62,11 +62,5 @@ public class SettingsActivity extends AppCompatActivity {
      */
     public static int GetRefreshRateMillis(Context context) {
         return (int)(1000 * Settings.GetFloatPref(Settings.checkin_refreshRate, context));
-    }
-
-    private void ReturnToMainActivity ()
-    {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
     }
 }

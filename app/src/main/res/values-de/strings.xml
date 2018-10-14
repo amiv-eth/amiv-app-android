@@ -86,18 +86,13 @@
     <string name="snack_error_retry">Fehler aufgetreten, bitte erneut versuchen</string>
 
     <string name="pref_food_title">Essen Präferenz</string>
+    <string name="pref_special_food_title">Andere Essens Beiträge</string>
     <string name="pref_food_key">food</string>
     <string-array name="pref_food_list_values">
         <item>Alles</item>
         <item>Vegetarisch</item>
         <item>Nichts</item>
         <item>Anderes</item>
-    </string-array>
-    <string-array name="pref_food_list_entries">
-        <item>all</item>
-        <item>veg</item>
-        <item>nothing</item>
-        <item>other</item>
     </string-array>
 
     <string name="pref_sbb_title">ÖV Abo</string>
@@ -106,12 +101,6 @@
         <item>Gleis7</item>
         <item>Halx Tax</item>
         <item>Kein Abo</item>
-    </string-array>
-    <string-array name="pref_sbb_list_entries">
-        <item>GA</item>
-        <item>G7</item>
-        <item>HT</item>
-        <item>NA</item>
     </string-array>
 
     <string name="pref_notifications_title">Benachrichtigungen</string>

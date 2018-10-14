@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import java.io.Serializable;
 
 import ch.amiv.android_app.events.Events;
-import ch.amiv.android_app.util.PersistentStorage;
 
 public class UserInfo implements Serializable{
     public static UserInfo current;
@@ -110,7 +109,7 @@ public class UserInfo implements Serializable{
         }
 
         if(!isSavedInstance)
-            PersistentStorage.SaveUserInfo(context);
+            Settings.SaveUserInfo(context);
     }
 
     public static void SetEmailOnlyLogin(Context context, String email, boolean isSavedInstance){
@@ -121,7 +120,7 @@ public class UserInfo implements Serializable{
         }
 
         if(!isSavedInstance)
-            PersistentStorage.SaveUserInfo(context);
+            Settings.SaveUserInfo(context);
     }
 
     /**
@@ -146,7 +145,7 @@ public class UserInfo implements Serializable{
             Events.ClearSignups();
         }
 
-        PersistentStorage.ClearUser(context);
+        Settings.ClearUser(context);
         UserInfo.current = null;
     }
 

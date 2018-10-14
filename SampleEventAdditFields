@@ -1,3 +1,7 @@
+This is a sample of the "additional_fields" variable found in the json for an event
+
+
+
 {
     "$schema":"http://json-schema.org/draft-04/schema#",
     "additionalProperties":false,

@@ -1,6 +1,10 @@
 package ch.amiv.android_app.core;
 
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -27,14 +31,15 @@ import ch.amiv.android_app.R;
 import ch.amiv.android_app.events.EventDetailActivity;
 import ch.amiv.android_app.events.Events;
 import ch.amiv.android_app.jobs.JobDetailActivity;
-import ch.amiv.android_app.util.PersistentStorage;
 import ch.amiv.android_app.util.Util;
+
 
 /**
  * This is the first screen. features: drawer, pageview with bottom navigation bar and within each page a list view.
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static MainActivity instance;
+
 
 
 //region -  ====Variables====
@@ -81,6 +86,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         instance = this;
         setContentView(R.layout.core_main);
 
+            // Create the NotificationChannel to run notifications on API 26+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                CharSequence name = "1";
+                String description = "Notifications";
+                int importance = NotificationManager.IMPORTANCE_DEFAULT;
+                NotificationChannel channel = new NotificationChannel("1", name, importance);
+                channel.setDescription(description);
+                // Register the channel in the system
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel);
+            }
+
+
+        /*
+        //Use this to set a custom taskDescription in the app overview, ie when switching apps. Can set the icon, label and color of the bar
+        Resources r = getResources();
+        ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(r.getString(R.string.app_name),
+                BitmapFactory.decodeResource(getResources(), R.drawable.ic_amiv_logo_icon_white),
+                r.getColor(R.color.white));
+        this.setTaskDescription(taskDescription);*/
+
         Toolbar toolbar = Util.SetupToolbar(this, false);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -96,12 +122,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bottomNavigation = findViewById(R.id.bottomNav);
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        PersistentStorage.LoadEvents(getApplicationContext());
-        PersistentStorage.LoadJobs(getApplicationContext());
+        Settings.LoadEvents(getApplicationContext());
+        Settings.LoadJobs(getApplicationContext());
         InitialisePageView();
 
+
         //fetch the user info if we are logged in, there exists a token from the previous session, should be cached.
-        if(!PersistentStorage.LoadUserInfo(getApplicationContext()) || UserInfo.current._id.isEmpty() && !Settings.IsEmailOnlyLogin(getApplicationContext())) {
+        if(!Settings.LoadUserInfo(getApplicationContext()) || UserInfo.current._id.isEmpty() && !Settings.IsEmailOnlyLogin(getApplicationContext())) {
             Request.FetchUserData(getApplicationContext(), drawerNav, new Request.OnDataReceivedCallback() {
                 @Override
                 public void OnDataReceived() {

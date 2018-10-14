@@ -1,0 +1,7 @@
+For POST request to signups, to send additional fields as part of the signup use this format
+
+"additional_fields":
+{
+    "SBB_Abo":"Halbtax",
+    "Food":"vegi"
+}

@@ -83,6 +83,94 @@ public final class Request {
     /**
      * Will fetch the list of events from the server, note does not require an access token.
      * @param errorCallback Use this to know when an error occurred to stop loading animations etc
+     * @param last_update_time last changes check time
+     */
+    public static void FetchEventListChanges(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback, @NonNull final String last_update_time, boolean projection)
+    {
+        if(!CheckConnection(context)) {
+            RunCallback(errorCallback);
+            return;
+        }
+
+        String url;
+        if (projection) {
+            url = Settings.API_URL + "events?" + "projection={\"_id\":1}" + "&where={\"_created\":{\"$gt\":\"" + last_update_time + "\"}, \"show_website\": true}";
+        }
+        else{
+            url = Settings.API_URL + "events?" + "where={\"_created\":{\"$gt\":\"" + last_update_time + "\"}, \"show_website\": true}";
+        }
+        Log.e("request", "url: " + url);
+
+        StringRequest request = new StringRequest(com.android.volley.Request.Method.GET, url,null, null)
+        {
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
+                if(response != null) {
+                    Log.e("request", "fetch events status Code: " + response.statusCode);
+
+                    try {
+                        final JSONObject json = new JSONObject(new String(response.data));
+
+                        //Update events on main thread
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                    // TODO alarmreceiver
+                                    Notifications.event_notifier(context,json);
+                                    if(callback != null)
+                                        callback.OnDataReceived();
+                            }
+                        };
+                        callbackHandler.post(runnable);
+
+                        Log.e("request", new JSONObject(new String(response.data)).toString());
+                    } catch (JSONException e) {
+                        RunCallback(errorCallback);
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    RunCallback(errorCallback);
+                    Log.e("request", "Request returned null response. fetch events");
+                }
+                return super.parseNetworkResponse(response);
+            }
+
+            @Override
+            protected VolleyError parseNetworkError(final VolleyError volleyError) {  //see comments at parseNetworkResponse()
+                if(volleyError != null && volleyError.networkResponse != null)
+                    Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
+                else
+                    Log.e("request", "Request returned null response. fetch events");
+
+                RunCallback(errorCallback);
+                return super.parseNetworkError(volleyError);
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                if(Settings.HasToken(context)) {
+                    Map<String,String> headers = new HashMap<String, String>();
+
+                    String credentials = Settings.GetToken(context) + ":";
+                    String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                    headers.put("Authorization", auth);
+
+                    return headers;
+                }
+
+                return super.getHeaders();
+            }
+        };
+
+        //send the request and check if it failed
+        if(!Request.SendRequest(request, context))
+            RunCallback(errorCallback);
+    }
+
+    /**
+     * Will fetch the list of events from the server, note does not require an access token.
+     * @param errorCallback Use this to know when an error occurred to stop loading animations etc
      * @param eventId to only fetch for a specific event id add this, else set as empty
      */
     public static void FetchEventList(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback, @NonNull final String eventId)

@@ -2,8 +2,6 @@ package ch.amiv.android_app.core;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -19,8 +17,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
-
-import java.util.Locale;
 
 import ch.amiv.android_app.R;
 

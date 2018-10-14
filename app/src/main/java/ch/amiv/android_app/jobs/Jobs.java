@@ -12,7 +12,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import ch.amiv.android_app.util.PersistentStorage;
+import ch.amiv.android_app.core.Settings;
 
 /**
  * This holds all the data about the job offers similar to the events class, for more explanations see the Events class
@@ -59,7 +59,7 @@ public class Jobs {
 
         GenerateSortedLists(isInitialising);
 
-        PersistentStorage.SaveJobs(context);
+        Settings.SaveJobs(context);
     }
 
     public static void GenerateSortedLists(boolean isInitialising)
