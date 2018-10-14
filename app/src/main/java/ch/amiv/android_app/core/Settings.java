@@ -60,7 +60,8 @@ public class Settings {
     //endregion
 
     //last changes check
-    public static final String[] last_change_check_dateKey = {"core.notifications_date", "1979-02-19T10:00:00Z"};
+    public static final String[] last_change_check_event_dateKey = {"core.notifications_date", "1979-02-19T10:00:00Z"};
+    public static final String[] last_change_check_job_dateKey = {"core.notifications_date", "1979-02-19T10:00:00Z"};
 
     //region ---SharedPrefs---
     /**

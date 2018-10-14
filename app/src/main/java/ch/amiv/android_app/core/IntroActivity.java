@@ -2,7 +2,6 @@ package ch.amiv.android_app.core;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -290,7 +289,8 @@ public class IntroActivity extends AppCompatActivity {
         Settings.SetBoolPref(Settings.introDoneKey, true, this);
 
         // TODO check if notifications are enabled in the settings
-        Notifications.set_Alarm(this);
+        // start alarm service
+        startService(new Intent(this,AlarmService.class));
 
         startActivity(new Intent(this, MainActivity.class));
         finish();

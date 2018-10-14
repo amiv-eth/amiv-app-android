@@ -191,5 +191,10 @@
     <string name="other">Anderes</string>
     <string name="tap_to_set">Setzen</string>
 
+    <string name="new_jobs_notification">Neue Stellenangebote</string>
+    <string name="multipleEventsadded">Neue Events</string>
+    <string name="singleEventadded">Neues Event</string>
+    <string name="new_job_notification">Neues Stellenangebot</string>
+
 
 </resources>

@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 NotificationChannel channel = new NotificationChannel("1", name, importance);
                 channel.setDescription(description);
                 // Register the channel in the system
-                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                NotificationManager notificationManager = getSystemService(                                   NotificationManager.class);
                 notificationManager.createNotificationChannel(channel);
             }
 

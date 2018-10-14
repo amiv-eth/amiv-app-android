@@ -115,7 +115,6 @@ public final class Request {
                         Runnable runnable = new Runnable() {
                             @Override
                             public void run() {
-                                    // TODO alarmreceiver
                                     Notifications.event_notifier(context,json);
                                     if(callback != null)
                                         callback.OnDataReceived();
@@ -391,6 +390,84 @@ public final class Request {
                 }
                 return super.parseNetworkResponse(response);
             }
+
+
+            @Override
+            protected VolleyError parseNetworkError(final VolleyError volleyError) {
+                if(volleyError != null && volleyError.networkResponse != null)
+                    Log.e("request", "status code: " + volleyError.networkResponse.statusCode + "\n" + new String(volleyError.networkResponse.data));
+                else
+                    Log.e("request", "Request returned null response. fetch jobs");
+
+                RunCallback(errorCallback);
+                return super.parseNetworkError(volleyError);
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                if(Settings.HasToken(context)) {
+                    Map<String,String> headers = new HashMap<String, String>();
+
+                    String credentials = Settings.GetToken(context) + ":";
+                    String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                    headers.put("Authorization", auth);
+
+                    return headers;
+                }
+
+                return super.getHeaders();
+            }
+        };
+
+        //send the request and check if it failed
+        if(!Request.SendRequest(request, context))
+            RunCallback(errorCallback);
+    }
+
+    public static void FetchJobListChanges(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback, @NonNull final String last_update_time)
+    {
+        if(!CheckConnection(context)) {
+            RunCallback(errorCallback);
+            return;
+        }
+
+        String url = Settings.API_URL + "joboffers?" + "&where={\"_created\":{\"$gt\":\"" + last_update_time + "\"}, \"show_website\": true}";
+        Log.e("request", "url: " + url);
+
+        StringRequest request = new StringRequest(com.android.volley.Request.Method.GET, url,null, null)
+        {
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) { //Note: the parseNetworkResponse is only called if the response was successful (codes 2xx), else parseNetworkError is called.
+                if(response != null) {
+                    Log.e("request", "fetch jobs status Code: " + response.statusCode);
+
+                    try {
+                        final JSONObject json = new JSONObject(new String(response.data));
+
+                        //Update on main thread
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                    Notifications.jobs_notifier(context,json);
+                                    if(callback != null)
+                                        callback.OnDataReceived();
+                            }
+                        };
+                        callbackHandler.post(runnable);
+
+                        Log.e("request", new JSONObject(new String(response.data)).toString());
+                    } catch (JSONException e) {
+                        RunCallback(errorCallback);
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    RunCallback(errorCallback);
+                    Log.e("request", "Request returned null response. fetch jobs");
+                }
+                return super.parseNetworkResponse(response);
+            }
+
 
             @Override
             protected VolleyError parseNetworkError(final VolleyError volleyError) {

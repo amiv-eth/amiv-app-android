@@ -213,4 +213,9 @@
     <string name="other">Other</string>
     <string name="tap_to_set">Tap to set</string>
 
+    <string name="new_jobs_notification">New Joboffers</string>
+    <string name="multipleEventsadded">New Events</string>
+    <string name="singleEventadded">New Event</string>
+    <string name="new_job_notification">New joboffer</string>
+
 </resources>

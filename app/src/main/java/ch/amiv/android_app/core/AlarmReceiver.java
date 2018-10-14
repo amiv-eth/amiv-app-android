@@ -7,12 +7,11 @@ import android.content.Intent;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
-    int notification_id=0;
-
+    // when alarm is received this function is executed
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        //Notifications.notify(context,"Alarm","Receiver called",R.drawable.ic_amiv_logo_icon);
+        // event changes
         Request.FetchEventListChanges(context, new Request.OnDataReceivedCallback() {
             @Override
             public void OnDataReceived() {
@@ -24,11 +23,20 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             }
         }, "2018-05-06T10:00:00Z",false); // TODO change date here to use last checked date
-                                                // use Settings.GetPref(Settings.last_change_check_dateKey,context)
+                                                // use Settings.GetPref(Settings.last_change_event_check_dateKey,context)
+        // job changes
+        Request.FetchJobListChanges(context, new Request.OnDataReceivedCallback() {
+            @Override
+            public void OnDataReceived() {
 
-        // TODO test if notification needed
+            }
+        }, new Request.OnDataReceivedCallback() {
+            @Override
+            public void OnDataReceived() {
 
-        // TODO enter event notifier here
-        notification_id++;
+            }                                       // TODO change date here to use last checked date
+        }, "2018-05-06T10:00:00Z");  // use Settings.GetPref(Settings.last_change_check_job_dateKey,context)
+
+
     }
 }
