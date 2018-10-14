@@ -268,6 +268,7 @@ public class EventDetailActivity extends AppCompatActivity {
             ((TextView) findViewById(R.id.eventDetail)).setText(event.GetDescription(getResources()));
             LoadEventImage(isRefreshing);
             AddRegisterInfos();
+            AddRegisterForms();
         }
 
         UpdateRegisterButton();
@@ -367,6 +368,91 @@ public class EventDetailActivity extends AppCompatActivity {
             ((TextView) layout.findViewById(R.id.valueField)).setText(infos.get(i)[1]);
 
             linear.addView(layout);
+        }
+    }
+
+    //XXXXX
+
+    /**
+     * This generates the list of event addit fields to be filled in
+     */
+    private void AddRegisterForms()
+    {
+        LinearLayout linear = findViewById(R.id.register_form_list);
+        linear.removeAllViews();
+
+        final AdditField[] fields = event.additional_fields;
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+        for (int i = 0; i < event.additional_fields.length; i++) {
+            //Create a view from the xml and then add it as a child of the listview
+            LinearLayout layout = null;
+            if(fields[i].type == AdditField.FieldType.STRING)
+            {
+                if(fields[i].possibleValues != null && fields[i].possibleValues.length == 0) //Text field
+                {
+                    layout = (LinearLayout) inflater.inflate(R.layout.core_main_list_item_keyval, linear, false);
+                    ((TextView) layout.findViewById(R.id.keyField  )).setText(fields[i].title(getApplicationContext()));
+                    ((TextView) layout.findViewById(R.id.valueField)).setText(fields[i].currentValue);
+
+                    //XXXXX
+                    final AdditField currentField = fields[i];
+                    layout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //Open keyboard and type in field. Or pop up
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                            builder.setTitle("Title");
+
+                            // Set up the input
+                            final EditText input = new EditText(getApplicationContext());
+                            // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                            builder.setView(input);
+
+                            // Set up the buttons
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    currentField.currentValue = input.getText().toString();
+                                }
+                            });
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                            builder.show();
+                        }
+                    });
+                }
+                else    //enum field
+                {
+                    layout = (LinearLayout) inflater.inflate(R.layout.core_main_list_item_keyval, linear, false);
+                    ((TextView) layout.findViewById(R.id.keyField  )).setText(fields[i].title(getApplicationContext()));
+                    ((TextView) layout.findViewById(R.id.valueField)).setText(fields[i].currentValue);
+
+                    layout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //Launch pref enum activity with the addit field
+                        }
+                    });
+                }
+            }
+            else if (fields[i].type == AdditField.FieldType.BOOLEAN){
+                //To be impemented
+                layout = null;
+            }
+            else if (fields[i].type == AdditField.FieldType.INTEGER){
+                //To be implemented
+                layout = null;
+            }
+
+            if(layout != null) {
+                linear.addView(layout);
+            }
         }
     }
 

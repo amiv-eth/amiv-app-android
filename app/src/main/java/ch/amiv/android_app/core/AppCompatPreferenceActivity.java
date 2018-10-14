@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * This is used by the SettingsActivity
+ * This is used by the SettingsActivity_old
  */
 public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
 

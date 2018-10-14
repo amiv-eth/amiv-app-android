@@ -3,7 +3,7 @@ package ch.amiv.android_app.core;
 import android.support.v7.widget.RecyclerView;
 
 /**
- * A class to simplify refreshing a recyclerview, used in events and jobs list for example
+ * A class to simplify refreshing a recyclerview, used in events and jobInfos list for example
  */
 public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  {
 

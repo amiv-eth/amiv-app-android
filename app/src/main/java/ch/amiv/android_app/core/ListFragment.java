@@ -26,7 +26,7 @@ import ch.amiv.android_app.events.EventsListAdapter;
 import ch.amiv.android_app.jobs.JobListAdapter;
 
 /**
- * This class is a fragment for a list screen used in the main activity by the page viewer for events, jobs, it will use the given page position to tell which one it is
+ * This class is a fragment for a list screen used in the main activity by the page viewer for events, jobInfos, it will use the given page position to tell which one it is
  * NOTE: This fragment will lose its connection to the parent activity, when the app is resumed, use MainActivity.instance as the activity and context
  */
 public class ListFragment extends Fragment {

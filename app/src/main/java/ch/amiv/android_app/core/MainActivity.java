@@ -122,9 +122,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bottomNavigation = findViewById(R.id.bottomNav);
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        Settings.LoadEvents(getApplicationContext());
-        Settings.LoadJobs(getApplicationContext());
         InitialisePageView();
+        if(!Settings.LoadEvents(getApplicationContext()))
+            Request.FetchEventList(getApplicationContext(), pages.get(ListFragment.PageType.EVENTS).onEventsListUpdatedCallback, null, "");
+        if(!Settings.LoadJobs(getApplicationContext()))
+            Request.FetchJobList(MainActivity.instance, pages.get(ListFragment.PageType.EVENTS).onJobsListUpdatedCallback, null, "");
 
 
         //fetch the user info if we are logged in, there exists a token from the previous session, should be cached.
