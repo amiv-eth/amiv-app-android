@@ -7,8 +7,8 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     playAccountConfigs {
         defaultAccountConfig {
@@ -28,7 +28,7 @@ android {
     defaultConfig {
         applicationId "ch.amiv.android_app"
         minSdkVersion 23
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -50,15 +50,15 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
-    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     //implementation 'com.mcxiaoke.volley:library:1.0.19'
     implementation project(path: ':volley')
     implementation 'com.google.zxing:core:3.2.1'
     implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
-    implementation 'com.google.android.gms:play-services-vision:15.0.2'
+    implementation 'com.google.android.gms:play-services-vision:17.0.2'
     implementation 'com.google.code.gson:gson:2.8.2'
 
     testImplementation 'junit:junit:4.12'
