@@ -8,13 +8,14 @@ import java.util.Date;
 import java.util.Locale;
 
 import ch.amiv.android_app.core.Request;
+import ch.amiv.android_app.util.ApiItemBase;
 import ch.amiv.android_app.util.Util;
 
 import static ch.amiv.android_app.util.Util.BuildFileUrl;
 
-public class JobInfo {
+public class JobInfo extends ApiItemBase {
 //region -   ====Variables====
-    public String _id;
+    //public String _id;      //inherited from ApiItemBase
     public String _etag;
     private String title_de;
     private String title_en;
@@ -32,13 +33,13 @@ public class JobInfo {
 //endregion
 
     public JobInfo(JSONObject json) {
-        UpdateJob(json);
+        Update(json);
     }
 
     /**
      * Overwrite the current data
      */
-    public void UpdateJob(JSONObject json)
+    public void Update(JSONObject json)
     {
         _id             = json.optString("_id");
         _etag           = json.optString("_etag");

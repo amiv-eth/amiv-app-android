@@ -1,116 +1,109 @@
 package ch.amiv.android_app.jobs;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import org.json.JSONArray;
-import org.json.JSONException;
+
 import org.json.JSONObject;
-import java.util.ArrayList;
+
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 import ch.amiv.android_app.core.Settings;
+import ch.amiv.android_app.util.ApiListBase;
 
 /**
  * This holds all the data about the job offers similar to the events class, for more explanations see the Events class
  */
-public class Jobs {
-    public static List<JobInfo> jobInfos = new ArrayList<JobInfo>();
-    public static List<List<JobInfo>> sortedJobs = new ArrayList<>(JobGroup.SIZE);
-    public static boolean[] invertJobGroupSorting = new boolean[] {false, false, true};
+public class Jobs extends ApiListBase<JobInfo> {
+    //region -   Variables
+    public static final Jobs get = new Jobs();
 
-    //Use this class to use the correct indexes for the job group for the sortedJobs list
+    public boolean[] invertJobGroupSorting = new boolean[] {false, false, true};
+
+    //Use this class to use the correct indexes for the job group for the sorted list
     public static final class JobGroup {
         public static final int SIZE          = 3;
         public static final int HIDDEN_JOBS   = 0;
         public static final int ALL_JOBS      = 1;
         public static final int PAST_JOBS     = 2;
+
+        public static final int HIDDEN_JOBS_EXP_SIZE   = 2;
+        public static final int ALL_JOBS_EXP_SIZE      = 10;
+        public static final int PAST_JOBS_EXP_SIZE     = 10;
     }
 
     //Defines for how many days after the ad start date the new tag is visible for
     public static final int DAYS_NEW_TAG_ACTIVE = 3;
 
-    /**
-     * Update the list of job offers with a json from the api
-     * @param json json array of the events.
-     */
-    public static void UpdateJobInfos(Context context, JSONArray json)
-    {
-        //initialise lists first or clear them
-        boolean isInitialising = jobInfos.size() == 0;
-
-        for (int i = 0; i < json.length(); i++)
-        {
-            try {
-                //if we are not initialising, search for the event id and then update it, else add a new one to the list. This ensures we do not lose the signup data
-                JSONObject jsonJob = json.getJSONObject(i);
-                JobInfo e = new JobInfo(jsonJob);
-                if(e._id.isEmpty())
-                    continue;
-                if(isInitialising || !UpdateSingleJob(jsonJob, e._id))
-                    jobInfos.add(e);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+    private static Comparator<JobInfo> endDateComparator = new Comparator<JobInfo>() {
+        @Override
+        public int compare(JobInfo a, JobInfo b) {
+            return a.time_end.compareTo(b.time_end);
         }
+    };
 
-        GenerateSortedLists(isInitialising);
+    @Override
+    public Comparator<JobInfo> GetItemComparator() {
+        return endDateComparator;
+    }
+    //endregion
 
+    //region -   Override functions from ApiListBase
+    /**
+     * @return An instance of JobInfo parsed from the json
+     */
+    @Override
+    public JobInfo CreateItem(JSONObject json) {
+        return new JobInfo(json);
+    }
+
+    /**
+     * @return The amount of categories in the sorted array, 1st dim
+     */
+    @Override
+    protected int GetSortedSize1() {
+        return JobGroup.SIZE;
+    }
+
+    /**
+     * @param category The 2nd dim of the sorted list
+     * @return The expected initialisation size
+     */
+    @Override
+    protected int GetSortedSize2Expected(int category) {
+        if(category == JobGroup.HIDDEN_JOBS)
+            return JobGroup.HIDDEN_JOBS_EXP_SIZE;
+        if(category == JobGroup.ALL_JOBS)
+            return JobGroup.ALL_JOBS_EXP_SIZE;
+        if(category == JobGroup.PAST_JOBS)
+            return JobGroup.PAST_JOBS_EXP_SIZE;
+        return 0;
+    }
+
+    @Override
+    public void SaveToCache(Context context){
         Settings.SaveJobs(context);
     }
 
-    public static void GenerateSortedLists(boolean isInitialising)
-    {
-        if(isInitialising){
-            for (int k = 0; k < JobGroup.SIZE; k++)
-                sortedJobs.add(new ArrayList<JobInfo>());
-        }
-        else {
-            for (int k = 0; k < sortedJobs.size(); k++)
-                sortedJobs.get(k).clear();
-        }
-
-        //Sort list
-        if(!jobInfos.isEmpty()){
-            //sort so first elem has an end date furthest in the future
-            Comparator<JobInfo> comparator;
-            comparator = new Comparator<JobInfo>() {
-                @Override
-                public int compare(JobInfo a, JobInfo b) {
-                    return a.time_end.compareTo(b.time_end);
-                }
-            };
-
-            Collections.sort(jobInfos, comparator);
-
-            Date today = Calendar.getInstance().getTime();
-
-            //fill in the sorted list according to the dates
-            for (int i = 0; i < jobInfos.size(); i++){
-                if(!jobInfos.get(i).show_website)
-                    sortedJobs.get(JobGroup.HIDDEN_JOBS).add(jobInfos.get(i));
-                else if(jobInfos.get(i).time_end.after(today))
-                    sortedJobs.get(JobGroup.ALL_JOBS).add(jobInfos.get(i));
-                else
-                    sortedJobs.get(JobGroup.PAST_JOBS).add(jobInfos.get(i));
-            }
-        }
+    @Override
+    public void LoadFromCache(Context context) {
+        Settings.LoadJobs(context);
     }
 
     /**
-     * Will update a given event with the id
-     * @return true if the event was found and updated
+     * @return The category of the sorted list the item fits in, 1st dim
      */
-    public static boolean UpdateSingleJob(JSONObject json, @NonNull String jobId){
-        for (int i = 0; i < jobInfos.size(); i++){
-            if(jobInfos.get(i)._id.equalsIgnoreCase(jobId)) {
-                jobInfos.get(i).UpdateJob(json);
-                return true;
-            }
-        }
-        return false;
+    @Override
+    public int GetItemCategory(JobInfo item) {
+        Date today = Calendar.getInstance().getTime();
+
+        if(!item.show_website)
+            return JobGroup.HIDDEN_JOBS;
+        else if(item.time_end.after(today))
+            return JobGroup.ALL_JOBS;
+        else
+            return JobGroup.PAST_JOBS;
     }
+    //endregion
 }

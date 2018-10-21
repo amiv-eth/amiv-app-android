@@ -31,6 +31,7 @@ import ch.amiv.android_app.R;
 import ch.amiv.android_app.events.EventDetailActivity;
 import ch.amiv.android_app.events.Events;
 import ch.amiv.android_app.jobs.JobDetailActivity;
+import ch.amiv.android_app.util.ApiListBase.LauncherExtras;
 import ch.amiv.android_app.util.Util;
 
 
@@ -246,16 +247,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void StartEventDetailActivity(int eventGroup, int eventIndex)
     {
         Intent intent = new Intent(this, EventDetailActivity.class);
-        intent.putExtra(EventDetailActivity.LauncherExtras.EVENT_GROUP, eventGroup);
-        intent.putExtra(EventDetailActivity.LauncherExtras.EVENT_INDEX, eventIndex);
+        intent.putExtra(LauncherExtras.ITEM_GROUP, eventGroup);
+        intent.putExtra(LauncherExtras.ITEM_INDEX, eventIndex);
         startActivityForResult(intent, 0);
     }
 
     public void StartJobDetailActivity(int jobGroup, int jobIndex)
     {
         Intent intent = new Intent(this, JobDetailActivity.class);
-        intent.putExtra(JobDetailActivity.LauncherExtras.JOB_GROUP, jobGroup);
-        intent.putExtra(JobDetailActivity.LauncherExtras.JOB_INDEX, jobIndex);
+        intent.putExtra(LauncherExtras.ITEM_GROUP, jobGroup);
+        intent.putExtra(LauncherExtras.ITEM_INDEX, jobIndex);
         startActivityForResult(intent, 0);
     }
 
@@ -275,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void OnDataReceived() {
                         SetLoginUIDirty();
                         //Update events and signups with the new userinfo
-                        if(Events.eventInfos.size() > 0)
+                        if(Events.get.data.size() > 0)
                             Request.FetchEventSignups(getApplicationContext(), pages.get(ListFragment.PageType.EVENTS).onEventsListUpdatedCallback, null, "");
                         else
                             Request.FetchEventList(getApplicationContext(), pages.get(ListFragment.PageType.EVENTS).onEventsListUpdatedCallback, null, "");

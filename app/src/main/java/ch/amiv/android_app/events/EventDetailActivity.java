@@ -54,23 +54,14 @@ import ch.amiv.android_app.util.Util;
  * This mainly displays stored info about the event, eg description and also fetches more such as images. Also handles registering for and event and the possible outcomes
  *
  * To launch this activity, you need to provide an event to view. You need to provide this as an intent extra (use intent.putExtra()):
- * - Provide eventGroup == -1, eventGroup == index in Events.eventInfos (unsorted list)
- * - Provide eventGroup == group in Events.sortedEventInfos, eventGroup == index in Events.sortedEventInfos (sorted list)
+ * - Provide eventGroup == -1, eventGroup == index in Events.data (unsorted list)
+ * - Provide eventGroup == group in Events.sorted, eventGroup == index in Events.sorted (sorted list)
  * - Provide eventId == any valid event id
  *
  * If the event is not found, the activity finishes and returns to the calling activity.
  */
 public class EventDetailActivity extends AppCompatActivity {
-    /**
-     * A constant class to easily set extras for launching the EventDetailActivity
-     */
-    public static final class LauncherExtras {
-        public static final String EVENT_GROUP = "eventGroup";
-        public static final String EVENT_INDEX = "eventIndex";
-        public static final String EVENT_ID = "eventId";
-        public static final String LOAD_EVENTS = "loadEvents";
-    }
-
+    //region -   Variables
     private EventInfo event;
 
     private ImageView posterImage;
@@ -107,6 +98,19 @@ public class EventDetailActivity extends AppCompatActivity {
             swipeRefreshLayout.setRefreshing(false);
         }
     };
+    //endregion
+
+    /**
+     * This will retrieve the eventIndexes to display, is only set when we originate from the MainActivity, where the int is added to the intent.
+     */
+    private void GetIntentData (){
+        Intent intent = getIntent();
+
+        event = Events.get.GetItem(intent, getApplicationContext());
+
+        if(event == null)
+            ReturnToCallingActivity(false);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,39 +161,6 @@ public class EventDetailActivity extends AppCompatActivity {
     private void ReturnToCallingActivity (boolean success){
         setResult(success ? RESULT_OK : RESULT_CANCELED, responseIntent);
         finish();
-    }
-
-    /**
-     * This will retrieve the eventIndexes to display, is only set when we originate from the MainActivity, where the int is added to the intent.
-     */
-    private void GetIntentData (){
-        Intent intent = getIntent();
-
-        if(intent.getBooleanExtra(LauncherExtras.LOAD_EVENTS, false))
-            Settings.LoadEvents(getApplicationContext());
-
-        if(intent.hasExtra(LauncherExtras.EVENT_GROUP) && intent.hasExtra(LauncherExtras.EVENT_INDEX))
-        {
-            int eventGroup = intent.getIntExtra(LauncherExtras.EVENT_GROUP, 0);
-            int eventIndex = intent.getIntExtra(LauncherExtras.EVENT_INDEX, 0);
-            if(eventGroup == -1)
-                event = Events.eventInfos.get(eventIndex);
-            else
-                event = Events.sortedEventInfos.get(eventGroup).get(eventIndex);
-
-            if (event == null)
-                Log.e("events", "invalid event index selected during InitUI(), (groupIndex, eventIndex): (" + eventGroup + "," + eventIndex + "), total event size" + Events.eventInfos.size() + ". Ensure that you are not clearing/overwriting the events list while viewing an event. Returning to calling activity...");
-        }
-        else if(intent.hasExtra(LauncherExtras.EVENT_ID))
-        {
-            event = Events.GetEventById(intent.getStringExtra(LauncherExtras.EVENT_ID));
-
-            if(event == null)
-                Log.e("events", "No event found from eventId=" + intent.getStringExtra(LauncherExtras.EVENT_ID) + " in intent, have you used intent.putStringExtra. Returning to calling activity...");
-        }
-
-        if(event == null)
-            ReturnToCallingActivity(false);
     }
 
     /**

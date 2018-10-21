@@ -201,9 +201,9 @@ public final class Request {
                             public void run() {
                                 try {
                                     if(eventId.isEmpty())
-                                        Events.UpdateEventInfos(context, json.getJSONArray("_items"));
+                                        Events.get.UpdateAll(context, json.getJSONArray("_items"));
                                     else
-                                        Events.UpdateSingleEvent(json, eventId);
+                                        Events.get.UpdateItem(json, eventId, context);
                                     if(callback != null)
                                         callback.OnDataReceived();
                                 } catch (JSONException e) {
@@ -260,7 +260,7 @@ public final class Request {
     }
 
     /**
-     * Will fetch the event signups for the current user and save them in the eventInfos list
+     * Will fetch the event signups for the current user and save them in the data list
      * @param eventId to only fetch for a specific event id add this, else set as empty
      */
     public static void FetchEventSignups(final Context context, final OnDataReceivedCallback callback, final OnDataReceivedCallback errorCallback, @NonNull String eventId)
@@ -289,7 +289,7 @@ public final class Request {
                             Runnable runnable = new Runnable() {
                                 @Override
                                 public void run() {
-                                    Events.AddSignupArray(signupsJson);
+                                    Events.get.AddSignupArray(signupsJson);
                                     if(callback != null)
                                         callback.OnDataReceived();
                                 }
@@ -366,9 +366,9 @@ public final class Request {
                             public void run() {
                                 try {
                                     if(jobId.isEmpty())
-                                        Jobs.UpdateJobInfos(context, json.getJSONArray("_items"));
+                                        Jobs.get.UpdateAll(context, json.getJSONArray("_items"));
                                     else
-                                        Jobs.UpdateSingleJob(json, jobId);
+                                        Jobs.get.UpdateItem(json, jobId, context);
                                     if(callback != null)
                                         callback.OnDataReceived();
                                 } catch (JSONException e) {

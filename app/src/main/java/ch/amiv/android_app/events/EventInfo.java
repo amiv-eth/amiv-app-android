@@ -15,6 +15,7 @@ import java.util.Locale;
 
 import ch.amiv.android_app.R;
 import ch.amiv.android_app.core.Request;
+import ch.amiv.android_app.util.ApiItemBase;
 import ch.amiv.android_app.util.Util;
 
 import static ch.amiv.android_app.util.Util.BuildFileUrl;
@@ -22,9 +23,9 @@ import static ch.amiv.android_app.util.Util.BuildFileUrl;
 /**
  * This is all the data about one event AND the current users signup data about that event
  */
-public class EventInfo implements Serializable{
+public class EventInfo extends ApiItemBase implements Serializable{
 //region -   ====Variables====
-    public String _id;
+    //public String _id;  //inherited from ApiItemBase
     public String _etag;
     private String title_de;
     private String title_en;
@@ -74,13 +75,13 @@ public class EventInfo implements Serializable{
 //endregion
 
     public EventInfo(JSONObject json) {
-        UpdateEvent(json);
+        Update(json);
     }
 
     /**
      * Overwrite the current data
      */
-    public void UpdateEvent(JSONObject json)
+    public void Update(JSONObject json)
     {
         _id             = json.optString("_id");
         _etag           = json.optString("_etag");

@@ -269,7 +269,7 @@ public class Settings {
     public static void SaveEvents(Context context)
     {
         Gson gson = new Gson();
-        String json = gson.toJson(Events.eventInfos, eventListType);
+        String json = gson.toJson(Events.get.data, eventListType);
         SetPref(eventInfoKey, json, context);
     }
 
@@ -283,8 +283,8 @@ public class Settings {
 
         try {
             Gson gson = new Gson();
-            Events.eventInfos = gson.fromJson(json, eventListType);
-            Events.GenerateSortedLists(true);
+            Events.get.data = gson.fromJson(json, eventListType);
+            Events.get.GenerateSortedLists(true);
         }
         catch (Exception e){    //This may happen if the userinfo class changes
             e.printStackTrace();
@@ -304,7 +304,7 @@ public class Settings {
     public static void SaveJobs(Context context)
     {
         Gson gson = new Gson();
-        String json = gson.toJson(Jobs.jobInfos, jobListType);
+        String json = gson.toJson(Jobs.get.data, jobListType);
         SetPref(jobInfoKey, json, context);
     }
 
@@ -318,8 +318,8 @@ public class Settings {
 
         try {
             Gson gson = new Gson();
-            Jobs.jobInfos = gson.fromJson(json, jobListType);
-            Jobs.GenerateSortedLists(true);
+            Jobs.get.data = gson.fromJson(json, jobListType);
+            Jobs.get.GenerateSortedLists(true);
         }
         catch (Exception e){    //This may happen if the userinfo class changes
             e.printStackTrace();

@@ -22,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
         String firstname = UserInfo.current.firstname;
 
         //To access events use
-        EventInfo eventInfo = Events.sortedEventInfos.get(0).get(1);//sorted into groups by date
-        eventInfo = Events.eventInfos.get(0);//unsorted list
+        EventInfo eventInfo = Events.sorted.get(0).get(1);//sorted into groups by date
+        eventInfo = Events.data.get(0);//unsorted list
 
         //To Send a request to the api or elsewhere see core.Request class for examples. Basic structure is as below
         //START of request

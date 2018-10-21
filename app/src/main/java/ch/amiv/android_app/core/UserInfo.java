@@ -142,7 +142,7 @@ public class UserInfo implements Serializable{
         else {
             //delete session at the server and then clear the token
             Request.DeleteCurrentSession(context);
-            Events.ClearSignups();
+            Events.get.ClearSignups();
         }
 
         Settings.ClearUser(context);

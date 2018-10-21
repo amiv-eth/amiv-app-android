@@ -57,7 +57,7 @@ public class EventsListAdapter extends BaseRecyclerAdapter {
     @Override
     public void BuildDataset ()
     {
-        if(Events.sortedEventInfos.size() == 0)
+        if(Events.get.sorted.size() == 0)
             return;
 
         dataList.clear();
@@ -71,12 +71,12 @@ public class EventsListAdapter extends BaseRecyclerAdapter {
 
             //invert order on the specified groups
             if(i >= Events.invertEventGroupSorting.length || !Events.invertEventGroupSorting[i]) {
-                for (int j = 0; j < Events.sortedEventInfos.get(i).size(); j++) {
+                for (int j = 0; j < Events.get.sorted.get(i).size(); j++) {
                     dataList.add(new ListHelper.Pair(ViewType.EVENT, new int[]{i, j}));
                 }
             }
             else{
-                for (int j = Events.sortedEventInfos.get(i).size() -1; j >= 0; j--) {
+                for (int j = Events.get.sorted.get(i).size() -1; j >= 0; j--) {
                     dataList.add(new ListHelper.Pair(ViewType.EVENT, new int[]{i, j}));
                 }
             }
@@ -150,7 +150,7 @@ public class EventsListAdapter extends BaseRecyclerAdapter {
                 int[] indexes = (int[])data;
                 final int eventGroup = indexes[0];
                 final int eventIndex = indexes[1];
-                final EventInfo e = Events.sortedEventInfos.get(eventGroup).get(eventIndex);
+                final EventInfo e = Events.get.sorted.get(eventGroup).get(eventIndex);
                 final EventInfoHolder eventInfoHolder = (EventInfoHolder)holder;
 
                 eventInfoHolder.titleField.setText(e.GetTitle(activity.getResources()));

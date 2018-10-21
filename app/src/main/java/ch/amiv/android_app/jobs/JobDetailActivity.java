@@ -32,32 +32,13 @@ import ch.amiv.android_app.util.Util;
  * This mainly displays stored info about the job, eg description and also fetches more such as images. Also handles registering for and job and the possible outcomes
  */
 public class JobDetailActivity extends AppCompatActivity {
-    public static final class LauncherExtras {
-        public static final String JOB_GROUP = "jobGroup";
-        public static final String JOB_INDEX = "jobIndex";
-        public static final String JOB_ID = "eventId";
-        public static final String LOAD_JOBS = "loadJobs";
-    }
-
-    private int jobGroup = 0;
-    private int jobIndex = 0;
-    private JobInfo job(){  //Used to easily access the activities job
-        if(!hasJob())
-            return null;
-        return Jobs.sortedJobs.get(jobGroup).get(jobIndex);
-    }
-
-    private boolean hasJob(){
-        if(jobGroup >= Jobs.sortedJobs.size() || jobIndex >= Jobs.sortedJobs.get(jobGroup).size()){
-            Log.e("jobs", "JobDetailActivity given invalid job indexes, (group, index) = (" + jobGroup + ", " + jobIndex + "), with sortedJobs size of 1st dim: " + Jobs.sortedJobs.size());
-            return false;
-        }
-        return true;
-    }
+    //region -   Variables
+    private JobInfo job;
 
     private CustomNetworkImageView logoImage;
     private ScrollView scrollView;
     private Button downloadPdfButton;
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,23 +48,22 @@ public class JobDetailActivity extends AppCompatActivity {
         InitUI();
     }
 
+    /**
+     * This will retrieve the eventIndexes to display, is only set when we originate from the MainActivity, where the int is added to the intent.
+     */
+    private void GetIntentData (){
+        Intent intent = getIntent();
+
+        job = Jobs.get.GetItem(intent, getApplicationContext());
+
+        if(job == null)
+            finish();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         GetIntentData();
-    }
-
-    /**
-     * This will retrieve the jobIndexes to display, is only set when we originate from the MainActivity, where the int is added to the intent.
-     */
-    private void GetIntentData (){
-        if(jobGroup == 0 && jobIndex == 0) {
-            Intent intent = getIntent();
-            if(intent.hasExtra(JobDetailActivity.LauncherExtras.JOB_GROUP) && intent.hasExtra(LauncherExtras.JOB_INDEX)) {
-                jobGroup = intent.getIntExtra(JobDetailActivity.LauncherExtras.JOB_GROUP, 0);
-                jobIndex = intent.getIntExtra(LauncherExtras.JOB_INDEX, 0);
-            }
-        }
     }
 
     /**
@@ -93,28 +73,21 @@ public class JobDetailActivity extends AppCompatActivity {
         //Set up toolbar and back button
         Util.SetupToolbar(this, true);
 
-        //Check that we have been given a job that exists else return to the calling activity
-        if(!hasJob()) {
-            Log.e("jobs", "invalid job index selected during InitUI(), (groupIndex, jobIndex): (" + jobGroup + "," + jobIndex + "), total job size" + Jobs.jobInfos.size() + ". Ensure that you are not clearing/overwriting the jobs list while viewing a job.");
-            onBackPressed();
-            return;
-        }
-
         //Link up variables with UI elements from the layout xml
         scrollView = findViewById(R.id.scrollView);
         logoImage = findViewById(R.id.companyLogo);
         downloadPdfButton = findViewById(R.id.openPdf);
 
-        ((TextView) findViewById(R.id.companyTitle)).setText(job().company);
-        ((TextView) findViewById(R.id.jobTitle)).setText(job().GetTitle(getResources()));
-        ((TextView) findViewById(R.id.jobDescription)).setText(job().GetDescription(getResources()));
+        ((TextView) findViewById(R.id.companyTitle)).setText(job.company);
+        ((TextView) findViewById(R.id.jobTitle)).setText(job.GetTitle(getResources()));
+        ((TextView) findViewById(R.id.jobDescription)).setText(job.GetDescription(getResources()));
 
         DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy", getResources().getConfiguration().locale);
-        ((TextView) findViewById(R.id.dateCreated)).setText(getResources().getString(R.string.date_created) + ": " + dateFormat.format(job().time_created).toString());
-        ((TextView) findViewById(R.id.dateEnd)).setText(getResources().getString(R.string.date_available_until) + ": " + dateFormat.format(job().time_end).toString());
+        ((TextView) findViewById(R.id.dateCreated)).setText(getResources().getString(R.string.date_created) + ": " + dateFormat.format(job.time_created).toString());
+        ((TextView) findViewById(R.id.dateEnd)).setText(getResources().getString(R.string.date_available_until) + ": " + dateFormat.format(job.time_end).toString());
 
         //LoadEventImage();
-        logoImage.setImageUrl(job().GetLogoUrl(), Request.GetImageLoader(getApplicationContext()));
+        logoImage.setImageUrl(job.GetLogoUrl(), Request.GetImageLoader(getApplicationContext()));
         logoImage.onImageLoaded = new Request.OnDataReceivedCallback() {
             @Override
             public void OnDataReceived() {
@@ -130,7 +103,7 @@ public class JobDetailActivity extends AppCompatActivity {
      * Will set the open pdf button to enabled only if a pdf exists
      */
     private void UpdateOpenPdfButton() {
-        if(job().pdf_url != null && !job().pdf_url.isEmpty())
+        if(job.pdf_url != null && !job.pdf_url.isEmpty())
         {
             downloadPdfButton.setEnabled(true);
             downloadPdfButton.setText(R.string.open_pdf);
@@ -156,7 +129,7 @@ public class JobDetailActivity extends AppCompatActivity {
     }
 
     public void OpenJobPdf(boolean askForPermission) {
-        if (job().pdf_url.isEmpty()) {
+        if (job.pdf_url.isEmpty()) {
             UpdateOpenPdfButton();
             return;
         }
@@ -175,8 +148,8 @@ public class JobDetailActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             return;
 
-        Uri uri = Uri.parse(job().GetPdfUrl());
-        String savePath = job().GetTitle(getResources());
+        Uri uri = Uri.parse(job.GetPdfUrl());
+        String savePath = job.GetTitle(getResources());
         savePath = savePath.replace(' ', '-');
         savePath = savePath.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");  //remove illegal characters
         savePath = "/amiv/" + savePath;
@@ -187,7 +160,7 @@ public class JobDetailActivity extends AppCompatActivity {
         DownloadManager.Request request = new DownloadManager.Request(uri)
             .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
             .setAllowedOverRoaming(false)
-            .setTitle(job().GetTitle(getResources()))
+            .setTitle(job.GetTitle(getResources()))
             .setDescription(getResources().getString(R.string.job_pdf_description))
             .setVisibleInDownloadsUi(true)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)

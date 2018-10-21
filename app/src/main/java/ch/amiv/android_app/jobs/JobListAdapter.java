@@ -57,7 +57,7 @@ public class JobListAdapter extends BaseRecyclerAdapter {
     @Override
     public void BuildDataset ()
     {
-        if(Jobs.sortedJobs.size() == 0)
+        if(Jobs.get.sorted.size() == 0)
             return;
 
         dataList.clear();
@@ -72,13 +72,13 @@ public class JobListAdapter extends BaseRecyclerAdapter {
                 dataList.add(new ListHelper.Pair(JobListAdapter.ViewType.HEADER, activity.getResources().getString(headers.get(i))));
 
             //invert order on the specified groups
-            if(i >= Jobs.invertJobGroupSorting.length || !Jobs.invertJobGroupSorting[i]) {
-                for (int j = 0; j < Jobs.sortedJobs.get(i).size(); j++) {
+            if(i >= Jobs.get.invertJobGroupSorting.length || !Jobs.get.invertJobGroupSorting[i]) {
+                for (int j = 0; j < Jobs.get.sorted.get(i).size(); j++) {
                     dataList.add(new ListHelper.Pair(ViewType.JOB, new int[]{i, j}));
                 }
             }
             else{
-                for (int j = Jobs.sortedJobs.get(i).size() -1; j >= 0; j--) {
+                for (int j = Jobs.get.sorted.get(i).size() -1; j >= 0; j--) {
                     dataList.add(new ListHelper.Pair(ViewType.JOB, new int[]{i, j}));
                 }
             }
@@ -152,7 +152,7 @@ public class JobListAdapter extends BaseRecyclerAdapter {
                 int[] indexes = (int[])data;
                 final int jobGroup = indexes[0];
                 final int jobIndex = indexes[1];
-                final JobInfo j = Jobs.sortedJobs.get(jobGroup).get(jobIndex);
+                final JobInfo j = Jobs.get.sorted.get(jobGroup).get(jobIndex);
                 final JobInfoHolder jobInfoHolder = (JobInfoHolder)holder;
 
                 jobInfoHolder.titleField.setText(j.GetTitle(activity.getResources()));
